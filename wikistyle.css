@@ -65,7 +65,7 @@ header {
     flex: none;
 }
 
-#logo {
+#logo, #logoAnker {
     width:170px;
     height:80px;
     margin-right: 50px;
@@ -152,9 +152,8 @@ nav {
 /* content */
 
 #contentContainer {
-
-    max-width: 1300px;
-    height: auto;
+    width: fit-content;
+    height: fit-content;
     margin: auto;
 }
 
@@ -162,18 +161,110 @@ nav {
 
     background-color: white;
     border: rgb(200, 200, 200) solid 1px;
-    padding: 10px;
+    padding: 15px;
 }
 
 /* article */
 
-article {
+/* document */
+#documentContainer {
 
-    
     margin-right: 10px;
     margin-top: 10px;
     word-break: break-all;
-    flex: 0 0 1000px;
+    width: 1000px;
+    flex-direction: column;
+}
+
+#menuContainer {
+
+    margin-top: 10px;
+    align-items: center;
+    justify-content: space-between;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+#toolContainer {
+
+    border: rgb(200, 200, 200) solid 1px;
+    border-radius: 10px;
+    background-color: rgb(250, 250, 250);
+}
+.toolItem {
+
+    flex: none;
+    width: 80px;
+    height: 35px;
+    border: none;
+    background-color: transparent;
+    padding: 0;
+    font-size: 0.9em;
+
+}
+
+.toolItem:hover {
+
+    cursor: pointer;
+    background-color: rgb(240, 240, 240);
+}
+
+.toolItem:nth-child(1) {
+
+    border-radius: 10px 0 0 10px;
+}
+
+.toolItem:nth-child(2) {
+
+    border-right: rgb(200, 200, 200) solid 1px;
+    border-left: rgb(200, 200, 200) solid 1px;
+    width: 84px;
+}
+
+.toolItem:nth-child(3) {
+
+    border-radius: 0 10px 10px 0;
+}
+
+.documentTitle {
+
+    font-size: 2em;
+    font-weight: bold;
+}
+
+#paragraph {
+
+    width: 1000px;
+    font-size: 1em;
+
+}
+
+/* edit */
+
+#editContainer {
+
+    width: 1000px;
+    margin-top: 10px;
+    margin-right: 10px;
+    height: fit-content;
+    flex-direction: column;
+}
+
+#editorContainer {
+
+    margin: 10px 20px;
+}
+
+
+
+#input {
+
+    margin: 20px 10px;
+    height: 500px;
+    width: auto
+    background-color: rgb(250, 250, 250);
+    resize: vertical;
+    font-size: 0.8em;
 }
 
 /* aside */
@@ -182,11 +273,12 @@ aside {
 
     flex: 0 0 220px;
     margin-top:10px;
+    height: fit-content;
 }
 
 aside a {
 
-    font-size: 12pt;
+    font-size: 0.8em;
 }
 
 /* footer */
