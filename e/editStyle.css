@@ -1,0 +1,25 @@
+#editContainer {
+
+    width: 1000px;
+    margin-top: 10px;
+    margin-right: 10px;
+    height: fit-content;
+    flex-direction: column;
+}
+
+#editorContainer {
+
+    margin: 10px 20px;
+}
+
+
+
+#input {
+
+    margin: 20px 10px;
+    height: 500px;
+    width: auto;
+    background-color: rgb(250, 250, 250);
+    resize: vertical;
+    font-size: 0.8em;
+}

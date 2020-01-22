@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+
+    <!-- metadata -->
+    <meta charset="utf-8">
+    <title>전곽위키</title>
+    <link rel="stylesheet" href="../src/css/wikiStyle.css" />
+    <link rel="stylesheet" href="editStyle.css" />
+    <script src="../src/js/jquery-3.4.1.min.js"></script>
+
+
+
+</head>
+
+<body>
+
+    <!-- header -->
+    <header>
+
+        <div id="serchContainer" class="container">
+            <a href="https://cameo.zone/test/kch/cameo.jpg" class="serchItem" id="logoAnker">
+
+                <img id="logo" src="../src/img/icon.png" alt="logo" />
+
+            </a>
+            <input id="serchTxt" type="text" class="serchItem" />
+            <button id="serchBtn" class="serchItem"><span
+                    style="text-align: center; font-size: 16pt;">검색</span></button>
+        </div>
+
+    </header>
+
+    <!-- navigation -->
+    <nav>
+        <div id="navContainer" class="container">
+            <div class="navItem">
+                <ul id="navList">
+                    <li class="navLi">
+                        <a href="#" class="navAnker"><span class="navTxt">버튼버튼</span></a>
+                    </li>
+                    <li class="navLi">
+                        <a href="#" class="navAnker"><span class="navTxt">버튼버튼</span></a>
+                    </li>
+                    <li class="navLi">
+                        <a href="#" class="navAnker"><span class="navTxt">버튼버튼</span></a>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- content -->
+    <div id="contentContainer" class="container">
+
+        <!-- article -->
+        <article>
+            <!-- 편집 화면 (edit) -->
+
+            <div id="editContainer" class="container contentItem">
+
+                <div id="menuContainer" class="container editItem">
+
+                    <span class="menuItem documentTitle">Lorem ipsum</span>
+
+                    <span class="container menuItem" id="toolContainer">
+                        <button class="toolItem" id="exitBtn">취소</button>
+                        <button class="toolItem">역사</button>
+                        <button class="toolItem">저장</button>
+                    </span>
+
+
+
+                </div>
+                <textarea id="input" class="editItem">
+
+                            문서내용, 편집할 내용이 들어갈 곳
+
+                        </textarea>
+
+            </div>
+
+        </article>
+
+        <!-- aside -->
+        <aside class="contentItem">
+            <p style="font-size: 1.2em; text-align: center;">수정된 문서</p>
+            <hr>
+            <a href="#">Lorem ipsum dolor sit amet1</a>
+            <hr>
+            <a href="#">Lorem ipsum dolor sit amet2</a>
+            <hr>
+            <a href="#">Lorem ipsum dolor sit amet3</a>
+            <hr>
+            <a href="#">Lorem ipsum dolor sit amet4</a>
+            <hr>
+            <a href="#">Lorem ipsum dolor sit amet5</a>
+            <hr>
+            <a href="#">Lorem ipsum dolor sit amet6</a>
+            <hr>
+            <a href="#">Lorem ipsum dolor sit amet7</a>
+            <hr>
+            <a href="#">Lorem ipsum dolor sit amet8</a>
+            <hr>
+            <a href="#">Lorem ipsum dolor sit amet9</a>
+            <hr>
+            <a href="#">Lorem ipsum dolor sit amet10</a>
+            <hr>
+        </aside>
+    </div>
+
+    <footer>
+        <div class="container" id="footerContainer">
+
+            <p class="footerItem">디자인은 누군가 알아서 잘 해 주겠지. 믿고 있다.</p>
+
+        </div>
+    </footer>
+
+    <!-- scripts -->
+
+    <script src="editFunctions.js"></script>
+
+    <!-- firebase -->
+    <div>
+        <!-- The core Firebase JS SDK is always required and must be listed first -->
+        <script src="https://www.gstatic.com/firebasejs/7.6.1/firebase-app.js"></script>
+
+        <!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+        <script src="https://www.gstatic.com/firebasejs/7.6.1/firebase-analytics.js"></script>
+
+        <script>
+            // Your web app's Firebase configuration
+            var firebaseConfig = {
+                apiKey: "AIzaSyBo1n7N-LhS5DmtCSRqAIHcDeo6oT-heeA",
+                authDomain: "jshswiki.firebaseapp.com",
+                databaseURL: "https://jshswiki.firebaseio.com",
+                projectId: "jshswiki",
+                storageBucket: "jshswiki.appspot.com",
+                messagingSenderId: "100649838292",
+                appId: "1:100649838292:web:3b24692bb098faedff3d41",
+                measurementId: "G-445Q0P6WKK"
+            };
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+            firebase.analytics();
+
+
+        </script>
+
+    </div>
+
+
+</body>
+
+</html>

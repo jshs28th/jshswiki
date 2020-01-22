@@ -3,7 +3,7 @@
 @font-face {
 
     font-family: mainFont;
-    src: url(NanumGothic.woff) format('woff')
+    src: url(../font/NanumGothic.woff) format('woff')
 }
 
 html {
@@ -166,23 +166,13 @@ nav {
 
 /* article */
 
-/* document */
-#documentContainer {
-
-    margin-right: 10px;
-    margin-top: 10px;
-    word-break: break-all;
-    width: 1000px;
-    flex-direction: column;
-}
-
 #menuContainer {
 
     margin-top: 10px;
     align-items: center;
     justify-content: space-between;
-    margin-left: 20px;
-    margin-right: 20px;
+    margin-left: 35px;
+    margin-right: 35px;
 }
 
 #toolContainer {
@@ -230,41 +220,6 @@ nav {
 
     font-size: 2em;
     font-weight: bold;
-}
-
-#paragraph {
-
-    width: 1000px;
-    font-size: 1em;
-
-}
-
-/* edit */
-
-#editContainer {
-
-    width: 1000px;
-    margin-top: 10px;
-    margin-right: 10px;
-    height: fit-content;
-    flex-direction: column;
-}
-
-#editorContainer {
-
-    margin: 10px 20px;
-}
-
-
-
-#input {
-
-    margin: 20px 10px;
-    height: 500px;
-    width: auto
-    background-color: rgb(250, 250, 250);
-    resize: vertical;
-    font-size: 0.8em;
 }
 
 /* aside */
