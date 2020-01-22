@@ -1,4 +1,4 @@
 $("#exitBtn").click(function(){
 
-    location.href = "../w/"
+    location.href = "../w/" + $(".documentTitle").text().replace(" ", "%20");
 })

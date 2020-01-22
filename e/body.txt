@@ -1,0 +1,138 @@
+<body>
+
+    <!-- header -->
+    <header>
+
+        <div id="searchContainer" class="container">
+            <a href="http://cameo.zone/test/kch/123/126/137/146/jshswiki/w/" class="searchItem" id="logoAnker">
+
+                <img id="logo" src="../src/img/icon.png" alt="logo" />
+
+            </a>
+            <input id="searchTxt" type="text" class="searchItem" />
+            <button id="searchBtn" class="searchItem"><span
+                    style="text-align: center; font-size: 16pt;">검색</span></button>
+        </div>
+
+    </header>
+
+    <!-- navigation -->
+    <nav>
+        <div id="navContainer" class="container">
+            <div class="navItem">
+                <ul id="navList">
+                    <li class="navLi">
+                        <a href="#" class="navAnker"><span class="navTxt">버튼버튼</span></a>
+                    </li>
+                    <li class="navLi">
+                        <a href="#" class="navAnker"><span class="navTxt">버튼버튼</span></a>
+                    </li>
+                    <li class="navLi">
+                        <a href="#" class="navAnker"><span class="navTxt">버튼버튼</span></a>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- content -->
+    <div id="contentContainer" class="container">
+
+        <!-- article -->
+        <article>
+            <!-- 편집 화면 (edit) -->
+
+            <div id="editContainer" class="container contentItem">
+
+                <div id="menuContainer" class="container editItem">
+
+                    <span class="menuItem documentTitle">제목</span>
+
+                    <span class="container menuItem" id="toolContainer">
+                        <button class="toolItem" id="exitBtn">취소</button>
+                        <button class="toolItem">역사</button>
+                        <button class="toolItem">저장</button>
+                    </span>
+
+
+
+                </div>
+                <textarea id="input" class="editItem inAndOut">문서내용, 편집할 내용이 들어갈 곳</textarea>
+            </div>
+
+        </article>
+
+        <!-- aside -->
+        <aside class="contentItem">
+            <p style="font-size: 1.2em; text-align: center;">수정된 문서</p>
+            <hr>
+            <a href="#">Lorem ipsum dolor sit amet1</a>
+            <hr>
+            <a href="#">Lorem ipsum dolor sit amet2</a>
+            <hr>
+            <a href="#">Lorem ipsum dolor sit amet3</a>
+            <hr>
+            <a href="#">Lorem ipsum dolor sit amet4</a>
+            <hr>
+            <a href="#">Lorem ipsum dolor sit amet5</a>
+            <hr>
+            <a href="#">Lorem ipsum dolor sit amet6</a>
+            <hr>
+            <a href="#">Lorem ipsum dolor sit amet7</a>
+            <hr>
+            <a href="#">Lorem ipsum dolor sit amet8</a>
+            <hr>
+            <a href="#">Lorem ipsum dolor sit amet9</a>
+            <hr>
+            <a href="#">Lorem ipsum dolor sit amet10</a>
+            <hr>
+        </aside>
+    </div>
+
+    <footer>
+        <div class="container" id="footerContainer">
+
+            <p class="footerItem">디자인은 누군가 알아서 잘 해 주겠지. 믿고 있다.</p>
+
+        </div>
+    </footer>
+
+    <!-- scripts -->
+
+    <script src="editFunctions.js"></script>
+    <script src="../src/js/wikiFunctions.js"></script>
+
+    <!-- 주소로 입력해도 들어가지는 엄청나게 공들인 코드-->
+    <script>
+    
+    function loadFile (i) {
+
+
+        $(".documentTitle").text(i.replace("%20", " "));
+
+        $(".inAndOut").load("../e/" + i + ".txt", function (file, status) {
+
+            if (status == "error") {
+
+                $(".inAndOut").text("새로운 문서를 작성합니다.");
+            }
+
+            history.pushState("", "", $(".documentTitle").text().replace(" ", "%20"));
+        });
+    }
+
+    var u = decodeURI(document.URL.split("/").pop());
+
+    if(u != ""){
+
+        loadFile(u.replace(" ", "%20"));
+
+    } else {
+
+        loadFile("Lorem%20ipsum");
+    }
+
+</script>
+
+</body>

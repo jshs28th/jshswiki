@@ -2,15 +2,8 @@ $("#searchBtn").on('click', function () {
 
     var input = $("#searchTxt").val();
 
-    var s = input.replace(" ", "_");
-    
-    $(".documentTitle").text(input);
+    var s = input.replace(" ", "%20");
 
-    $(".inAndOut").load("../w/" + s + ".txt", function (file, status) {
-        if (status == "error") {
+    window.location.replace("http://cameo.zone/test/kch/123/126/137/146/jshswiki/w/" + s);
 
-            $(".inAndOut").text("해당하는 문서가 존재하지 않습니다.");
-        }
-
-    });
 });
