@@ -14,5 +14,5 @@
 
 $("#editBtn").click(function(){
 
-    location.href = "../e/index.html"
+    location.href = "../e/"
 })

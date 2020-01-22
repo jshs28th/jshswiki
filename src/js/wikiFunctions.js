@@ -1,10 +1,16 @@
 $("#searchBtn").on('click', function () {
 
-    var s = $("#searchTxt").val();
+    var input = $("#searchTxt").val();
 
-    $(".documentTitle").text(s);
+    var s = input.replace(" ", "_");
+    
+    $(".documentTitle").text(input);
 
-    $("#paragraph").load("../w/main.txt");
+    $(".inAndOut").load("../w/" + s + ".txt", function (file, status) {
+        if (status == "error") {
 
+            $(".inAndOut").text("해당하는 문서가 존재하지 않습니다.");
+        }
 
+    });
 });

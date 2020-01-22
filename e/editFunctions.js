@@ -1,4 +1,4 @@
 $("#exitBtn").click(function(){
 
-    location.href = "../w/index.html"
+    location.href = "../w/"
 })
