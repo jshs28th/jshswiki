@@ -117,13 +117,16 @@
     //loadFile이라는 함수를 만듦. 매개변수는 i 일단 이 함수는 무시하고 아래를 봐. (var u부터)
     function loadFile (i) {
 
-//방금 loadFile에 인수로 u.replace(" ", "%20")를 사용했는데 이건 u에서 띄어쓰기(" ")를 찾아서 %20으로 바꾼다는 말이야.
+//방금 loadFile에 인수로 u.replace(/ /gi, "%20")를 사용했는데 이건 u에서 띄어쓰기
+//(원래 " "이렇게 쓰는데 이러면 첫번째 띄어쓰기만 찾기 때문에 정규식이라는 것을 이용해서 / /gi 라고 씀.
+//  / /안에 바꿀 내용을 쓰면 되는데 띄어쓰기라 / /라고 썼음.)
+//를 찾아서 %20으로 바꾼다는 말이야.
 //예를 들어 주소에 http://cameo.zone/test/kch/123/126/137/146/jshswiki/w/남 현 우 라고 쳤으면
 //u=남%20현%20우%20 인거임.
 //이제 이 함수 안에서는 u가 아니라 i겠지만.
 
-        $(".documentTitle").text(i.replace("%20", " "));
-        //이건 jquery를 이용해서 클래스가 documentTitle인 태그의 text를 i.replace("%20", " ")로 바꾸겠다는 거임.
+        $(".documentTitle").text(i.replace(/%20/gi, " "));
+        //이건 jquery를 이용해서 클래스가 documentTitle인 태그의 text를 i.replace(/20%/gi, " ")로 바꾸겠다는 거임.
         //이게 뭐냐면 제목 text거든 그래서 이 코드는 제목을 남 현 우 로 바꾸겠다는 거야.
         //앞으로 앞에 $붙어 있으면 다 jquery임.
 
@@ -132,8 +135,9 @@
             //괄호 안에는 파일의 주소와 함수가 하나 있는데 함수는 필요에 따라 넣고 뺄 수 있음. 난 필요해서 넣었어.
             //주소를 살펴보면 ../w/남%20현%20우.txt 가 됨. 근데 그 파일이 없잖아. 그러면 이제 함수 쪽에서 status의 값을 error로 바꿈. 
             //만약 파일이 있었으면 .load자체에서 문서 내용 텍스트에 파일 내용을 바로 넣어주고 status값이 success였나?
-            //여기서 한가지 더 문제가 있지. 저 %20이 자동으로 스페이스로 바뀌더라고... 그래서 보면 알겠지만 Lorem%20ipsum.txt가
-            //아니라 Lorem ipsum.txt임.
+            //여기서 한가지 더 문제가 있지. 저 %20이 자동으로 스페이스로 바뀌더라고... 그래서 w폴더를 보면 알겠지만
+            //Lorem%20ipsum.txt가 아니라 Lorem ipsum.txt임.
+            
             if (status == "error") {
 
                 //자 에러가 났어. 그러면
@@ -172,7 +176,7 @@
 //그럼 이제 loadFile를 사용했으니까 다시 올라가 보자.
     if(u != ""){
         
-        loadFile(u.replace(" ", "%20"));
+        loadFile(u.replace(/ /gi, "%20"));
 
     } else {
 

@@ -109,7 +109,7 @@
     function loadFile (i) {
 
 
-        $(".documentTitle").text(i.replace("%20", " "));
+        $(".documentTitle").text(i.replace(/%20/gi, " "));
 
         $(".inAndOut").load("../e/" + i + ".txt", function (file, status) {
 
@@ -118,7 +118,7 @@
                 $(".inAndOut").text("새로운 문서를 작성합니다.");
             }
 
-            history.pushState("", "", $(".documentTitle").text().replace(" ", "%20"));
+            history.pushState("", "", i);
         });
     }
 
@@ -126,7 +126,7 @@
 
     if(u != ""){
 
-        loadFile(u.replace(" ", "%20"));
+        loadFile(u.replace(/ /gi, "%20"));
 
     } else {
 
