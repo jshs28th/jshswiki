@@ -1,4 +1,4 @@
-$("#searchBtn").on('click', function () {
+$("#searchBtn").click(function () {
 
     var input = $("#searchTxt").val();
 

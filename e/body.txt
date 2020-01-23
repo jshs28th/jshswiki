@@ -46,12 +46,17 @@
 
                 <div id="menuContainer" class="container editItem">
 
-                    <span class="menuItem documentTitle">제목</span>
+                    <span class="menuItem">
+
+                        <span class="documentTitle">제목</span>
+                        <span id = "historyNum">역사</span>
+                        
+                    </span>
 
                     <span class="container menuItem" id="toolContainer">
                         <button class="toolItem" id="exitBtn">취소</button>
                         <button class="toolItem">역사</button>
-                        <button class="toolItem" id = "saveBtn">저장</button>
+                        <button class="toolItem" id="saveBtn">저장</button>
                     </span>
 
 
@@ -104,34 +109,41 @@
 
     <!-- 주소로 입력해도 들어가지는 엄청나게 공들인 코드-->
     <script>
-    
-    function loadFile (i) {
 
+        function loadFile(i) {
 
-        $(".documentTitle").text(i.replace(/%20/gi, " "));
+            $(".documentTitle").text(i.replace(/%20/gi, " "));
 
-        $(".inAndOut").load("../e/" + i + ".txt", function (file, status) {
+            $.post("readphp.php", { title: i.replace(/%20/gi, " ") }, function (data, status) {
 
-            if (status == "error") {
+                if (data == "") {
 
-                $(".inAndOut").text("새로운 문서를 작성합니다.");
-            }
+                    $(".inAndOut").text("해당하는 문서가 존재하지 않습니다.");
 
-            history.pushState("", "", i);
-        });
-    }
+                } else {
 
-    var u = decodeURI(document.URL.split("/").pop());
+                    var a = data.split("\n");
+                    $("#historyNum").text((parseInt(a[0])+1)+"번째 편집");
+                    $(".inAndOut").html(a[1]);
 
-    if(u != ""){
+                }
 
-        loadFile(u.replace(/ /gi, "%20"));
+                history.pushState("", "", i);
 
-    } else {
+            });
+        }
 
-        loadFile("Lorem%20ipsum");
-    }
+        var u = decodeURI(document.URL.split("/").pop());
 
-</script>
+        if (u != "") {
+
+            loadFile(u.replace(/ /gi, "%20"));
+
+        } else {
+
+            loadFile("Lorem%20ipsum");
+        }
+
+    </script>
 
 </body>

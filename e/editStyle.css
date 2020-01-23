@@ -23,3 +23,9 @@
     resize: vertical;
     font-size: 0.8em;
 }
+
+#historyNum {
+
+    font-size: 1em;
+    margin-left: 10px;
+}
