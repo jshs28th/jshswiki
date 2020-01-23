@@ -42,7 +42,6 @@
         <!-- article -->
         <article>
             <!-- 편집 화면 (edit) -->
-
             <div id="editContainer" class="container contentItem">
 
                 <div id="menuContainer" class="container editItem">
@@ -52,7 +51,7 @@
                     <span class="container menuItem" id="toolContainer">
                         <button class="toolItem" id="exitBtn">취소</button>
                         <button class="toolItem">역사</button>
-                        <button class="toolItem">저장</button>
+                        <button class="toolItem" id = "saveBtn">저장</button>
                     </span>
 
 
