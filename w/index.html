@@ -3,6 +3,7 @@
 <head>
 
 <!-- metadata -->
+<!-- head 구성은 그냥 css랑 jquery파일 불러오는 거임 -->
     <meta charset="utf-8">
     <title>전곽위키</title>
     <link rel="stylesheet" href="../src/css/wikiStyle.css" />
@@ -16,6 +17,8 @@
 
 <script>
 
+    // 사실 이거 한 줄이 다야. 이게 jquery를 이용한 건데 body태그에 body.txt파일을 가져와서 채워넣는 코드임.
+    //그러면 이 코드는 지워지고 body.txt내용으로 대체됨. body.txt로 ㄱㄱ (w폴더의)
     $("body").load("body.txt");
 
 </script>
