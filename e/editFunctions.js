@@ -1,6 +1,6 @@
 $("#exitBtn").click(function () {
 
-    location.href = "../w/" + $(".documentTitle").text().replace(" ", "%20");
+    location.href = "../w/" + $(".documentTitle").text().replace(/ /gi, "%20");
 });
 
 $("#saveBtn").click(function () {
@@ -8,7 +8,7 @@ $("#saveBtn").click(function () {
     var text1 = $(".inAndOut").val().replace(/\n/g, "<br>");
     alert(text1);
     var text2 = $("#historyNum").text().split("번");
-    var text3 = ("\n" + text1 + "\n" + "--h" + text2[0] + "_" + Date.now());
+    var text3 = ("\n" + text1 + "\n" + "--h" + text2[0] + "_" + Date.now() + "_익명_몇바이트--<br>");
 
     $.post("editphp.php",
 

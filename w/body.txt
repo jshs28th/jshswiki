@@ -55,7 +55,7 @@
 
                     <span class="container menuItem" id="toolContainer">
                         <button class="toolItem" id="editBtn">편집</button>
-                        <button class="toolItem">역사</button>
+                        <button class="toolItem" id = "historyBtn">역사</button>
                         <button class="toolItem">신고?</button>
                     </span>
 
@@ -63,7 +63,9 @@
 
                 </div>
 
-                <p class="documentItem inAndOut">내용</p>
+                <p class="documentItem inAndOut">해당하는 문서가 존재하지 않습니다.</p>
+
+                <pre id="historyTxt" class = "documentItem">아직 만들어지지 않은 문서입니다.</pre>
             </div>
         </article>
 
@@ -131,13 +133,10 @@
 
             $.post("readphp.php", {title: i.replace(/%20/gi, " ")}, function (data, status) {
 
-                if(data == ""){
-
-                    $(".inAndOut").text("해당하는 문서가 존재하지 않습니다.");
-                } else {
+                if(status == "success"){
 
                     $(".inAndOut").html(data);
-
+                    
                 }
 
                 history.pushState("", "", i);
@@ -174,7 +173,7 @@
 
             } else {
 
-                loadFile("Lorem%20ipsum");
+                loadFile("대문");
             }
 
 

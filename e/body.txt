@@ -49,20 +49,20 @@
                     <span class="menuItem">
 
                         <span class="documentTitle">제목</span>
-                        <span id = "historyNum">역사</span>
+                        <span id = "historyNum">1번째 편집</span>
                         
                     </span>
 
                     <span class="container menuItem" id="toolContainer">
                         <button class="toolItem" id="exitBtn">취소</button>
-                        <button class="toolItem">역사</button>
+                        <button class="toolItem" id = "historyBtn">역사</button>
                         <button class="toolItem" id="saveBtn">저장</button>
                     </span>
 
 
 
                 </div>
-                <textarea id="input" class="editItem inAndOut">문서내용, 편집할 내용이 들어갈 곳</textarea>
+                <textarea id="input" class="editItem inAndOut">새로운 문서를 작성합니다.</textarea>
             </div>
 
         </article>
@@ -116,15 +116,11 @@
 
             $.post("readphp.php", { title: i.replace(/%20/gi, " ") }, function (data, status) {
 
-                if (data == "") {
-
-                    $(".inAndOut").text("해당하는 문서가 존재하지 않습니다.");
-
-                } else {
+                if (status == "success") {
 
                     var a = data.split("\n");
                     $("#historyNum").text((parseInt(a[0])+1)+"번째 편집");
-                    $(".inAndOut").html(a[1]);
+                    $(".inAndOut").text(a[1]);
 
                 }
 
@@ -134,6 +130,7 @@
         }
 
         var u = decodeURI(document.URL.split("/").pop());
+        
 
         if (u != "") {
 
@@ -141,7 +138,7 @@
 
         } else {
 
-            loadFile("Lorem%20ipsum");
+            loadFile("대문");
         }
 
     </script>

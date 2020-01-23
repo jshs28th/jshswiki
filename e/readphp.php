@@ -1,7 +1,7 @@
 <?php
 
 $title = $_POST["title"];
-$n =0;
+$n =-1;
 
 $txt = fopen($title.".txt", 'r');
 
@@ -18,7 +18,7 @@ echo "\n";
 
 rewind($txt);
 
-for ($i = 2; $i < $n; $i++) {
+for ($i = 1; $i < $n; $i++) {
 
     fgets($txt);
 }

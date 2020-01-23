@@ -14,3 +14,13 @@
     align-self: center;
 
 }
+
+#historyTxt {
+
+    width: 970px;
+    font-size: 1em;
+    align-self: center;
+    font-family: mainFont, sans-serif;
+    white-space: pre-wrap;
+
+}
