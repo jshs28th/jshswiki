@@ -36,12 +36,19 @@ button:focus {
 
 ul, ol {
 
-    list-style: none;
+    list-style: outside none none !important;
 }
 
 a {
 
     text-decoration: none;
+    color: blue;
+}
+
+a:hover {
+
+    border-bottom: blue solid 1px;
+
 }
 
 /* header */
@@ -69,6 +76,7 @@ header {
     width:170px;
     height:80px;
     margin-right: 50px;
+    border: none !important;
 }
 
 #logo:hover {
@@ -126,27 +134,33 @@ nav {
 .navLi {
 
     float: left;
+    line-height: 50px;
 }
 
-.navAnker {
+.navBtn {
 
     display: flex;
     height: 50px;
     width: 120px;
     align-items: center;
     justify-content: center;
+    font-size: 1.4em;
+    color: black;
+    margin: 0px;
     
 }
 
-.navAnker:hover {
+.navBtn:hover {
 
     background-color:  rgb(105, 201, 192);
 }
 
-.navTxt {
+#uploadDiv {
 
-    font-size: 1.4em;
-    color: black;
+    position: absolute;
+    z-index: 9999;
+    background-color: white;
+    border: rgb(200, 200, 200) solid 1px;
 }
 
 /* content */

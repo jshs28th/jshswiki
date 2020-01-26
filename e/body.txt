@@ -22,16 +22,22 @@
             <div class="navItem">
                 <ul id="navList">
                     <li class="navLi">
-                        <a href="#" class="navAnker"><span class="navTxt">버튼버튼</span></a>
+                        <p id="upload" class="navBtn">업로드</p>
+                            <div id = "uploadDiv">
+                                <form id = "uploadForm" method="POST">
+                                    <input name="file" type="file" id="file">
+                                    <button type = "button" id="uploadBtn">업로드</button>
+                                </form>
+                            </div>
                     </li>
                     <li class="navLi">
-                        <a href="#" class="navAnker"><span class="navTxt">버튼버튼</span></a>
+                        <p class="navBtn">버튼버튼</p>
                     </li>
                     <li class="navLi">
-                        <a href="#" class="navAnker"><span class="navTxt">버튼버튼</span></a>
+                        <p class="navBtn">버튼버튼</p>
                     </li>
 
-                </ul>
+            </ul>
             </div>
         </div>
     </nav>
@@ -49,13 +55,13 @@
                     <span class="menuItem">
 
                         <span class="documentTitle">제목</span>
-                        <span id = "historyNum">1번째 편집</span>
-                        
+                        <span id="historyNum">1번째 편집</span>
+
                     </span>
 
                     <span class="container menuItem" id="toolContainer">
                         <button class="toolItem" id="exitBtn">취소</button>
-                        <button class="toolItem" id = "historyBtn">역사</button>
+                        <button class="toolItem">삭제</button>
                         <button class="toolItem" id="saveBtn">저장</button>
                     </span>
 
@@ -69,27 +75,27 @@
 
         <!-- aside -->
         <aside class="contentItem">
-            <p style="font-size: 1.2em; text-align: center;">수정된 문서</p>
+            <p style="font-size: 1.2em; text-align: center;" id="target">수정된 문서</p>
             <hr>
-            <a href="#">Lorem ipsum dolor sit amet1</a>
+            <a href="#" id="link1"></a>
             <hr>
-            <a href="#">Lorem ipsum dolor sit amet2</a>
+            <a href="#" id="link2"></a>
             <hr>
-            <a href="#">Lorem ipsum dolor sit amet3</a>
+            <a href="#" id="link3"></a>
             <hr>
-            <a href="#">Lorem ipsum dolor sit amet4</a>
+            <a href="#" id="link4"></a>
             <hr>
-            <a href="#">Lorem ipsum dolor sit amet5</a>
+            <a href="#" id="link5"></a>
             <hr>
-            <a href="#">Lorem ipsum dolor sit amet6</a>
+            <a href="#" id="link6"></a>
             <hr>
-            <a href="#">Lorem ipsum dolor sit amet7</a>
+            <a href="#" id="link7"></a>
             <hr>
-            <a href="#">Lorem ipsum dolor sit amet8</a>
+            <a href="#" id="link8"></a>
             <hr>
-            <a href="#">Lorem ipsum dolor sit amet9</a>
+            <a href="#" id="link9"></a>
             <hr>
-            <a href="#">Lorem ipsum dolor sit amet10</a>
+            <a href="#" id="link10"></a>
             <hr>
         </aside>
     </div>
@@ -119,8 +125,8 @@
                 if (status == "success") {
 
                     var a = data.split("\n");
-                    $("#historyNum").text((parseInt(a[0])+1)+"번째 편집");
-                    $(".inAndOut").text(a[1]);
+                    $("#historyNum").text((parseInt(a[0]) + 1) + "번째 편집");
+                    grammar(a[1], 0);
 
                 }
 
@@ -130,7 +136,7 @@
         }
 
         var u = decodeURI(document.URL.split("/").pop());
-        
+
 
         if (u != "") {
 
@@ -140,6 +146,8 @@
 
             loadFile("대문");
         }
+
+        loadLog();
 
     </script>
 

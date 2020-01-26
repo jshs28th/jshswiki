@@ -24,15 +24,21 @@
         <div id="navContainer" class="container">
             <div class="navItem">
                 <ul id="navList">
-                    <li class="navLi">
-                        <a href="#" class="navAnker"><span class="navTxt">버튼버튼</span></a>
-                    </li>
-                    <li class="navLi">
-                        <a href="#" class="navAnker"><span class="navTxt">버튼버튼</span></a>
-                    </li>
-                    <li class="navLi">
-                        <a href="#" class="navAnker"><span class="navTxt">버튼버튼</span></a>
-                    </li>
+                        <li class="navLi">
+                            <p id="upload" class="navBtn">업로드</p>
+                                <div id = "uploadDiv">
+                                    <form id = "uploadForm" method="POST">
+                                        <input name="file" type="file" id="file">
+                                        <button type = "button" id="uploadBtn">업로드</button>
+                                    </form>
+                                </div>
+                        </li>
+                        <li class="navLi">
+                            <p class="navBtn">버튼버튼</p>
+                        </li>
+                        <li class="navLi">
+                            <p class="navBtn">버튼버튼</p>
+                        </li>
 
                 </ul>
             </div>
@@ -55,8 +61,8 @@
 
                     <span class="container menuItem" id="toolContainer">
                         <button class="toolItem" id="editBtn">편집</button>
-                        <button class="toolItem" id = "historyBtn">역사</button>
-                        <button class="toolItem">신고?</button>
+                        <button class="toolItem" id="historyBtn">역사</button>
+                        <button class="toolItem" id = "lastBtn">이전</button>
                     </span>
 
 
@@ -65,7 +71,7 @@
 
                 <p class="documentItem inAndOut">해당하는 문서가 존재하지 않습니다.</p>
 
-                <pre id="historyTxt" class = "documentItem">아직 만들어지지 않은 문서입니다.</pre>
+                <pre id="historyTxt" class="documentItem">아직 만들어지지 않은 문서입니다.</pre>
             </div>
         </article>
 
@@ -73,25 +79,25 @@
         <aside class="contentItem">
             <p style="font-size: 1.2em; text-align: center;">수정된 문서</p>
             <hr>
-            <a href="#">Lorem ipsum dolor sit amet1</a>
+            <a href="#" id="link1"></a>
             <hr>
-            <a href="#">Lorem ipsum dolor sit amet2</a>
+            <a href="#" id="link2"></a>
             <hr>
-            <a href="#">Lorem ipsum dolor sit amet3</a>
+            <a href="#" id="link3"></a>
             <hr>
-            <a href="#">Lorem ipsum dolor sit amet4</a>
+            <a href="#" id="link4"></a>
             <hr>
-            <a href="#">Lorem ipsum dolor sit amet5</a>
+            <a href="#" id="link5"></a>
             <hr>
-            <a href="#">Lorem ipsum dolor sit amet6</a>
+            <a href="#" id="link6"></a>
             <hr>
-            <a href="#">Lorem ipsum dolor sit amet7</a>
+            <a href="#" id="link7"></a>
             <hr>
-            <a href="#">Lorem ipsum dolor sit amet8</a>
+            <a href="#" id="link8"></a>
             <hr>
-            <a href="#">Lorem ipsum dolor sit amet9</a>
+            <a href="#" id="link9"></a>
             <hr>
-            <a href="#">Lorem ipsum dolor sit amet10</a>
+            <a href="#" id="link10"></a>
             <hr>
         </aside>
     </div>
@@ -131,52 +137,52 @@
             //이게 뭐냐면 제목 text거든 그래서 이 코드는 제목을 남 현 우 로 바꾸겠다는 거야.
             //앞으로 앞에 $붙어 있으면 다 jquery임.
 
-            $.post("readphp.php", {title: i.replace(/%20/gi, " ")}, function (data, status) {
+            $.post("readphp.php", { title: i.replace(/%20/gi, " ") }, function (data, status) {
 
-                if(status == "success"){
+                if (status == "success") {
 
                     $(".inAndOut").html(data);
-                    
+
                 }
 
                 history.pushState("", "", i);
 
             });
-                //.load는 그 뒤 괄호 안에 있는 파일을 읽어오는 거야. index에도 있었지.
-                //괄호 안에는 파일의 주소와 함수가 하나 있는데 함수는 필요에 따라 넣고 뺄 수 있음. 난 필요해서 넣었어.
-                //주소를 살펴보면 ../w/남%20현%20우.txt 가 됨. 근데 그 파일이 없잖아. 그러면 이제 함수 쪽에서 status의 값을 error로 바꿈. 
-                //만약 파일이 있었으면 .load자체에서 문서 내용 텍스트에 파일 내용을 바로 넣어주고 status값이 success였나?
-                //여기서 한가지 더 문제가 있지. 저 %20이 자동으로 스페이스로 바뀌더라고... 그래서 w폴더를 보면 알겠지만
-                //Lorem%20ipsum.txt가 아니라 Lorem ipsum.txt임.
+            //.load는 그 뒤 괄호 안에 있는 파일을 읽어오는 거야. index에도 있었지.
+            //괄호 안에는 파일의 주소와 함수가 하나 있는데 함수는 필요에 따라 넣고 뺄 수 있음. 난 필요해서 넣었어.
+            //주소를 살펴보면 ../w/남%20현%20우.txt 가 됨. 근데 그 파일이 없잖아. 그러면 이제 함수 쪽에서 status의 값을 error로 바꿈. 
+            //만약 파일이 있었으면 .load자체에서 문서 내용 텍스트에 파일 내용을 바로 넣어주고 status값이 success였나?
+            //여기서 한가지 더 문제가 있지. 저 %20이 자동으로 스페이스로 바뀌더라고... 그래서 w폴더를 보면 알겠지만
+            //Lorem%20ipsum.txt가 아니라 Lorem ipsum.txt임.
 
-                    //자 에러가 났어. 그러면
+            //자 에러가 났어. 그러면
 
-                    
-                    //문서 내용부분 텍스트를 이렇게 바꾸는 거지.
-                
-                //그리고 파일을 찾았든 못 찾았든 주소창의 값을 바꿀거야
-                //history.pushState(a, b, c); 이 때 a, b는 나도 딱히 안 찾아봤는데 주소창에 내용은 c부분이야.
-                //그래서 a,b부분에는 ""을 넣어뒀고 c부분에 주소값을 넣음. (맨 뒤의 값만.)
-                //i가 남%20현%20우 였으니까 이제 주소창에는 이렇게 써 있겠지.
-                //http://cameo.zone/test/kch/123/126/137/146/jshswiki/w/남%20현%20우
-                //그리고 현재 페이지에는 남현우 파일이 없는데도 있는 척을 하면서 편집을 누르면 새 문서를 만든다고 나옴.
-                //일단 다시 위키 원리 설명.txt로 돌아가자.
 
-            
+            //문서 내용부분 텍스트를 이렇게 바꾸는 거지.
+
+            //그리고 파일을 찾았든 못 찾았든 주소창의 값을 바꿀거야
+            //history.pushState(a, b, c); 이 때 a, b는 나도 딱히 안 찾아봤는데 주소창에 내용은 c부분이야.
+            //그래서 a,b부분에는 ""을 넣어뒀고 c부분에 주소값을 넣음. (맨 뒤의 값만.)
+            //i가 남%20현%20우 였으니까 이제 주소창에는 이렇게 써 있겠지.
+            //http://cameo.zone/test/kch/123/126/137/146/jshswiki/w/남%20현%20우
+            //그리고 현재 페이지에는 남현우 파일이 없는데도 있는 척을 하면서 편집을 누르면 새 문서를 만든다고 나옴.
+            //일단 다시 위키 원리 설명.txt로 돌아가자.
+
+
         }
 
-            var u = decodeURI(document.URL.split("/").pop());
+        var u = decodeURI(document.URL.split("/").pop());
 
-            if (u != "") {
+        if (u != "") {
 
-                loadFile(u.replace(/ /gi, "%20"));
+            loadFile(u.replace(/ /gi, "%20"));
 
-            } else {
+        } else {
 
-                loadFile("대문");
-            }
+            loadFile("대문");
+        }
 
-
+        loadLog();
 
 //u라는 변수를 만들었는데 그 값이decodeURI(document.URL.split("/").pop())이야.
 //안에부터 살펴보자면 document.URL은 지금 사이트의 url을 불러오는 거야.

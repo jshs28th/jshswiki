@@ -3,7 +3,7 @@
 $title = $_POST["title"];
 $n =-1;
 
-$txt = fopen($title.".txt", 'r');
+$txt = fopen("../w/".$title.".txt", 'r');
 
     while(!feof($txt)) {
 
