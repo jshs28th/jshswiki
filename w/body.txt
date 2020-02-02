@@ -101,7 +101,9 @@
             <hr>
         </aside>
     </div>
-
+    <!--가운데 정렬 실패..두 p태그 사이에 큰 공간 생김-->
+    <!--그리고 사이트 전체에 적용 안 됨-->
+    <!--라이브러리에서 index 켰을 때만 됨-->
     <footer>
         <div class="container" id="footerContainer">
 
