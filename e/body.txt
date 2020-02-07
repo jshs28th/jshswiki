@@ -54,14 +54,14 @@
 
                     <span class="menuItem">
 
-                        <span class="documentTitle">제목</span>
+                        <h1 class="documentTitle">제목</h1>
                         <span id="historyNum">1번째 편집</span>
 
                     </span>
 
                     <span class="container menuItem" id="toolContainer">
                         <button class="toolItem" id="exitBtn">취소</button>
-                        <button class="toolItem">삭제</button>
+                        <button class="toolItem">문법</button>
                         <button class="toolItem" id="saveBtn">저장</button>
                     </span>
 
@@ -135,7 +135,8 @@
             });
         }
 
-        var u = decodeURI(document.URL.split("/").pop());
+        var v = decodeURI(document.URL.split("/").pop());
+        var u = v.split("#")[0];
 
 
         if (u != "") {

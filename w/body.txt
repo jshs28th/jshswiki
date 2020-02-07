@@ -15,6 +15,9 @@
             <input id="searchTxt" type="text" class="searchItem" />
             <button id="searchBtn" class="searchItem"><span
                     style="text-align: center; font-size: 16pt;">검색</span></button>
+            <a href="#" class="searchItem" id="login">
+            <img src="../src/img/치킨.jpg"  />
+            </a>
         </div>
 
     </header>
@@ -57,12 +60,12 @@
 
                 <div id="menuContainer" class="container documentItem">
 
-                    <span class="menuItem documentTitle">제목</span>
+                    <h1 class="menuItem documentTitle">제목</h1>
 
                     <span class="container menuItem" id="toolContainer">
                         <button class="toolItem" id="editBtn">편집</button>
                         <button class="toolItem" id="historyBtn">역사</button>
-                        <button class="toolItem" id = "lastBtn">이전</button>
+                        <button class="toolItem" id = "lastBtn">삭제</button>
                     </span>
 
 
@@ -171,7 +174,8 @@
 
         }
 
-        var u = decodeURI(document.URL.split("/").pop());
+        var v = decodeURI(document.URL.split("/").pop());
+        var u = v.split("#")[0];
 
         if (u != "") {
 
