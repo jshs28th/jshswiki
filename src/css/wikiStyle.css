@@ -395,3 +395,7 @@ footer {
     background-color: rgb(173, 232, 227);
     border: rgb(105, 201, 192) solid 1px;
 }
+
+.footerItem{
+    margin:0 auto;
+}
