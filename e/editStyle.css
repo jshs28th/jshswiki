@@ -1,10 +1,11 @@
 #editContainer {
 
-    width: 1000px;
+    flex: 0 0 1070px;
     margin-top: 10px;
     margin-right: 10px;
     height: fit-content;
     flex-direction: column;
+    box-sizing: border-box;
 }
 
 #editorContainer {
@@ -16,12 +17,12 @@
 
 #input {
 
-    margin: 20px 10px;
+    margin: 20px auto;
     height: 500px;
-    width: auto;
+    width: 1000px;
     background-color: rgb(250, 250, 250);
     resize: vertical;
-    font-size: 0.8em;
+    font-size: 1em;
 }
 
 #historyNum {

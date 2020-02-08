@@ -107,6 +107,18 @@ h5 {
     font-size: 1.05em;
 }
 
+/* 미리 만들어 자주 쓰는 것들 */
+
+.fn {
+
+    flex: none;
+}
+
+.hidden {
+
+    display: none;
+}
+
 /* header */
 
 header {
@@ -115,7 +127,7 @@ header {
     background-color: rgb(249, 255, 255);
 }
 
-#searchContainer {
+#headContainer {
     max-width: 1300px;
     margin: 30px auto;
     justify-content: flex-start;
@@ -123,10 +135,7 @@ header {
 
 }
 
-.searchItem {
 
-    flex: none;
-}
 
 #logo, #logoAnker {
     width:170px;
@@ -159,6 +168,75 @@ header {
     background-color: white;
     margin-left: -3px;
 }
+
+#login {
+
+    margin-left: auto;
+}
+
+#loginInput {
+
+    position: relative;
+}
+
+#loginInput > input {
+
+    position: absolute;
+    margin: auto;
+    flex: 0 0 220px;
+    height: 20px;
+}
+
+#id {
+
+    right: 190px;
+    bottom: 20px;
+}
+
+#pw {
+
+    right: 10px;
+    bottom: 20px;
+}
+
+#loginBtn {
+    position: relative;
+    display: inline-block;
+    box-sizing: border-box;
+    height: 60px;
+    width: 60px;
+    border: black 1.5px solid;
+    border-radius: 60px;
+    
+}
+
+#loginBtn > img {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    margin: auto;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    
+}
+
+#loginBtn:hover {
+
+    cursor: pointer;
+}
+
+#loginBtn:hover > #sign1 {
+
+    display: none;
+}
+
+#loginBtn:hover > #sign2 {
+
+    display: block;
+}
+
 
 /* navigation */
 
@@ -222,8 +300,8 @@ nav {
 /* content */
 
 #contentContainer {
-    width: fit-content;
-    height: fit-content;
+    max-width: 1300px;
+    height: auto;
     margin: auto;
 }
 
@@ -300,6 +378,7 @@ aside {
     flex: 0 0 220px;
     margin-top:10px;
     height: fit-content;
+    box-sizing: border-box;
 }
 
 aside a {

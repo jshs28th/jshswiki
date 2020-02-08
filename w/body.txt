@@ -6,18 +6,29 @@
     <!-- header -->
     <header>
 
-        <div id="searchContainer" class="container">
-            <a href="http://cameo.zone/test/kch/123/126/137/146/jshswiki/w/" class="searchItem" id="logoAnker">
-
+        <div class="container" id="headContainer">
+            <a href="../w/" id="logoAnker" class="fn">
                 <img id="logo" src="../src/img/icon.png" alt="logo" />
+            </a>
+            <input id="searchTxt" type="text" class="fn" />
+            <button id="searchBtn" class="fn"><span style="text-align: center; font-size: 16pt;">검색</span></button>
+            <span id="login">
 
-            </a>
-            <input id="searchTxt" type="text" class="searchItem" />
-            <button id="searchBtn" class="searchItem"><span
-                    style="text-align: center; font-size: 16pt;">검색</span></button>
-            <a href="#" class="searchItem" id="login">
-            <img src="../src/img/치킨.jpg"  />
-            </a>
+                <!-- 로그인 창 -->
+                <span id="loginInput">
+                    <input id="id" type="text" placeholder="아이디">
+                    <input id="pw" type="password" placeholder="비밀번호">
+                </span>
+                <!-- 로그인 버튼 -->
+                <span id="loginBtn" class="fn">
+    
+                    <img id= "sign1" src="../src/img/sign1.png"  />
+                    <img id= "sign2" class = "hidden" src="../src/img/sign2.png" />
+                    <img id= "auth" class = "hidden" src="../src/img/auth.png" />
+    
+                </span>
+
+            </span>
         </div>
 
     </header>
@@ -27,21 +38,21 @@
         <div id="navContainer" class="container">
             <div class="navItem">
                 <ul id="navList">
-                        <li class="navLi">
-                            <p id="upload" class="navBtn">업로드</p>
-                                <div id = "uploadDiv">
-                                    <form id = "uploadForm" method="POST">
-                                        <input name="file" type="file" id="file">
-                                        <button type = "button" id="uploadBtn">업로드</button>
-                                    </form>
-                                </div>
-                        </li>
-                        <li class="navLi">
-                            <p class="navBtn">버튼버튼</p>
-                        </li>
-                        <li class="navLi">
-                            <p class="navBtn">버튼버튼</p>
-                        </li>
+                    <li class="navLi">
+                        <p id="upload" class="navBtn">업로드</p>
+                        <div id="uploadDiv">
+                            <form id="uploadForm" method="POST">
+                                <input name="file" type="file" id="file">
+                                <button type="button" id="uploadBtn">업로드</button>
+                            </form>
+                        </div>
+                    </li>
+                    <li class="navLi">
+                        <p class="navBtn">버튼버튼</p>
+                    </li>
+                    <li class="navLi">
+                        <p class="navBtn">버튼버튼</p>
+                    </li>
 
                 </ul>
             </div>
@@ -52,11 +63,10 @@
     <div id="contentContainer" class="container">
 
         <!-- article -->
-        <article>
+        <article class="contentItem container" id="documentContainer">
 
             <!-- 문서 화면 (document) -->
             <!-- .documentTitle은 문서 제목-->
-            <div class="contentItem container" id="documentContainer">
 
                 <div id="menuContainer" class="container documentItem">
 
@@ -65,17 +75,12 @@
                     <span class="container menuItem" id="toolContainer">
                         <button class="toolItem" id="editBtn">편집</button>
                         <button class="toolItem" id="historyBtn">역사</button>
-                        <button class="toolItem" id = "lastBtn">삭제</button>
+                        <button class="toolItem" id="lastBtn">삭제</button>
                     </span>
-
-
-
                 </div>
-
                 <p class="documentItem inAndOut">해당하는 문서가 존재하지 않습니다.</p>
 
                 <pre id="historyTxt" class="documentItem">아직 만들어지지 않은 문서입니다.</pre>
-            </div>
         </article>
 
         <!-- aside -->
@@ -113,8 +118,15 @@
         </div>
     </footer>
 
-    <!-- scripts -->
+    <!-- firebase -->
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.8.1/firebase-app.js"></script>
 
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="https://www.gstatic.com/firebasejs/7.8.1/firebase-analytics.js"></script>
+
+    <!-- scripts -->
     <script src="documentFunctions.js"></script>
     <script src="../src/js/wikiFunctions.js"></script>
 
@@ -206,4 +218,5 @@
 
 
     </script>
+
 </body>

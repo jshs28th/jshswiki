@@ -1,18 +1,20 @@
 #documentContainer {
 
+    flex: 0 0 1070px;
     margin-right: 10px;
     margin-top: 10px;
     word-break: break-all;
-    width: 1000px;
     flex-direction: column;
+    box-sizing: border-box;
 }
 
 .inAndOut {
 
-    width: 970px;
+    width: 1000px;
     font-size: 1em;
     align-self: center;
     white-space: pre-wrap;
+    margin: 0 auto;
 
 }
 
