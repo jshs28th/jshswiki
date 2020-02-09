@@ -7,22 +7,24 @@ $("#historyTxt").hide();
 
 $("#historyBtn").click(function () {
 
-   $("#historyTxt").load($(".documentTitle").text().replace(/ /gi, "%20") + ".txt");
-        $(".inAndOut").slideToggle(200);
-        $("#historyTxt").slideToggle(200);
+    $("#historyTxt").load($(".documentTitle").text().replace(/ /gi, "%20") + ".txt");
+    $(".inAndOut").slideToggle(200);
+    $("#historyTxt").slideToggle(200);
 
 });
 
+
+// Your web app's Firebase configuration
 var firebaseConfig = {
-    apiKey: "AIzaSyAU9GCIYpjhmHReymw8SU3ltCHiLO0tYx4",
-    authDomain: "jshswiki-ac7c6.firebaseapp.com",
-    databaseURL: "https://jshswiki-ac7c6.firebaseio.com",
-    projectId: "jshswiki-ac7c6",
-    storageBucket: "jshswiki-ac7c6.appspot.com",
-    messagingSenderId: "924522495153",
-    appId: "1:924522495153:web:9e5928457557b11361b690",
-    measurementId: "G-BVSZGD97VR"
-  };
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-  firebase.analytics();
+    apiKey: "AIzaSyBo1n7N-LhS5DmtCSRqAIHcDeo6oT-heeA",
+    authDomain: "jshswiki.firebaseapp.com",
+    databaseURL: "https://jshswiki.firebaseio.com",
+    projectId: "jshswiki",
+    storageBucket: "jshswiki.appspot.com",
+    messagingSenderId: "100649838292",
+    appId: "1:100649838292:web:3b24692bb098faedff3d41",
+    measurementId: "G-445Q0P6WKK"
+};
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+firebase.analytics();

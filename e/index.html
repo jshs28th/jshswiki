@@ -16,8 +16,167 @@
 
 <body>
 
+    <!-- header -->
+    <header>
+
+        <div class="container" id="headContainer">
+            <a href="../w/" id="logoAnker" class="fn">
+                <img id="logo" src="../src/img/icon.png" alt="logo" />
+            </a>
+            <input id="searchTxt" type="text" class="fn" onkeydown="javascript:if(event.keyCode == 13){search();}"/>
+            <button id="searchBtn" class="fn"><span style="text-align: center; font-size: 16pt;">검색</span></button>
+            <span id="login">
+
+                <!-- 로그인 창 -->
+                <span id="loginInput">
+                    <input id="id" type="text" placeholder="아이디">
+                    <input id="pw" type="password" placeholder="비밀번호">
+                </span>
+                <!-- 로그인 버튼 -->
+                <span id="loginBtn" class="fn">
+    
+                    <img id= "sign1" src="../src/img/sign1.png"  />
+                    <img id= "sign2" class = "hidden" src="../src/img/sign2.png" />
+                    <img id= "auth" class = "hidden" src="../src/img/auth.png" />
+    
+                </span>
+
+            </span>
+        </div>
+
+    </header>
+
+    <!-- navigation -->
+    <nav>
+        <div id="navContainer" class="container">
+            <div class="navItem">
+                <ul id="navList">
+                    <li class="navLi">
+                        <p id="upload" class="navBtn">업로드</p>
+                        <div id="uploadDiv">
+                            <form id="uploadForm" method="POST">
+                                <input name="file" type="file" id="file">
+                                <button type="button" id="uploadBtn">업로드</button>
+                            </form>
+                        </div>
+                    </li>
+                    <li class="navLi">
+                        <p class="navBtn">버튼버튼</p>
+                    </li>
+                    <li class="navLi">
+                        <p class="navBtn">버튼버튼</p>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- content -->
+    <div id="contentContainer" class="container">
+
+        <!-- article -->
+        <!-- 편집 화면 (edit) -->
+        <article id="editContainer" class="container contentItem">
+
+            <div id="menuContainer" class="container editItem">
+
+                <span class="menuItem">
+
+                    <h1 class="documentTitle">제목</h1>
+                    <span id="historyNum">1번째 편집</span>
+
+                </span>
+
+                <span class="container menuItem" id="toolContainer">
+                    <button class="toolItem" id="exitBtn">취소</button>
+                    <button class="toolItem">문법</button>
+                    <button class="toolItem" id="saveBtn">저장</button>
+                </span>
+
+
+
+            </div>
+            <textarea id="input" class="editItem inAndOut">새로운 문서를 작성합니다.</textarea>
+
+        </article>
+
+        <!-- aside -->
+        <aside class="contentItem">
+            <p style="font-size: 1.2em; text-align: center;" id="target">수정된 문서</p>
+            <hr>
+            <a href="#" id="link1"></a>
+            <hr>
+            <a href="#" id="link2"></a>
+            <hr>
+            <a href="#" id="link3"></a>
+            <hr>
+            <a href="#" id="link4"></a>
+            <hr>
+            <a href="#" id="link5"></a>
+            <hr>
+            <a href="#" id="link6"></a>
+            <hr>
+            <a href="#" id="link7"></a>
+            <hr>
+            <a href="#" id="link8"></a>
+            <hr>
+            <a href="#" id="link9"></a>
+            <hr>
+            <a href="#" id="link10"></a>
+            <hr>
+        </aside>
+    </div>
+
+    <footer>
+        <div class="container" id="footerContainer">
+
+            <p class="footerItem">디자인은 누군가 알아서 잘 해 주겠지. 믿고 있다.</p>
+
+        </div>
+    </footer>
+
+    <!-- scripts -->
+
+    <script src="editFunctions.js"></script>
+    <script src="../src/js/wikiFunctions.js"></script>
+
+    <!-- 주소로 입력해도 들어가지는 엄청나게 공들인 코드-->
     <script>
-            $("body").load("body.txt");
+
+        function loadFile(i) {
+
+            $(".documentTitle").text(i.replace(/%20/gi, " "));
+
+            $.post("readphp.php", { title: i.replace(/%20/gi, " ") }, function (data, status) {
+
+                if (status == "success") {
+
+                    var a = data.split("\n");
+                    $("#historyNum").text((parseInt(a[0]) + 1) + "번째 편집");
+                    grammar(a[1], 0);
+
+                }
+
+                history.pushState("", "", i);
+
+            });
+        }
+
+        var v = decodeURI(document.URL.split("/").pop());
+        var u = v.split("#")[0];
+
+
+        if (u != "") {
+
+            loadFile(u.replace(/ /gi, "%20"));
+
+        } else {
+
+            loadFile("전곽위키:대문");
+        }
+
+        loadLog();
 
     </script>
 

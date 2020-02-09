@@ -316,11 +316,12 @@ nav {
 
 #menuContainer {
 
-    margin-top: 10px;
+    /* margin-top: 10px; */
     align-items: center;
     justify-content: space-between;
     margin-left: 35px;
     margin-right: 35px;
+    height: 80px;
 }
 
 #toolContainer {
