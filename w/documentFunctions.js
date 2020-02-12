@@ -13,18 +13,9 @@ $("#historyBtn").click(function () {
 
 });
 
+$('#levelBtn').click(function() {
 
-// Your web app's Firebase configuration
-var firebaseConfig = {
-    apiKey: "AIzaSyBo1n7N-LhS5DmtCSRqAIHcDeo6oT-heeA",
-    authDomain: "jshswiki.firebaseapp.com",
-    databaseURL: "https://jshswiki.firebaseio.com",
-    projectId: "jshswiki",
-    storageBucket: "jshswiki.appspot.com",
-    messagingSenderId: "100649838292",
-    appId: "1:100649838292:web:3b24692bb098faedff3d41",
-    measurementId: "G-445Q0P6WKK"
-};
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-firebase.analytics();
+    alert(level);
+})
+
+

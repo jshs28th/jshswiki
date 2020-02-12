@@ -52,10 +52,20 @@ ul {
     list-style: outside none none !important;
 }
 
+del {
+
+    color: gray;
+}
+
 a {
 
     text-decoration: none;
     color: blue;
+}
+
+a > del {
+
+    color: blue !important;
 }
 
 a:hover {
@@ -64,10 +74,7 @@ a:hover {
 
 }
 
-del {
 
-    color: gray;
-}
 
 del:hover {
 
@@ -172,31 +179,20 @@ header {
 #login {
 
     margin-left: auto;
+    display: inline-flex;
+    align-items: center;
 }
 
-#loginInput {
+#loginInput, #signUpInput {
 
     position: relative;
 }
 
-#loginInput > input {
+#loginInput > input, #signUpInput > input {
 
-    position: absolute;
     margin: auto;
     flex: 0 0 220px;
     height: 20px;
-}
-
-#id {
-
-    right: 190px;
-    bottom: 20px;
-}
-
-#pw {
-
-    right: 10px;
-    bottom: 20px;
 }
 
 #loginBtn {
@@ -207,6 +203,7 @@ header {
     width: 60px;
     border: black 1.5px solid;
     border-radius: 60px;
+    margin-left: 10px;
     
 }
 
@@ -237,6 +234,25 @@ header {
     display: block;
 }
 
+#authDiv {
+
+    display: inline-flex;
+    margin-left: auto;
+    align-items: center;
+}
+
+#auth {
+
+    width: 55px;
+    height: 55px;
+}
+
+#nickTxt {
+
+    font-size: 1.2em;
+    display: inline-block;
+    margin-right: 10px;
+}
 
 /* navigation */
 
