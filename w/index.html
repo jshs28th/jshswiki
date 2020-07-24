@@ -6,138 +6,236 @@
     <!-- metadata -->
     <meta charset="utf-8">
     <title>전곽위키</title>
-    <link rel="stylesheet" href="../src/css/wikiStyle.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="숨겨두었던 전곽위키">
+    <link href="../src/img/icon2.png" rel="shortcut icon" type="image/x-icon">
+
+    <!-- css -->
     <link rel="stylesheet" href="documentStyle.css" />
+    <link rel="stylesheet" href="../src/css/wikiStyle.css" />
+    <link rel="stylesheet" href="../src/css/metaStyle.css" />
+    <link rel="stylesheet" href="../src/css/classStyle.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@1.0/nanumsquare.css">
+
+    <!-- script -->
     <script src="../src/js/jquery-3.4.1.min.js"></script>
+    <script src="https://unpkg.com/hangul-js" type="text/javascript"></script>
+    <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_HTMLorMML&delayStartupUntil=configured">
+            MathJax.Hub.Config({
+                TeX: {
+                    equationNumbers: {
+                        autoNumber: "AMS"
+                    }
+                },
+                tex2jax: {
+                    inlineMath: [['$', '$']],
+                    displayMath: [['$$', '$$']],
+                    processEscapes: true,
+                }
+            });
+        </script>
 
 
 </head>
 
+
+<!-- id를 가장 앞에 쓰고 그 뒤에 class 그 뒤에 나머지 속성을 쓴다. -->
+<!-- id는 거의 모두 쓰되 각 역할을 앞에, 태그의 이름을 뒤에 붙여 쓴다. -->
+<!-- 예외로 input중 text는 Txt로 button은 Btn으로 쓴다. -->
+
 <body>
+
+    <div id="loginDiv" class="container">
+        <!-- 로그인 전 -->
+        <div id="signInDiv" class="whiteBlock container hidden">
+            <p>로그인</p>
+            <hr>
+
+            <form>
+                <input id="idTxt" class="signInput" type="text"
+                    onkeydown="javascript:if(event.keyCode == 13){signIn($('#idTxt').val(), $('#pwTxt').val());}"
+                    placeholder="아이디">
+                <input id="pwTxt" class="signInput" type="password"
+                    onkeydown="javascript:if(event.keyCode == 13){signIn($('#idTxt').val(), $('#pwTxt').val());}"
+                    placeholder="비밀번호">
+            </form>
+
+            <button id="signInBtn" class="signBtn" onclick="signIn($('#idTxt').val(), $('#pwTxt').val())">로그인</button>
+        </div>
+
+        <!-- 로딩중 -->
+        <div id="authLoadDiv" class="whiteBlock container">
+            <hr>
+            <p>LOADING...</p>
+            <hr>
+        </div>
+
+    </div>
+
     <!-- header -->
-    <header>
+    <header class="container">
 
-        <div class="container" id="headContainer">
-            <a href="../w/" id="logoAnker" class="fn">
-                <img id="logo" src="../src/img/icon.png" alt="logo" />
-            </a>
-            <input id="searchTxt" type="text" class="fn" onkeydown="javascript:if(event.keyCode == 13){search();}" />
-            <button id="searchBtn" class="fn"><span style="text-align: center; font-size: 16pt;">검색</span></button>
-            <div id="login">
+        <!-- 로고 이미지 -->
+        <div>
+            <span id="logoImg" onclick="javascript:location.href='../w/전곽위키:대문'">전곽위키</span>
+            <span style="color: rgb(80, 0, 255);
+        font-size: 2rem;
+        position: relative;
+        top: 1rem;
+        width: 1.5rem;">beta</span>
+        </div>
+        <!-- <img id="logoImg" src="../src/img/icon.png" alt="logo" onclick="javascript:location.href='전곽위키:대문'" /> -->
 
-                <!-- 로그인 창 -->
-                <span id="loginInput">
-                    <input id="id" type="text" onkeydown="javascript:if(event.keyCode == 13){signIn($('#id').val(), $('#pw').val());}" placeholder="이메일">
-                    <input id="pw" type="password" onkeydown="javascript:if(event.keyCode == 13){signIn($('#id').val(), $('#pw').val());}" placeholder="비밀번호">
-                </span>
-                <!-- 회원가입 창 -->
-                <span id="signUpInput">
-                    <input id="nick" type="text" onkeydown="javascript:if(event.keyCode == 13){signUp($('#nick').val(), $('#gisu').val());}" placeholder="이름">
-                    <input id="gisu" type="text" onkeydown="javascript:if(event.keyCode == 13){signUp($('#nick').val(), $('#gisu').val());}" placeholder="기수">
-                </span>
-                <!-- 로그인 버튼 -->
-                <span id="loginBtn" class="fn">
-
-                    <img id="sign1" src="../src/img/sign1.png" />
-                    <img id="sign2" class="hidden" src="../src/img/sign2.png" />
-
-                </span>
-
-                <div id="authDiv" class="hidden">
-                    <p id="nickTxt"></p>
-                    <img id="auth" src="../src/img/auth.png" />
-                </div>
-
-            </div>
+        <!-- 검색 관련 -->
+        <div id="searchDiv" class="container">
+            <input id="searchTxt" type="search" autocomplete="off" onkeydown="autoUpDown(event.keyCode)" />
+            <button id="searchBtn">검색</button>
         </div>
 
     </header>
 
     <!-- navigation -->
-    <nav>
-        <div id="navContainer" class="container">
-            <div class="navItem">
-                <ul id="navList">
-                    <li class="navLi">
-                        <p id="upload" class="navBtn">업로드</p>
-                        <div id="uploadDiv">
-                            <form id="uploadForm" method="POST">
-                                <input name="file" type="file" id="file">
-                                <button type="button" id="uploadBtn">업로드</button>
-                            </form>
-                        </div>
-                    </li>
-                    <li class="navLi">
-                        <p class="navBtn">버튼버튼</p>
-                    </li>
-                    <li class="navLi">
-                        <p class="navBtn">버튼버튼</p>
-                    </li>
+    <nav class="container">
 
-                </ul>
+        <div id="navDiv" class="container">
+            <!-- 업로드 버튼 -->
+            <label for="uploadInput" class="navBtn">업로드</label>
+            <input id="uploadInput" class="hidden" type="checkbox">
+
+            <!-- 업로드 관련 태그들 -->
+            <div id="uploadDiv" class="container" style="margin-right:1rem">
+                <label for="fileInput"
+                    onclick="if($('#uploadDiv > label').text() != '파일 선택') { uploadFile(); return false;}">파일 선택</label>
+                <input id="fileInput" class="hidden" name="file" type="file" onchange="changeFile(this.files)">
+                <p id="checkFileP" class="hidden"></p>
             </div>
+
+            <!-- 랜덤문서 버튼 -->
+            <label for="randomInput" class="navBtn" id="randomLabel">랜덤문서</label>
+            <input id="randomInput" class="hidden" type="checkbox">
+
+            <!-- 랜덤문서 관련 태그들 -->
+            <div id="randomDiv" class="container"></div>
+
         </div>
+
     </nav>
 
-    <!-- content -->
-    <div id="contentContainer" class="container">
+    <!-- section -->
+    <section class="container">
 
         <!-- article -->
-        <article class="contentItem container" id="documentContainer">
+        <article class="whiteBlock container">
 
-            <!-- 문서 화면 (document) -->
-            <!-- .documentTitle은 문서 제목-->
+            <!-- 문서 헤드 -->
+            <div id="headDiv" class="container">
 
-            <div id="menuContainer" class="container documentItem">
+                <h1 id="titleH1">제목</h1>
 
-                <h1 class="menuItem documentTitle">제목</h1>
+                <div id="toolDiv" class="container">
+                    <button id="editBtn">편집</button>
+                    <button id="historyBtn">역사</button>
+                    <button id="optionBtn">설정</button>
+                </div>
 
-                <span class="container menuItem" id="toolContainer">
-                    <button class="toolItem" id="editBtn">편집</button>
-                    <button class="toolItem" id="historyBtn">역사</button>
-                    <button class="toolItem" id="levelBtn">권한</button>
-                </span>
             </div>
-            <p class="documentItem inAndOut">해당하는 문서가 존재하지 않습니다.</p>
 
-            <pre id="historyTxt" class="documentItem">아직 만들어지지 않은 문서입니다.</pre>
+            <!-- 문서 내용 나오는 태그 -->
+            <p id="document">문서를 불러오는 중입니다.</p>
+
+            <!-- 역사 고르는 화면 (check)-->
+            <div id="checkHistoryDiv" class="hidden">역사를 불러오는 중입니다.</div>
+
+            <!-- 역사 문서 비교 화면 (show)-->
+            <div id="showHistoryDiv" class="hidden">
+                <table>
+                    <tr>
+                        <th class='historyTh'>
+                            <span id="oldHistoryTitleSpan"></span>
+                        </th>
+                        <th class='historyTh'>
+                            <span id="newHistoryTitleSpan"></span>
+                        </th>
+                    </tr>
+                    <tr>
+                        <td class='historyTd'>
+                            <div id="oldHistoryDiv"></div>
+                        </td>
+                        <td class='historyTd'>
+                            <div id="newHistoryDiv"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class='historyTh' colspan="2">
+                            <span id="oldVsNewTitleSpan"></span>
+                        </th>
+                    </tr>
+                    <tr>
+                        <td class='historyTd' colspan="2">
+                            <div id="oldVsNewDiv"></div>
+                        </td>
+                    </tr>
+                </table>
+                <!-- 문법 적용된 역사 보여주는 태그 -->
+                <p id="showHistoryP"></p>
+            </div>
+        
+            
         </article>
 
+
         <!-- aside -->
-        <aside class="contentItem">
-            <p style="font-size: 1.2em; text-align: center;">수정된 문서</p>
-            <hr>
-            <a href="#" id="link1"></a>
-            <hr>
-            <a href="#" id="link2"></a>
-            <hr>
-            <a href="#" id="link3"></a>
-            <hr>
-            <a href="#" id="link4"></a>
-            <hr>
-            <a href="#" id="link5"></a>
-            <hr>
-            <a href="#" id="link6"></a>
-            <hr>
-            <a href="#" id="link7"></a>
-            <hr>
-            <a href="#" id="link8"></a>
-            <hr>
-            <a href="#" id="link9"></a>
-            <hr>
-            <a href="#" id="link10"></a>
-            <hr>
+        <aside class="container">
+            <div>
+
+                <!-- 로그인 후 -->
+                <div id="authDiv" class="whiteBlock container hidden asideDiv">
+                    <p id="nickP">익명</p>
+                    <hr>
+                    <button id="signOutBtn" class="signBtn" onclick="signOut()">로그아웃</button>
+                </div>
+
+                <!-- 관련된 문서 -->
+                <!-- <div id="relDiv" class="whiteBlock container asideDiv">
+
+                    <p>관련된 문서</p>
+                    <hr>
+
+                </div> -->
+
+                <!-- 기여도 순위 -->
+                <div id="rankDiv" class="whiteBlock container asideDiv">
+
+                    <p>기여도 순위</p>
+                    <hr>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- 수정된 문서 -->
+            <div id="logDiv" class="whiteBlock container asideDiv">
+                <p>수정된 문서</p>
+                <hr>
+            </div>
+
         </aside>
-    </div>
-    <!--가운데 정렬 실패..두 p태그 사이에 큰 공간 생김-->
-    <!--그리고 사이트 전체에 적용 안 됨-->
-    <!--라이브러리에서 index 켰을 때만 됨-->
-    <footer>
-        <div class="container" id="footerContainer">
 
-            <p class="footerItem">일단 가운데 정렬이 되게 바꿔보았다.</p>
-            <p class="footerItem">로고 작게 한번 더 넣고 'made by (신설동아리)' 이런 거 넣으면 좋을 듯</p>
+    </section>
 
+    <!-- footer -->
+    <footer class="container">
+        <div class="container">
+            <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/2.0/kr/">
+                <img alt="크리에이티브 커먼즈 라이선스" style="border-width:0"
+                    src="https://i.creativecommons.org/l/by-nc-sa/2.0/kr/88x31.png" />
+            </a>
+            <p>
+                <strong><a href="전곽위키:대문">전곽위키</a></strong> made by <strong>projCORONA</strong>
+            </p>
         </div>
     </footer>
 
@@ -147,47 +245,55 @@
     <script src="https://www.gstatic.com/firebasejs/7.8.1/firebase-analytics.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.8.1/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.8.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.8.1/firebase-storage.js"></script>
 
     <!-- scripts -->
-    <script src="documentFunctions.js"></script>
     <script src="../src/js/wikiFunctions.js"></script>
+    <script src="../e/editFunctions.js"></script>
+    <script src="documentFunctions.js"></script>
 
 
     <script>
+        loading(true);
+        function loadContent(i) {
 
-        function loadFile(i) {
-
-            $(".documentTitle").text(i.replace(/%20/gi, " "));
-
-            $.post("readphp.php", { title: i.replace(/%20/gi, " ") }, function (data, status) {
-
-                if (status == "success") {
-
-                    $(".inAndOut").html(data);
-
-                }
-
-                history.pushState("", "", i);
+            $("#titleH1").text(i.replace(/%20/gi, " "));
+            var colName = i.split(':');
+            var docName = colName.pop();
+            loadRank();
+            loadDoc(colName, docName.replace(/%20/gi, " "), 0, i.replace(/%20/gi, " "));
+            loadLog({ source: 'cache' }).then(() => {
+                realLoad(onlyColName, 0, fullName, sharp);
 
             });
+            if (sharp != undefined && question != undefined) {
+                history.pushState("", "", i + '#' + sharp + '?' + question);
+            } else if (sharp != undefined) {
+                history.pushState("", "", i + '#' + sharp);
+            } else if (question != undefined) {
+                history.pushState("", "", i + '?' + question);
+            } else {
+                history.pushState("", "", i);
+            }
+
         }
 
-        var v = decodeURI(document.URL.split("/").pop());
-        var u = v.split("#")[0];
+        var u = decodeURI(document.URL.split('/').pop()).replace(/&DOT&/, '.');
+        var v = u.split("#")[0];
+        var sharp = u.split("#")[1];
+        var w = v.split("?")[0];
+        var question = v.split("?")[1];
 
-        if (u != "") {
+        if (w != "") {
 
-            loadFile(u.replace(/ /gi, "%20"));
+            loadContent(w.replace(/ /gi, "%20"));
 
         } else {
 
-            loadFile("전곽위키:대문");
+            loadContent("전곽위키:대문");
         }
 
-        loadLog();
-
     </script>
-
 </body>
 
 </html>

@@ -1,0 +1,210 @@
+/* meta */
+
+/* @font-face {
+    font-family: 'Daehan';
+    src: url('//cdn.jsdelivr.net/korean-webfonts/1/corps/yoon/Daehan/DaehanR.woff') format('woff');
+} */
+
+* {
+    box-sizing: border-box;
+    font-family: 'NanumSquare', '돋움', sans-serif;
+}
+
+p {
+    line-height: 1.4;
+}
+
+table {
+    border-collapse: collapse;
+    border: black solid .1rem;
+    margin: .5rem;
+}
+
+.historyTd, .historyTh {
+    border: black solid .1rem;
+    margin: 0;
+    padding: .5rem;
+    text-align: center;
+}
+
+td:not(.historyTd), th:not(.historyTh) {
+    border: grey solid .1rem;
+    margin: 0;
+    padding: .5rem 1rem;
+    text-align: center;
+    background-color: rgb(245,245,245);
+}
+
+body {
+    margin: 0;
+}
+
+input:focus {
+    outline: none;
+}
+
+button:focus {
+    outline: none;
+}
+
+ul {
+    list-style: outside none none !important;
+    padding-inline-start: 4rem;
+    margin: .5rem 0;
+}
+
+ol {
+    padding-inline-start: 4rem;
+    margin: .5rem 0;
+}
+
+td>ul, td>ol {
+    padding-inline-start: 2rem;
+}
+
+del {
+    color: gray;
+}
+
+a {
+    text-decoration: none;
+    color: rgb(60, 0, 255);
+}
+
+a>del {
+    color: rgb(60, 0, 255) !important;
+}
+
+*[id^=index]>a {
+    color: rgb(80, 0, 255) !important;
+}
+
+a:hover {
+    border-bottom: rgb(60, 0, 255) solid .1rem;
+}
+
+del:hover {
+    text-decoration: none;
+}
+
+ins {
+    text-decoration: none;
+    border-bottom: black solid .1rem;
+}
+
+h2, h3, h4, h5 {
+    border-bottom: rgb(200, 200, 200) solid .15rem;
+    padding: .5rem 0;
+    margin-bottom: 1rem;
+}
+
+h2 {
+    font-size: 3rem;
+}
+
+h3 {
+    font-size: 2.8rem;
+}
+
+h4 {
+    font-size: 2.6rem;
+}
+
+h5 {
+    font-size: 2.4rem;
+}
+
+blockquote[class^=small] {
+    display: inline;
+    text-align: center;
+    margin: 0 .2rem;
+    padding: .2rem .5rem;
+    background-color: rgb(235, 235, 235);
+    border-radius: .5rem;
+}
+
+blockquote[class^=middle] {
+    margin: 0;
+    max-width: max-content;
+    text-align: center;
+    padding: .8rem 2rem;
+    background-color: rgb(235, 235, 235);
+    border-radius: .5rem;
+}
+
+blockquote[class^=big] {
+    margin: 2rem 2rem;
+    text-align: center;
+    padding: 3rem 4.5rem;
+    background-color: rgb(235, 235, 235);
+    border-radius: 1rem;
+}
+
+code {
+    display: inline-block;
+    margin: 0 .2rem;
+    max-width: max-content;
+    text-align: left;
+    padding: .1rem .5rem;
+    background-color: rgb(255, 255, 255);
+    border: grey solid .1rem;
+    border-radius: .5rem;
+    font-family: '돋움';
+}
+
+.adminNameSpan {
+    animation-duration: 1s;
+    animation-name: gradation;
+    animation-iteration-count: infinite;
+}
+
+.borderGradation {
+    animation-duration: 1s;
+    animation-name: borderGradation;
+    animation-iteration-count: infinite;
+}
+
+.adminDiv {
+    border-color: rgb(80, 0, 255);
+    border-width: .2rem;
+    border-style: solid;
+}
+.adminDiv:hover {
+    border-color: rgb(160, 0, 255);
+}
+
+#redirectAlertP {
+    border: .2rem rgb(80, 0, 255) solid;
+    border-radius: 1rem;
+    background-color: rgb(250,245,255);
+    padding: .5rem .8rem;
+    font-size: 1.8rem;
+    padding-left: 1rem;
+    line-height: 2.4rem;
+    margin: 0;
+    margin-bottom: 1rem;
+}
+
+@keyframes gradation {
+    0% {
+        color: rgb(80, 0, 255);
+    }
+    50% {
+        color: rgb(160, 0, 255);
+    }
+    100% {
+        color: rgb(80, 0, 255);
+    }
+}
+
+@keyframes borderGradation {
+    0% {
+        border-color: rgb(160, 0, 255);
+    }
+    50% {
+        border-color: rgb(80, 0, 255);
+    }
+    100% {
+        border-color: rgb(160, 0, 255);
+    }
+}

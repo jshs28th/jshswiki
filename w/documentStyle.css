@@ -1,29 +1,99 @@
-#documentContainer {
+#document {
+    font-size: 2rem;
+}
 
-    flex: 0 0 1070px;
-    margin-right: 10px;
-    margin-top: 10px;
+#titleH1 {
+    margin: 2rem 0;
+}
+
+.historyTitleDiv {
+    font-size: 2rem;
+    justify-content: space-between;
+    padding-top: 1rem;
+    margin: 0 5rem;
+}
+
+#showHistoryDiv div, #showHistoryDiv span {
+    white-space: pre-wrap;
     word-break: break-all;
+    font-size: 2rem;
+    text-align: left;
+    line-height: 3rem;
+}
+
+#showHistoryDiv .historyTh, #showHistoryDiv .historyTd {
+    vertical-align: top;
+    width: 50%;
+}
+
+#showHistoryP {
+    font-size: 2rem;
+}
+
+/* 각주 말풍선 */
+
+a[id^=note] {
+    position: relative;
+}
+
+a[id^=note] .noteDiv>p {
+    width: max-content;
+    margin: 0;
+    margin-left: .5rem;
+}
+
+a[id^=note] .noteDiv > a {
+    word-break: keep-all;
+}
+
+@media screen and (min-width: 800px) {
+    a[id^=note] .noteDiv {
+        bottom: 2.8rem;
+        position: absolute;
+        max-width: 50vw;
+        padding: 0.7rem 1rem;
+        border: .1rem rgb(60, 0, 200) solid;
+        background-color: white;
+        border-radius: 1rem;
+        color: black;
+        visibility: hidden;
+        z-index: 99999;
+        font-size: 1.8rem;
+    }
+    a[id^=note]:hover .noteDiv {
+        visibility: visible;
+    }
+}
+
+@media screen and (max-width: 800px) {
+    a[id^=note] .noteDiv {
+        bottom: 2.8rem;
+        position: absolute;
+        max-width: 50vw;
+        padding: 0.7rem 1rem;
+        border: .1rem rgb(60, 0, 200) solid;
+        background-color: white;
+        border-radius: 1rem;
+        color: black;
+        visibility: hidden;
+        z-index: 99999;
+        font-size: 1.8rem;
+    }
+}
+
+div[class^=suyeon]{
     flex-direction: column;
-    box-sizing: border-box;
+    width: max-content;
+    font-size: 1.7rem;
+    height: auto;
+    margin: 0 3%;
+    word-break: break-all;
 }
 
-.inAndOut {
+/* 목차 리스트 */
 
-    width: 1000px;
-    font-size: 1em;
-    align-self: center;
-    white-space: pre-wrap;
-    margin: 10px auto;
-
-}
-
-#historyTxt {
-
-    width: 970px;
-    font-size: 1em;
-    align-self: center;
-    font-family: mainFont, sans-serif;
-    white-space: pre-wrap;
-
+#index {
+    margin: 2rem 0;
+    padding: 1rem;
+    width: fit-content;
 }
