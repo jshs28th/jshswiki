@@ -1063,14 +1063,61 @@ function saveDoc(content) {
     }
 }
 
-//검색어 생성 함수
+//검색엔쥔
 function searchMaker() {
-    
-    var searchedTxt = $("#searchTxt").val();
-    var keywordObject = new Object();
-    firebase.database().ref('KEYWORD').child(serialize(docName)).once('value', function (snap) {
-
+    var relship;
+    firebase.database().ref('RELATIONSHIP').once('value', function (snap) {
+        relship = snap.val();
     })
+    var searchedTxt;
+    if ($("#searchTxt").val() != null) {
+        var searchedTxt = $("#searchTxt").val();
+    } else {
+        alert("검색어를 입력해 주세요.")
+        return
+    }
+    var keywordObject = new Object();
+    var searchedObject = new Object();
+    firebase.database().ref('KEYWORD').once('value', function (snap) {
+        keywordObject = snap.val()
+        for (key in keywordObject) {
+            var temptkey = key;
+            for (key in keywordObject[temptkey]) {
+                if (key == searchedTxt) {
+                    searchedObject[key] = keywordObject[temptkey][key]
+                }
+
+            }
+        }
+    })
+    var additionalList = new Set();
+    for (key in searchedObject) {
+        var temp = key;
+        additionalList.add(temp);
+        for (key in relship[searchedObject[temp]]) {
+            additionalList.add(key)
+            if (searchedObject[key] == undefined) {
+                searchedObject[key] = 0.3
+            } else {
+                searchedObject[key] += 0.3
+            }
+        }
+    }
+    var relList = new Array(additionalList.size);
+    for (var i = 0; i < relList.length; i++) {
+        relList[i] = new Array(additionalList.size);
+    }
+    var relCount = (additionalList.size-1)
+    for (var i = 0; i < relCount; i++) {
+        for (var j = 0; i < relCount; j++) {
+            if (relship[additionalList[i]][additionalList[i][j]] == undefined) {
+                relList[i][j] = 0
+            }else{
+                relList[i][j] = ((relship[additionalList[i]][additionalList[i][j]]["tot_fdp"]+relship[additionalList[i]][additionalList[i][j]]["std_fdp"])*(1-3**(-searchedObject[additionalList[j]]*searchedObject[additionalList[i]])))
+            }           
+        }
+    }
+    console.log(relList)//인접행렬 만듬
 }
 
 
@@ -1094,6 +1141,7 @@ function inv_serialize(serial) {
     }
 }
 
+//관련도 만들기 함수
 function friendMaker(content, docName) {
     return new Promise(function (resolve) {
         //씨리얼 목록 파일 받아옴
