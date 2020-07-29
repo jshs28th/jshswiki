@@ -510,6 +510,7 @@ function checkLevel() {
 
                         
 
+
                             //console.log(val2.val());
                             if (val2.val() == null) {
                                 userLevel = Number(jshsInfo.level.split(',')[0]) + 1;
@@ -530,13 +531,13 @@ function checkLevel() {
                                             $('#nickP').html(userNick + '(선생님)');
                                         } else {
                                             if (userLevel >= 15) {
-                                                $('#nickP').html('<span class="adminNameSpan"><b>' + userNick + '</b>(' + userGisu + '기)' + '</span>'+ '<bn>' + '<span style="font-size:1.7rem">' +' 기여도:' + val3.val() +'</span>' );
+                                                $('#nickP').html('<span class="adminNameSpan"><b>' + userNick + '</b>(' + userGisu + '기)' + '</span>' + '<bn>' + '<span style="font-size:1.7rem">' + ' 기여도:' + val3.val() + '</span>');
                                             } else if (userLevel >= 10) {
-                                                $('#nickP').html('<span style="color:rgb(50, 100, 255)"><b>' + userNick + '</b>(' + userGisu + '기)' + '</span>' + '<bn>' + '<span style="font-size:1.7rem">' +' 기여도:' + val3.val() +'</span>');
+                                                $('#nickP').html('<span style="color:rgb(50, 100, 255)"><b>' + userNick + '</b>(' + userGisu + '기)' + '</span>' + '<bn>' + '<span style="font-size:1.7rem">' + ' 기여도:' + val3.val() + '</span>');
                                             } else if (userLevel >= 7) {
-                                                $('#nickP').html('<span style="color:rgb(105, 201, 192)"><b>' + userNick + '</b>(' + userGisu + '기)' + '</span>' + '<bn>' + '<span style="font-size:1.7rem">' +' 기여도:' + val3.val() +'</span>');
+                                                $('#nickP').html('<span style="color:rgb(105, 201, 192)"><b>' + userNick + '</b>(' + userGisu + '기)' + '</span>' + '<bn>' + '<span style="font-size:1.7rem">' + ' 기여도:' + val3.val() + '</span>');
                                             } else {
-                                                $('#nickP').html(userNick + '(' + userGisu + '기)' + '<bn>' + '<span style="font-size:1.7rem">' +' 기여도:' + val3.val() +'</span>' );
+                                                $('#nickP').html(userNick + '(' + userGisu + '기)' + '<bn>' + '<span style="font-size:1.7rem">' + ' 기여도:' + val3.val() + '</span>');
                                             }
                                         }
                                         resolve(userLevel);
@@ -562,20 +563,20 @@ function checkLevel() {
                                             $('#nickP').html(userNick + '(선생님)');
                                         } else {
                                             if (userLevel >= 15) {
-                                                $('#nickP').html('<span class="adminNameSpan"><b>' + userNick + '</b>(' + userGisu + '기)' +'</span>' + '<br>' + '<span style="font-size:1.7rem">' +' 기여도:' + val3.val() +'</span>');
+                                                $('#nickP').html('<span class="adminNameSpan"><b>' + userNick + '</b>(' + userGisu + '기)' + '</span>' + '<br>' + '<span style="font-size:1.7rem">' + ' 기여도:' + val3.val() + '</span>');
                                             } else if (userLevel >= 10) {
-                                                $('#nickP').html('<span style="color:rgb(50, 100, 255)"><b>' + userNick + '</b>(' + userGisu + '기)' + '</span>' + '<bn>' + '<span style="font-size:1.7rem">' +' 기여도:' + val3.val() +'</span>');
+                                                $('#nickP').html('<span style="color:rgb(50, 100, 255)"><b>' + userNick + '</b>(' + userGisu + '기)' + '</span>' + '<bn>' + '<span style="font-size:1.7rem">' + ' 기여도:' + val3.val() + '</span>');
                                             } else if (userLevel >= 7) {
-                                                $('#nickP').html('<span style="color:rgb(105, 201, 192)"><b>' + userNick + '</b>(' + userGisu + '기)' + '</span>' + '<bn>' + '<span style="font-size:1.7rem">' +' 기여도:' + val3.val() +'</span>');
+                                                $('#nickP').html('<span style="color:rgb(105, 201, 192)"><b>' + userNick + '</b>(' + userGisu + '기)' + '</span>' + '<bn>' + '<span style="font-size:1.7rem">' + ' 기여도:' + val3.val() + '</span>');
                                             } else {
-                                                $('#nickP').html(userNick + '(' + userGisu + '기)' + '<bn>' + '<span style="font-size:1.7rem">' +' 기여도:' + val3.val() +'</span>');
+                                                $('#nickP').html(userNick + '(' + userGisu + '기)' + '<bn>' + '<span style="font-size:1.7rem">' + ' 기여도:' + val3.val() + '</span>');
                                             }
                                         }
                                         resolve(userLevel);
                                     });
                                 }
                             }
-                        });    
+                        });
                     });
                 });
             });
@@ -828,7 +829,7 @@ function realLoad(colName, num, realName, sharp) {
 
 
                                     });
-                                
+
                                     var indexList = indexTxt.split('<br>');
                                     var trash = indexList.pop();
 
@@ -920,7 +921,7 @@ function learning_function() {
     if (serialize(targetle.replace(/\./g, '&DOT&')) != undefined) {
         if (targetle == fullName) {
             alert("이 문서는 추천할 수 없습니다.")
-        } else{
+        } else {
             var titleSerial = serialize(targetle.replace(/\./g, '&DOT&'));
             if (relations[serialize(fullName.replace(/\./g, '&DOT&'))][titleSerial] != undefined) {
                 if (relations[serialize(fullName.replace(/\./g, '&DOT&'))][titleSerial]['std_fdp'] == undefined) {
@@ -934,26 +935,26 @@ function learning_function() {
                         $("div[id=learning]").remove();
                     });
                 } else {
-                    eval("firebase.database().ref('RELATIONSHIP').child("+serialize(fullName.replace(/\./g, '&DOT&'))+").update({"+titleSerial+": { tot_fdp: 0, std_fdp: (saveed_std + 0.4) } })").then(() => {
+                    eval("firebase.database().ref('RELATIONSHIP').child(" + serialize(fullName.replace(/\./g, '&DOT&')) + ").update({" + titleSerial + ": { tot_fdp: 0, std_fdp: (saveed_std + 0.4) } })").then(() => {
                         console.log("done");
                         $("div[id=learning]").remove();
                     });
                 }
             } else {
-                eval("firebase.database().ref('RELATIONSHIP').child("+serialize(fullName.replace(/\./g, '&DOT&'))+").update({"+titleSerial+": { tot_fdp: 0, std_fdp: 0.4 } })").then(() => {
+                eval("firebase.database().ref('RELATIONSHIP').child(" + serialize(fullName.replace(/\./g, '&DOT&')) + ").update({" + titleSerial + ": { tot_fdp: 0, std_fdp: 0.4 } })").then(() => {
                     console.log("done");
                     $("div[id=learning]").remove();
                 });
             }
         }
-        
-    }  else {
+
+    } else {
         alert("존재하지 않는 문서입니다.")
     }
 
 
-    
-    
+
+
 }
 
 var realClassContent;
@@ -1063,8 +1064,13 @@ function saveDoc(content) {
 }
 
 //검색어 생성 함수
-function indexmaker(content, docName){
+function searchMaker() {
     
+    var searchedTxt = $("#searchTxt").val();
+    var keywordObject = new Object();
+    firebase.database().ref('KEYWORD').child(serialize(docName)).once('value', function (snap) {
+
+    })
 }
 
 
