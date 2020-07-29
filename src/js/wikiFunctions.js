@@ -1107,14 +1107,14 @@ function searchMaker() {
     for (var i = 0; i < relList.length; i++) {
         relList[i] = new Array(additionalList.size);
     }
-    var relCount = (additionalList.size-1)
+    var relCount = (additionalList.size - 1)
     for (var i = 0; i < relCount; i++) {
         for (var j = 0; i < relCount; j++) {
             if (relship[additionalList[i]][additionalList[i][j]] == undefined) {
                 relList[i][j] = 0
-            }else{
-                relList[i][j] = ((relship[additionalList[i]][additionalList[i][j]]["tot_fdp"]+relship[additionalList[i]][additionalList[i][j]]["std_fdp"])*(1-3**(-searchedObject[additionalList[j]]*searchedObject[additionalList[i]])))
-            }           
+            } else {
+                relList[i][j] = ((relship[additionalList[i]][additionalList[i][j]]["tot_fdp"] + relship[additionalList[i]][additionalList[i][j]]["std_fdp"]) * (1 - 3 ** (-searchedObject[additionalList[j]] * searchedObject[additionalList[i]])))
+            }
         }
     }
     console.log(relList)//인접행렬 만듬
