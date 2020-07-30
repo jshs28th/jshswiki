@@ -932,17 +932,20 @@ function learning_function() {
                     firebase.database().ref('RELATIONSHIP').child(serialize(fullName.replace(/\./g, '&DOT&'))).child(titleSerial).update({ std_fdp: (saveed_std + 0.4) }).then(() => {
                         console.log("done");
                         $("div[id=learning]").remove();
+                        alert("참여해 주셔서 감사합니다.")
                     });
                 } else {
                     eval("firebase.database().ref('RELATIONSHIP').child(" + serialize(fullName.replace(/\./g, '&DOT&')) + ").update({" + titleSerial + ": { tot_fdp: 0, std_fdp: (saveed_std + 0.4) } })").then(() => {
                         console.log("done");
                         $("div[id=learning]").remove();
+                        alert("참여해 주셔서 감사합니다.")
                     });
                 }
             } else {
                 eval("firebase.database().ref('RELATIONSHIP').child(" + serialize(fullName.replace(/\./g, '&DOT&')) + ").update({" + titleSerial + ": { tot_fdp: 0, std_fdp: 0.4 } })").then(() => {
                     console.log("done");
                     $("div[id=learning]").remove();
+                    alert("참여해 주셔서 감사합니다.")
                 });
             }
         }
@@ -1182,16 +1185,22 @@ function friendMaker(content, docName) {
 
             finalUpdate.sort();
             console.log(finalUpdate);
+            console.log(saved_std_fdp);
             var finalObject = new Object();
 
             for (i = 0; i < finalUpdate.length; i++) {
                 eval("var relative" + "=" + "5*(1-0.8**(cnt_" + finalUpdate[i] + "));");
-
-                if (saved_std_fdp[finalUpdate[i]]['std_fdp'] == undefined) {
+                if (saved_std_fdp[finalUpdate[i]] == undefined) {
                     finalObject[finalUpdate[i]] = { tot_fdp: relative, std_fdp: 0 };
-                } else {
-                    finalObject[finalUpdate[i]] = { tot_fdp: relative, std_fdp: saved_std_fdp[finalUpdate[i]]['std_fdp'] }
+                } else{
+                    if (saved_std_fdp[finalUpdate[i]]['std_fdp'] == undefined) {
+                        finalObject[finalUpdate[i]] = { tot_fdp: relative, std_fdp: 0 };
+                    } else {
+                        finalObject[finalUpdate[i]] = { tot_fdp: relative, std_fdp: saved_std_fdp[finalUpdate[i]]['std_fdp'] }
+                    }
                 }
+
+                
                 //console.log(finalObject)
 
             }
