@@ -508,7 +508,6 @@ function checkLevel() {
                     userRef.child(userGisu).child(userName).once('value', function (val2) {
                         rankRef.child(userName + '(' + userGisu + '기)').child('edit').once('value', function (val3) {
 
-                        
 
 
                             //console.log(val2.val());
