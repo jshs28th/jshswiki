@@ -1070,56 +1070,74 @@ function searchMaker() {
     var relship;
     firebase.database().ref('RELATIONSHIP').once('value', function (snap) {
         relship = snap.val();
-    })
-    var searchedTxt;
-    if ($("#searchTxt").val() != null) {
-        var searchedTxt = $("#searchTxt").val();
-    } else {
-        alert("검색어를 입력해 주세요.")
-        return
-    }
-    var keywordObject = new Object();
-    var searchedObject = new Object();
-    firebase.database().ref('KEYWORD').once('value', function (snap) {
-        keywordObject = snap.val()
-        for (key in keywordObject) {
-            var temptkey = key;
-            for (key in keywordObject[temptkey]) {
-                if (key == searchedTxt) {
-                    searchedObject[key] = keywordObject[temptkey][key]
-                }
+    }).then(() => {
+        var searchedTxt;
+        if ($("#searchTxt").val() != "") {
+            var searchedTxt = $("#searchTxt").val();
+        } else {
+            alert("검색어를 입력해 주세요.")
+            return;
+        }//검색어 받아옴
+        var keywordObject = new Object();//키워드 리스트 받아올 거
+        var searchedObject = new Object();
+        firebase.database().ref('KEYWORD').once('value', function (snap) {
+            keywordObject = snap.val()
+            for (key in keywordObject) {
+                var temptkey = key;
+                for (key in keywordObject[temptkey]) {
+                    if (key == searchedTxt) {
+                        searchedObject[temptkey] = keywordObject[temptkey][key]
+                    }
 
+                }
             }
-        }
-    })
-    var additionalList = new Set();
-    for (key in searchedObject) {
-        var temp = key;
-        additionalList.add(temp);
-        for (key in relship[searchedObject[temp]]) {
-            additionalList.add(key)
-            if (searchedObject[key] == undefined) {
-                searchedObject[key] = 0.3
-            } else {
-                searchedObject[key] += 0.3
+        }).then(() => {
+            console.log(searchedObject)//{문서의 시리얼: 검색어를 가지고 있는 개수, 시리얼: 개수, .....} 요렇게 나오면 됨
+            var totalList = new Set();//검색된 문서와 연관된 문서(검색어를 포함하든 안하든)를 다 모음 중복 없이
+            var addedList = new Set();//검색어가 없는 문서지만 연관된 문서 즉 새롭게 추가될 문서들을 모음
+            for (key in searchedObject) {
+                var temp = key;
+                totalList.add(String(temp));
+
+                for (key in relship[temp]) {
+                    totalList.add(String(key))
+                    if (searchedObject[key] == undefined) {
+                        addedList.add(String(key))
+
+                    }
+                }
             }
-        }
-    }
-    var relList = new Array(additionalList.size);
-    for (var i = 0; i < relList.length; i++) {
-        relList[i] = new Array(additionalList.size);
-    }
-    var relCount = (additionalList.size - 1)
-    for (var i = 0; i < relCount; i++) {
-        for (var j = 0; i < relCount; j++) {
-            if (relship[additionalList[i]][additionalList[i][j]] == undefined) {
-                relList[i][j] = 0
-            } else {
-                relList[i][j] = ((relship[additionalList[i]][additionalList[i][j]]["tot_fdp"] + relship[additionalList[i]][additionalList[i][j]]["std_fdp"]) * (1 - 3 ** (-searchedObject[additionalList[j]] * searchedObject[additionalList[i]])))
+            var addedRealList = [...addedList].sort(); // addedList를 Set그대로 쓰려니 오류가 생겨서 List로 바꿔줌
+            var totalRealList = [...totalList].sort(); // 얘도 위와 같은 이유
+            for (var i = 0; i < addedRealList.length; i++) {
+
+                searchedObject[addedRealList[i]] = 0.3
             }
-        }
-    }
-    console.log(relList)//인접행렬 만듬
+            var relList = new Array(totalRealList.length); // nXn 인접행렬 생성
+            for (var i = 0; i < relList.length; i++) {
+                relList[i] = new Array(totalRealList.length);
+            }
+            console.log("ready!!")
+            for (var i = 0; i < totalRealList.length; i++) {
+                for (var j = 0; j < totalRealList.length; j++) {
+                    if (i == j) {
+                        relList[i][j] = 0
+                    } else {
+                        if (relship[totalRealList[i]] == undefined) {
+                            relList[i][j] = 0
+                        } else {
+                            if (relship[totalRealList[i]][totalRealList[j]] == undefined) {
+                                relList[i][j] = 0
+                            } else {
+                                relList[i][j] = ((relship[totalRealList[i]][totalRealList[j]]["tot_fdp"] + relship[totalRealList[i]][totalRealList[j]]["std_fdp"]) * (1 - 1.2 ** (-searchedObject[totalRealList[j]] * searchedObject[totalRealList[i]])))
+                            }
+                        }
+                    }
+                }
+            }
+            console.log(relList)//인접행렬 만듬
+        })
+    });
 }
 
 
@@ -1192,7 +1210,7 @@ function friendMaker(content, docName) {
                 eval("var relative" + "=" + "5*(1-0.8**(cnt_" + finalUpdate[i] + "));");
                 if (saved_std_fdp[finalUpdate[i]] == undefined) {
                     finalObject[finalUpdate[i]] = { tot_fdp: relative, std_fdp: 0 };
-                } else{
+                } else {
                     if (saved_std_fdp[finalUpdate[i]]['std_fdp'] == undefined) {
                         finalObject[finalUpdate[i]] = { tot_fdp: relative, std_fdp: 0 };
                     } else {
@@ -1200,7 +1218,7 @@ function friendMaker(content, docName) {
                     }
                 }
 
-                
+
                 //console.log(finalObject)
 
             }
