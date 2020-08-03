@@ -1086,7 +1086,7 @@ var keywordObject = {};
 function addKeyword(keyword) {
     //console.log(keyword);
     keyword = keyword.replace(/&lt;/g, '<');
-    var keywordList = keyword.split(/(?:>|<| |\[|\(|\)|\]|{|}|\||\.|\/|#|\$|:)/g);
+    var keywordList = keyword.split(/(?:>|<| |\[|\(|\)|\]|{|}|\||\.|\/|#|\$|:|\?|,)/g);
 
     if (keywordList == keyword) {
         if (keyword.length >= 2 && keyword.search(/\\/g) == -1) {
