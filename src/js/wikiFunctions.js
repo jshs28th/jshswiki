@@ -963,7 +963,7 @@ var realClassContent;
 
 //위키 문서 저장하기//위키 문서 저장하기//위키 문서 저장하기//위키 문서 저장하기//위키 문서 저장하기//위키 문서 저장하기
 var byte = 0;
-function saveDoc(content) {
+function saveDoc(content, keyword) {
 
     var realName = $("#titleH1").text();
     var colName = realName.split(':');
@@ -978,91 +978,94 @@ function saveDoc(content) {
         alert('Easter Egg 2');
     }
 
-    if (his == 0) {
+    firebase.database().ref('KEYWORD').child(serialize(realName)).set(keyword).then(() => {
 
-        $.post('../src/php/allDoc.php', { title: realName.replace(/ /g, '%20') }).then(function () {
+        if (his == 0) {
+
+            $.post('../src/php/allDoc.php', { title: realName.replace(/ /g, '%20') }).then(function () {
 
 
 
-            firebase.database().ref('VALUE').child('docCnt').once('value', function (snap) {
+                firebase.database().ref('VALUE').child('docCnt').once('value', function (snap) {
 
-                var docCnt = snap.val();
-                firebase.database().ref('VALUE').update({
-                    docCnt: docCnt + 1
-                }).then(() => {
+                    var docCnt = snap.val();
+                    firebase.database().ref('VALUE').update({
+                        docCnt: docCnt + 1
+                    }).then(() => {
 
-                    firebase.database().ref('SERIAL').child(realName).set(docCnt).then(() => {
+                        firebase.database().ref('SERIAL').child(realName).set(docCnt).then(() => {
 
-                        serialNote[realName] = docCnt;
-                        saveFunction(content, realName, his, makeLevel, wikiCol, comment).then(function () {
+                            serialNote[realName] = docCnt;
+                            saveFunction(content, realName, his, makeLevel, wikiCol, comment).then(function () {
 
-                            wikiDoc.doc('all').update({
+                                wikiDoc.doc('all').update({
 
-                                all: firebase.firestore.FieldValue.arrayUnion(realName)
+                                    all: firebase.firestore.FieldValue.arrayUnion(realName)
 
-                            }).then(function () {
-                                rankRef.child(userName + '(' + userGisu + '기)').update({
-                                    edit: userEdit + 3
-                                }).then(() => {
-                                    if (userEdit + 3 == userLevel * userLevel * 10
-                                        || userEdit + 3 == userLevel * userLevel * 10 + 1
-                                        || userEdit + 3 == userLevel * userLevel * 10 + 2
-                                        && userLevel < 10) {
-                                        userRef.child(userGisu).child(userName).child('level').set(userLevel + 1).then(() => {
-                                            if (userLevel < 7) {
-                                                alert('기여도를 ' + (userEdit + 3) + '만큼 쌓으셨네요.\n권한 등급이 ' + (userLevel + 1) + '(으)로 올랐습니다.');
-                                                window.location.replace('../w/' + realName);
-                                            } else if (userLevel == 7) {
-                                                alert('기여도를 ' + (userEdit + 3) + '만큼 쌓으셨네요.\n권한 등급이 7로 올랐습니다.\n이제 "학생 문서"와 "선생님 문서"가 편집이 가능합니다.\n또한, 편집 시 역사의 별명이 연두색이 됩니다.');
-                                                window.location.replace('../w/' + realName);
-                                            } else if (userLevel < 9) {
-                                                alert('기여도를 ' + (userEdit + 3) + '만큼 쌓으셨네요.\n권한 등급이 ' + (userLevel + 1) + '(으)로 올랐습니다.');
-                                                window.location.replace('../w/' + realName);
-                                            } else if (userLevel == 9) {
-                                                alert('기여도를 ' + (userEdit + 3) + '만큼 쌓으셨네요.\n권한 등급이 최대(10)가 되었습니다.\n이제 편집 시 역사의 별명이 푸른색이 됩니다.');
-                                                window.location.replace('../w/' + realName);
-                                            }
-                                        });
-                                    } else {
-                                        reasonOfMove = '편집';
-                                        window.location.replace('../w/' + realName);
-                                    }
+                                }).then(function () {
+                                    rankRef.child(userName + '(' + userGisu + '기)').update({
+                                        edit: userEdit + 3
+                                    }).then(() => {
+                                        if (userEdit + 3 == userLevel * userLevel * 10
+                                            || userEdit + 3 == userLevel * userLevel * 10 + 1
+                                            || userEdit + 3 == userLevel * userLevel * 10 + 2
+                                            && userLevel < 10) {
+                                            userRef.child(userGisu).child(userName).child('level').set(userLevel + 1).then(() => {
+                                                if (userLevel < 7) {
+                                                    alert('기여도를 ' + (userEdit + 3) + '만큼 쌓으셨네요.\n권한 등급이 ' + (userLevel + 1) + '(으)로 올랐습니다.');
+                                                    window.location.replace('../w/' + realName);
+                                                } else if (userLevel == 7) {
+                                                    alert('기여도를 ' + (userEdit + 3) + '만큼 쌓으셨네요.\n권한 등급이 7로 올랐습니다.\n이제 "학생 문서"와 "선생님 문서"가 편집이 가능합니다.\n또한, 편집 시 역사의 별명이 연두색이 됩니다.');
+                                                    window.location.replace('../w/' + realName);
+                                                } else if (userLevel < 9) {
+                                                    alert('기여도를 ' + (userEdit + 3) + '만큼 쌓으셨네요.\n권한 등급이 ' + (userLevel + 1) + '(으)로 올랐습니다.');
+                                                    window.location.replace('../w/' + realName);
+                                                } else if (userLevel == 9) {
+                                                    alert('기여도를 ' + (userEdit + 3) + '만큼 쌓으셨네요.\n권한 등급이 최대(10)가 되었습니다.\n이제 편집 시 역사의 별명이 푸른색이 됩니다.');
+                                                    window.location.replace('../w/' + realName);
+                                                }
+                                            });
+                                        } else {
+                                            reasonOfMove = '편집';
+                                            window.location.replace('../w/' + realName);
+                                        }
+                                    });
                                 });
                             });
                         });
                     });
                 });
             });
-        });
-    } else {
+        } else {
 
-        saveFunction(content, realName, his, level, wikiCol, comment).then(function () {
-            rankRef.child(userName + '(' + userGisu + '기)').update({
-                edit: userEdit + 1
-            }).then(() => {
-                if (userEdit + 1 == userLevel * userLevel * 10 && userLevel < 10) {
-                    userRef.child(userGisu).child(userName).child('level').set(userLevel + 1).then(() => {
-                        if (userLevel < 7) {
-                            alert('기여도를 ' + (userEdit + 1) + '만큼 쌓으셨네요.\n권한 등급이 ' + (userLevel + 1) + '(으)로 올랐습니다.');
-                            window.location.replace('../w/' + realName);
-                        } else if (userLevel == 7) {
-                            alert('기여도를 ' + (userEdit + 1) + '만큼 쌓으셨네요.\n권한 등급이 7로 올랐습니다.\n이제 "학생 문서"와 "선생님 문서"가 편집이 가능합니다.\n또한, 편집 시 역사의 별명이 연두색이 됩니다.');
-                            window.location.replace('../w/' + realName);
-                        } else if (userLevel < 9) {
-                            alert('기여도를 ' + (userEdit + 1) + '만큼 쌓으셨네요.\n권한 등급이 ' + (userLevel + 1) + '(으)로 올랐습니다.');
-                            window.location.replace('../w/' + realName);
-                        } else if (userLevel == 9) {
-                            alert('기여도를 ' + (userEdit + 1) + '만큼 쌓으셨네요.\n권한 등급이 최대(10)가 되었습니다.\n이제 편집 시 역사의 별명이 푸른색이 됩니다.');
-                            window.location.replace('../w/' + realName);
-                        }
-                    });
-                } else {
-                    reasonOfMove = '편집';
-                    window.location.replace('../w/' + realName);
-                }
+            saveFunction(content, realName, his, level, wikiCol, comment).then(function () {
+                rankRef.child(userName + '(' + userGisu + '기)').update({
+                    edit: userEdit + 1
+                }).then(() => {
+                    if (userEdit + 1 == userLevel * userLevel * 10 && userLevel < 10) {
+                        userRef.child(userGisu).child(userName).child('level').set(userLevel + 1).then(() => {
+                            if (userLevel < 7) {
+                                alert('기여도를 ' + (userEdit + 1) + '만큼 쌓으셨네요.\n권한 등급이 ' + (userLevel + 1) + '(으)로 올랐습니다.');
+                                window.location.replace('../w/' + realName);
+                            } else if (userLevel == 7) {
+                                alert('기여도를 ' + (userEdit + 1) + '만큼 쌓으셨네요.\n권한 등급이 7로 올랐습니다.\n이제 "학생 문서"와 "선생님 문서"가 편집이 가능합니다.\n또한, 편집 시 역사의 별명이 연두색이 됩니다.');
+                                window.location.replace('../w/' + realName);
+                            } else if (userLevel < 9) {
+                                alert('기여도를 ' + (userEdit + 1) + '만큼 쌓으셨네요.\n권한 등급이 ' + (userLevel + 1) + '(으)로 올랐습니다.');
+                                window.location.replace('../w/' + realName);
+                            } else if (userLevel == 9) {
+                                alert('기여도를 ' + (userEdit + 1) + '만큼 쌓으셨네요.\n권한 등급이 최대(10)가 되었습니다.\n이제 편집 시 역사의 별명이 푸른색이 됩니다.');
+                                window.location.replace('../w/' + realName);
+                            }
+                        });
+                    } else {
+                        reasonOfMove = '편집';
+                        window.location.replace('../w/' + realName);
+                    }
+                });
             });
-        });
-    }
+        }
+    });
 }
 
 //검색엔쥔
@@ -1273,6 +1276,7 @@ function saveFunction(CONTENT, TITLE, HISTORY, LEVEL, REF, COMMENT) {
                 comment: COMMENT,
                 private: false,
             }).then(function () {
+
 
                 if (REF.id != 'class' && REF.id != 'file') {
                     logRef.child(TITLE).set({

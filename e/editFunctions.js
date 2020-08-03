@@ -118,16 +118,25 @@ function ankerGrammar(text, num) {
             });
         } else if (num == 1) {
             newTxt = text.replace(/(?<!\\)(?<!])\[\[([^\[](?:}]|[^|])*?)]]/g, function (match, first) {
+
+
+
                 if (first.search(/(?:.|\n)+?\([0-9]+?기\)/) != -1 || first.search(/(?:.|\n)+?\(동아리\)/) != -1) {
+                    addKeyword(first.split('(')[0]);
                     return "<a title='" + first + "' href='" + first + "'>" + first.split('(')[0] + "</a>";
                 } else if (first.search(/(?:.|\n)+?\(선생님\)/) != -1) {
+                    addKeyword(first.split('(')[0]);
                     return "<a title='" + first + "' href='" + first + "'>" + first.split('(')[0] + " 선생님</a>";
                 } else {
+                    addKeyword(first);
                     return "<a title='" + first + "' href='" + first + "'>" + first + "</a>";
                 }
             });
             //console.log('ok');
-            newTxt = newTxt.replace(/(?<!\\)\[\[((?:[^|[](?!]]))+?)\|((?:[^\]](?!\[\[)(?!]]])|}]|\)])+?)]]/g, "<a title='$1' href='$1'>$2</a>");
+            newTxt = newTxt.replace(/(?<!\\)\[\[((?:[^|[](?!]]))+?)\|((?:[^\]](?!\[\[)(?!]]])|}]|\)])+?)]]/g, function (match, first, second) {
+                addKeyword(second);
+                return "<a title='" + first + "' href='" + first + "'>" + second + "</a>"
+            });
             //console.log('ok2');
         }
 
@@ -149,7 +158,10 @@ function textGrammar(text, num) {
             newTxt = text.replace(/(?<!\\)\[\/((?:.|\n)+?)\/]/g, "<i>$1</i>");
             newTxt = newTxt.replace(/(?<!\\)\['((?:.|\n)+?)']/g, "<ins>$1</ins>");
             newTxt = newTxt.replace(/(?<!\\)\[_((?:.|\n)+?)_]/g, "<del>$1</del>");
-            newTxt = newTxt.replace(/(?<!\\)\["((?:.|\n)+?)"]/g, "<b>$1</b>");
+            newTxt = newTxt.replace(/(?<!\\)\["((?:.|\n)+?)"]/g, function (match, first) {
+                addKeyword(first);
+                return "<b>" + first + "</b>";
+            });
             newTxt = newTxt.replace(/(?<!\\)\[\+((?:.|\n)+?)\+]/g, "<sup>$1</sup>");
             newTxt = newTxt.replace(/(?<!\\)\[\-((?:.|\n)+?)\-]/g, "<sub>$1</sub>");
         }
@@ -180,7 +192,10 @@ function spanGrammar(text, num) {
         if (num == 0) {
             newTxt = text.replace(/<span style='(.+?)'>((?:.|\n)+?)<\/span>/g, "[?$1|$2?]");
         } else if (num == 1) {
-            newTxt = text.replace(/(?<!\\)\[\?(.+?)\|((?:.|\n)+?)\?]/g, "<span style='$1'>$2</span>");
+            newTxt = text.replace(/(?<!\\)\[\?(.+?)\|((?:.|\n)+?)\?]/g, function (match, first, second) {
+                addKeyword(second);
+                return "<span style='" + first + "'>" + second + "</span>"
+            });
         }
 
         resolve(newTxt);
@@ -637,7 +652,26 @@ function indexGrammar(text, num) {
             var high;
             var low;
             newTxt = text;
-            newTxt = text;
+
+            text.replace(/(?<!\\)\n?\[=(?!=)(.+?)=]\n?/g, function (match, first) {
+                addKeyword(first);
+                return;
+            });
+
+            text.replace(/(?<!\\)\n?\[==(?!=)(.+?)==]\n?/g, function (match, first) {
+                addKeyword(first);
+                return;
+            });
+
+            text.replace(/(?<!\\)\n?\[===(?!=)(.+?)===]\n?/g, function (match, first) {
+                addKeyword(first);
+                return;
+            });
+
+            text.replace(/(?<!\\)\n?\[====(?!=)(.+?)====]\n?/g, function (match, first) {
+                addKeyword(first);
+                return;
+            });
 
             while (index >= 0) {
                 //첫번째 목차
@@ -738,6 +772,11 @@ function classGrammar(text, num) {
             replaceClass(text).then(txt => {
 
                 console.log(classList);
+
+                for (var i = 0; i < classList.length; i++) {
+                    addKeyword(classList[i].split('분류:').pop());
+                }
+
                 var removedClass = new Array();
                 for (var i = 0; i < oldClassList.length; i++) {
                     var checkIsRemove = true;
@@ -791,7 +830,7 @@ function classGrammar(text, num) {
                             classTxt = classTxt.concat("&nbsp|&nbsp<a title='분류:" + classList[i] + "' href='분류:" + classList[i] + "'>" + classList[i] + "<\/a>");
                         }
                     }
-                    console.log('분류 후 텍스트 => ' + classTxt.concat('<hr/>' + newText));
+                    //console.log('분류 후 텍스트 => ' + classTxt.concat('<hr/>' + newText));
                     resolve(classTxt.concat('<hr/>' + newText));
                 });
             }
@@ -879,7 +918,10 @@ function quoteGrammar(text, num) {
             newTxt = newTxt.replace(/<blockquote class='bigBlockquote'><em>((?:.|\n)+?)<\/em><\/blockquote>/g, "[>>>$1<<<]\n");
 
         } else if (num == 1) {
-            newTxt = text.replace(/(?<!\\)\[>(?!>)((?:.|\n)+?)(?<!&lt;|<)(?:&lt;|<)]/g, "<blockquote class='smallBlockquote'>$1</blockquote>");
+            newTxt = text.replace(/(?<!\\)\[>(?!>)((?:.|\n)+?)(?<!&lt;|<)(?:&lt;|<)]/g, function (match, first) {
+                addKeyword(first);
+                return "<blockquote class='smallBlockquote'>" + first + "</blockquote>"
+            });
             newTxt = newTxt.replace(/(?<!\\)\[>>(?!>)((?:.|\n)+?)(?<!&lt;|<)(?:&lt;|<)(?:&lt;|<)](?:\n)?/g, "<blockquote class='middleBlockquote'><em>$1</em></blockquote>");
             newTxt = newTxt.replace(/(?<!\\)\[>>>(?!>)((?:.|\n)+?)(?<!&lt;|<)(?:&lt;|<)(?:&lt;|<)(?:&lt;|<)](?:\n)?/g, "<blockquote class='bigBlockquote'><em>$1</em></blockquote>");
         }
@@ -1039,6 +1081,29 @@ function cardGrammar(text, num) {
 //num 5는 분류 문서 편집할 때 미리보기에 사용
 //num 6도 분류에서 사용
 
+var keywordObject = {};
+
+function addKeyword(keyword) {
+    //console.log(keyword);
+    keyword = keyword.replace(/&lt;/g, '<');
+    var keywordList = keyword.split(/(?:>|<| |\[|\(|\)|\]|{|}|\||\.|\/|#|\$|:)/g);
+
+    if (keywordList == keyword) {
+        if (keyword.length >= 2 && keyword.search(/\\/g) == -1) {
+            if (keywordObject[keyword] != undefined) {
+                var count = keywordObject[keyword];
+                keywordObject[keyword] = count + 1;
+            } else {
+                keywordObject[keyword] = 1;
+            }
+        }
+    } else {
+        for (var i = 0; i < keywordList.length; i++) {
+            addKeyword(keywordList[i]);
+        }
+    }
+}
+
 function grammar(text, num) {
     return new Promise(resolve => {
         if (num == 0 || num == 2) {
@@ -1107,6 +1172,10 @@ function grammar(text, num) {
             //if (text.search('<hr/>') == -1) {
 
             console.log(text);
+
+            //키워드 초기화
+            keywordObject = {};
+
             if (text.search(/</) != -1 && num != 4) {
                 if (userLevel >= 15) {
                     var adminSetting = prompt('0. 기본 세팅\n1. 자바스크립트 허용');
@@ -1312,7 +1381,7 @@ $("#saveBtn").off('click').on('click', function () {
 
                 if (editPossible) {
 
-                    if (confirm("저장하시겠습니까?\n\n문서를 저장하게 되면 당신이 기여한 내용을 CC-BY-NC-SA 2.0으로 배포하는 것에 동의하는 것으로 간주합니다. 동의는 철회할 수 없습니다.")) {
+                    if (confirm("저장하시겠습니까?\n\n문서를 저장하게 되면 당신이 기여한 내용을 CC-BY-NC-SA 2.0으로 배포하는 것과 주소만으로 출처를 밝히는 데에 동의하는 것으로 간주합니다. 동의는 철회할 수 없습니다.")) {
 
                         loading(true);
                         wikiCol.collection(fullName).orderBy('history', 'desc').limit(1).get({ source: 'server' }).then(field => {
@@ -1335,14 +1404,14 @@ $("#saveBtn").off('click').on('click', function () {
                                     classRef.child(onlyDocName).child('history').once('value', function (snap) {
                                         classRef.child(onlyDocName).child('history').set(snap.val() + 1).then(() => {
                                             classGrammar(editTxt + realClassContent, 6).then(text => {
-                                                saveDoc(noGrammar(text, 1));
+                                                saveDoc(noGrammar(text, 1), keywordObject);
                                             });
                                         });
                                     });
 
                                 } else {
                                     grammar(editTxt, 1).then(text => {
-                                        saveDoc(text);
+                                        saveDoc(text, keywordObject);
                                     });
                                 }
                             }
