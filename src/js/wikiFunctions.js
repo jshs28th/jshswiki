@@ -1062,12 +1062,6 @@ function saveDoc(content) {
     }
 }
 
-<<<<<<< Updated upstream
-//검색어 생성 함수
-function indexmaker(content, docName){
-    
-}
-=======
 //검색엔쥔
 function searchMaker() {
     function matrixProductMatrix(matrix1, matrix2) {//행렬곱
@@ -1203,7 +1197,6 @@ function searchMaker() {
                         } else {
                             gen_relMatrix[j][i] = (relMatrix[j][i] / Math.log(2+column_sum));
                         }
->>>>>>> Stashed changes
 
                     } else {
                         gen_relMatrix[j][i] = 0.001 * 1.747565 / totalRealList.length
@@ -1250,7 +1243,7 @@ function searchMaker() {
                     }
                 }
             }
-            console.log(resultList)
+            console.log(resultList)//이게 결과 리스트 [[씨리얼,중요도],[씨리얼,중요도],....] 이렇게 나온다. 조원희 일해라
 
         })
     });
