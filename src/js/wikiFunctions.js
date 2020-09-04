@@ -112,28 +112,31 @@ function addWarn() {
 
 //검색 관련 작업들!//검색 관련 작업들!//검색 관련 작업들!//검색 관련 작업들!//검색 관련 작업들!//검색 관련 작업들!
 $("#searchBtn").click(function () {
-    search();
+    window.location.href='../s/' + $('#searchTxt').val();
+    
 });
 
-function search() {
 
-    if (autoCompleteNum == 0) {
-        var inputT = $("#searchTxt").val();
-        var autoT = $("#auto_1>a").text();
-        if (inputT.toUpperCase().replace(/ /g, '') == autoT.toUpperCase().replace(/ /g, '')) {
-            var input = $("#auto_1>a").text();
-        } else {
-            var input = $("#searchTxt").val();
-        }
-    } else {
-        var input = $("#auto_" + autoCompleteNum + '>a').text();
-    }
 
-    var s = input.replace(" ", "%20");
+// function search() {
 
-    window.location.replace("../w/" + s);
+//    if (autoCompleteNum == 0) {
+//        var inputT = $("#searchTxt").val();
+//        var autoT = $("#auto_1>a").text();
+//        if (inputT.toUpperCase().replace(/ /g, '') == autoT.toUpperCase().replace(/ /g, '')) {
+//            var input = $("#auto_1>a").text();
+//        } else {
+//            var input = $("#searchTxt").val();
+//        }
+//    } else {
+//        var input = $("#auto_" + autoCompleteNum + '>a').text();
+//    }
 
-}
+//    var s = input.replace(" ", "%20");
+
+//    window.location.replace("../w/" + s);
+
+// }
 
 
 var autoCompleteNum = 0;
@@ -818,7 +821,7 @@ function realLoad(colName, num, realName, sharp) {
                                                 return a[1] - b[1];
                                             });
                                             arr.reverse();
-                                            console.log(arr);
+                                            //console.log(arr);
                                             for (i = 0; i < arr.length; i++) {
                                                 if (inv_serialize(arr[i][0]) != undefined) {
                                                     $('div[id=suyeon146]').append('<div class="container">' + '<a href="' + inv_serialize(arr[i][0]) + '">' + inv_serialize(arr[i][0]) + '</a></div>' + '<hr>');
@@ -840,7 +843,7 @@ function realLoad(colName, num, realName, sharp) {
 
                                     $('#document').html(newTxt.join('<hr/>'));
 
-                                    $('article[class^=whiteBlock]').append('<div id="learning"><p>이 문서와 가장 관련있다고 생각하는 문서 1개의 제목을 아래에 입력해 주세요. 여러분의 많은 참여가 전곽위키를 발전시킵니다.</p><input id="lrn" type="text" name="title"><input type="button" onclick="learning_function()" value="확인"></div>')
+                                    $('article[class^=whiteBlock]  ').append('<div id="learning" style="display:none"><p>이 문서와 가장 관련있다고 생각하는 문서 1개의 제목을 아래에 입력해 주세요. 여러분의 많은 참여가 전곽위키를 발전시킵니다.</p><input id="lrn" type="text" name="title"><input type="button" onclick="learning_function()" value="확인"></div>')
 
                                     $("a[id^=note]").each(function (index) {
                                         var note = $(this).attr("name");
@@ -932,20 +935,17 @@ function learning_function() {
                     firebase.database().ref('RELATIONSHIP').child(serialize(fullName.replace(/\./g, '&DOT&'))).child(titleSerial).update({ std_fdp: (saveed_std + 0.4) }).then(() => {
                         console.log("done");
                         $("div[id=learning]").remove();
-                        alert("참여해 주셔서 감사합니다.")
                     });
                 } else {
                     eval("firebase.database().ref('RELATIONSHIP').child(" + serialize(fullName.replace(/\./g, '&DOT&')) + ").update({" + titleSerial + ": { tot_fdp: 0, std_fdp: (saveed_std + 0.4) } })").then(() => {
                         console.log("done");
                         $("div[id=learning]").remove();
-                        alert("참여해 주셔서 감사합니다.")
                     });
                 }
             } else {
                 eval("firebase.database().ref('RELATIONSHIP').child(" + serialize(fullName.replace(/\./g, '&DOT&')) + ").update({" + titleSerial + ": { tot_fdp: 0, std_fdp: 0.4 } })").then(() => {
                     console.log("done");
                     $("div[id=learning]").remove();
-                    alert("참여해 주셔서 감사합니다.")
                 });
             }
         }
@@ -978,173 +978,94 @@ function saveDoc(content, keyword) {
         alert('Easter Egg 2');
     }
 
-    firebase.database().ref('KEYWORD').child(serialize(realName)).set(keyword).then(() => {
+    if (his == 0) {
 
-        if (his == 0) {
+        $.post('../src/php/allDoc.php', {
+            title: realName.replace(/ /g, '%20')
+        }).then(function () {
 
-            $.post('../src/php/allDoc.php', { title: realName.replace(/ /g, '%20') }).then(function () {
 
 
+            firebase.database().ref('VALUE').child('docCnt').once('value', function (snap) {
 
-                firebase.database().ref('VALUE').child('docCnt').once('value', function (snap) {
+                var docCnt = snap.val();
+                firebase.database().ref('VALUE').update({
+                    docCnt: docCnt + 1
+                }).then(() => {
 
-                    var docCnt = snap.val();
-                    firebase.database().ref('VALUE').update({
-                        docCnt: docCnt + 1
-                    }).then(() => {
+                    firebase.database().ref('SERIAL').child(realName).set(docCnt).then(() => {
 
-                        firebase.database().ref('SERIAL').child(realName).set(docCnt).then(() => {
+                        serialNote[realName] = docCnt;
+                        saveFunction(content, realName, his, makeLevel, wikiCol, comment, keyword).then(function () {
 
-                            serialNote[realName] = docCnt;
-                            saveFunction(content, realName, his, makeLevel, wikiCol, comment).then(function () {
+                            wikiDoc.doc('all').update({
 
-                                wikiDoc.doc('all').update({
+                                all: firebase.firestore.FieldValue.arrayUnion(realName)
 
-                                    all: firebase.firestore.FieldValue.arrayUnion(realName)
-
-                                }).then(function () {
-                                    rankRef.child(userName + '(' + userGisu + '기)').update({
-                                        edit: userEdit + 3
-                                    }).then(() => {
-                                        if (userEdit + 3 == userLevel * userLevel * 10
-                                            || userEdit + 3 == userLevel * userLevel * 10 + 1
-                                            || userEdit + 3 == userLevel * userLevel * 10 + 2
-                                            && userLevel < 10) {
-                                            userRef.child(userGisu).child(userName).child('level').set(userLevel + 1).then(() => {
-                                                if (userLevel < 7) {
-                                                    alert('기여도를 ' + (userEdit + 3) + '만큼 쌓으셨네요.\n권한 등급이 ' + (userLevel + 1) + '(으)로 올랐습니다.');
-                                                    window.location.replace('../w/' + realName);
-                                                } else if (userLevel == 7) {
-                                                    alert('기여도를 ' + (userEdit + 3) + '만큼 쌓으셨네요.\n권한 등급이 7로 올랐습니다.\n이제 "학생 문서"와 "선생님 문서"가 편집이 가능합니다.\n또한, 편집 시 역사의 별명이 연두색이 됩니다.');
-                                                    window.location.replace('../w/' + realName);
-                                                } else if (userLevel < 9) {
-                                                    alert('기여도를 ' + (userEdit + 3) + '만큼 쌓으셨네요.\n권한 등급이 ' + (userLevel + 1) + '(으)로 올랐습니다.');
-                                                    window.location.replace('../w/' + realName);
-                                                } else if (userLevel == 9) {
-                                                    alert('기여도를 ' + (userEdit + 3) + '만큼 쌓으셨네요.\n권한 등급이 최대(10)가 되었습니다.\n이제 편집 시 역사의 별명이 푸른색이 됩니다.');
-                                                    window.location.replace('../w/' + realName);
-                                                }
-                                            });
-                                        } else {
-                                            reasonOfMove = '편집';
-                                            window.location.replace('../w/' + realName);
-                                        }
-                                    });
+                            }).then(function () {
+                                rankRef.child(userName + '(' + userGisu + '기)').update({
+                                    edit: userEdit + 3
+                                }).then(() => {
+                                    if (userEdit + 3 == userLevel * userLevel * 10 ||
+                                        userEdit + 3 == userLevel * userLevel * 10 + 1 ||
+                                        userEdit + 3 == userLevel * userLevel * 10 + 2 &&
+                                        userLevel < 10) {
+                                        userRef.child(userGisu).child(userName).child('level').set(userLevel + 1).then(() => {
+                                            if (userLevel < 7) {
+                                                alert('기여도를 ' + (userEdit + 3) + '만큼 쌓으셨네요.\n권한 등급이 ' + (userLevel + 1) + '(으)로 올랐습니다.');
+                                                window.location.replace('../w/' + realName);
+                                            } else if (userLevel == 7) {
+                                                alert('기여도를 ' + (userEdit + 3) + '만큼 쌓으셨네요.\n권한 등급이 7로 올랐습니다.\n이제 "학생 문서"와 "선생님 문서"가 편집이 가능합니다.\n또한, 편집 시 역사의 별명이 연두색이 됩니다.');
+                                                window.location.replace('../w/' + realName);
+                                            } else if (userLevel < 9) {
+                                                alert('기여도를 ' + (userEdit + 3) + '만큼 쌓으셨네요.\n권한 등급이 ' + (userLevel + 1) + '(으)로 올랐습니다.');
+                                                window.location.replace('../w/' + realName);
+                                            } else if (userLevel == 9) {
+                                                alert('기여도를 ' + (userEdit + 3) + '만큼 쌓으셨네요.\n권한 등급이 최대(10)가 되었습니다.\n이제 편집 시 역사의 별명이 푸른색이 됩니다.');
+                                                window.location.replace('../w/' + realName);
+                                            }
+                                        });
+                                    } else {
+                                        reasonOfMove = '편집';
+                                        window.location.replace('../w/' + realName);
+                                    }
                                 });
                             });
                         });
                     });
                 });
             });
-        } else {
+        });
+    } else {
 
-            saveFunction(content, realName, his, level, wikiCol, comment).then(function () {
-                rankRef.child(userName + '(' + userGisu + '기)').update({
-                    edit: userEdit + 1
-                }).then(() => {
-                    if (userEdit + 1 == userLevel * userLevel * 10 && userLevel < 10) {
-                        userRef.child(userGisu).child(userName).child('level').set(userLevel + 1).then(() => {
-                            if (userLevel < 7) {
-                                alert('기여도를 ' + (userEdit + 1) + '만큼 쌓으셨네요.\n권한 등급이 ' + (userLevel + 1) + '(으)로 올랐습니다.');
-                                window.location.replace('../w/' + realName);
-                            } else if (userLevel == 7) {
-                                alert('기여도를 ' + (userEdit + 1) + '만큼 쌓으셨네요.\n권한 등급이 7로 올랐습니다.\n이제 "학생 문서"와 "선생님 문서"가 편집이 가능합니다.\n또한, 편집 시 역사의 별명이 연두색이 됩니다.');
-                                window.location.replace('../w/' + realName);
-                            } else if (userLevel < 9) {
-                                alert('기여도를 ' + (userEdit + 1) + '만큼 쌓으셨네요.\n권한 등급이 ' + (userLevel + 1) + '(으)로 올랐습니다.');
-                                window.location.replace('../w/' + realName);
-                            } else if (userLevel == 9) {
-                                alert('기여도를 ' + (userEdit + 1) + '만큼 쌓으셨네요.\n권한 등급이 최대(10)가 되었습니다.\n이제 편집 시 역사의 별명이 푸른색이 됩니다.');
-                                window.location.replace('../w/' + realName);
-                            }
-                        });
-                    } else {
-                        reasonOfMove = '편집';
-                        window.location.replace('../w/' + realName);
-                    }
-                });
-            });
-        }
-    });
-}
-
-//검색엔쥔
-function searchMaker() {
-    var relship;
-    firebase.database().ref('RELATIONSHIP').once('value', function (snap) {
-        relship = snap.val();
-    }).then(() => {
-        var searchedTxt;
-        if ($("#searchTxt").val() != "") {
-            var searchedTxt = $("#searchTxt").val();
-        } else {
-            alert("검색어를 입력해 주세요.")
-            return;
-        }//검색어 받아옴
-        var keywordObject = new Object();//키워드 리스트 받아올 거
-        var searchedObject = new Object();
-        firebase.database().ref('KEYWORD').once('value', function (snap) {
-            keywordObject = snap.val()
-            for (key in keywordObject) {
-                var temptkey = key;
-                for (key in keywordObject[temptkey]) {
-                    if (key == searchedTxt) {
-                        searchedObject[temptkey] = keywordObject[temptkey][key]
-                    }
-
-                }
-            }
-        }).then(() => {
-            console.log(searchedObject)//{문서의 시리얼: 검색어를 가지고 있는 개수, 시리얼: 개수, .....} 요렇게 나오면 됨
-            var totalList = new Set();//검색된 문서와 연관된 문서(검색어를 포함하든 안하든)를 다 모음 중복 없이
-            var addedList = new Set();//검색어가 없는 문서지만 연관된 문서 즉 새롭게 추가될 문서들을 모음
-            for (key in searchedObject) {
-                var temp = key;
-                totalList.add(String(temp));
-
-                for (key in relship[temp]) {
-                    totalList.add(String(key))
-                    if (searchedObject[key] == undefined) {
-                        addedList.add(String(key))
-
-                    }
-                }
-            }
-            var addedRealList = [...addedList].sort(); // addedList를 Set그대로 쓰려니 오류가 생겨서 List로 바꿔줌
-            var totalRealList = [...totalList].sort(); // 얘도 위와 같은 이유
-            for (var i = 0; i < addedRealList.length; i++) {
-
-                searchedObject[addedRealList[i]] = 0.3
-            }
-            var relList = new Array(totalRealList.length); // nXn 인접행렬 생성
-            for (var i = 0; i < relList.length; i++) {
-                relList[i] = new Array(totalRealList.length);
-            }
-            console.log("ready!!")
-            for (var i = 0; i < totalRealList.length; i++) {
-                for (var j = 0; j < totalRealList.length; j++) {
-                    if (i == j) {
-                        relList[i][j] = 0
-                    } else {
-                        if (relship[totalRealList[i]] == undefined) {
-                            relList[i][j] = 0
-                        } else {
-                            if (relship[totalRealList[i]][totalRealList[j]] == undefined) {
-                                relList[i][j] = 0
-                            } else {
-                                relList[i][j] = ((relship[totalRealList[i]][totalRealList[j]]["tot_fdp"] + relship[totalRealList[i]][totalRealList[j]]["std_fdp"]) * (1 - 1.2 ** (-searchedObject[totalRealList[j]] * searchedObject[totalRealList[i]])))
-                            }
+        saveFunction(content, realName, his, level, wikiCol, comment, keyword).then(function () {
+            rankRef.child(userName + '(' + userGisu + '기)').update({
+                edit: userEdit + 1
+            }).then(() => {
+                if (userEdit + 1 == userLevel * userLevel * 10 && userLevel < 10) {
+                    userRef.child(userGisu).child(userName).child('level').set(userLevel + 1).then(() => {
+                        if (userLevel < 7) {
+                            alert('기여도를 ' + (userEdit + 1) + '만큼 쌓으셨네요.\n권한 등급이 ' + (userLevel + 1) + '(으)로 올랐습니다.');
+                            window.location.replace('../w/' + realName);
+                        } else if (userLevel == 7) {
+                            alert('기여도를 ' + (userEdit + 1) + '만큼 쌓으셨네요.\n권한 등급이 7로 올랐습니다.\n이제 "학생 문서"와 "선생님 문서"가 편집이 가능합니다.\n또한, 편집 시 역사의 별명이 연두색이 됩니다.');
+                            window.location.replace('../w/' + realName);
+                        } else if (userLevel < 9) {
+                            alert('기여도를 ' + (userEdit + 1) + '만큼 쌓으셨네요.\n권한 등급이 ' + (userLevel + 1) + '(으)로 올랐습니다.');
+                            window.location.replace('../w/' + realName);
+                        } else if (userLevel == 9) {
+                            alert('기여도를 ' + (userEdit + 1) + '만큼 쌓으셨네요.\n권한 등급이 최대(10)가 되었습니다.\n이제 편집 시 역사의 별명이 푸른색이 됩니다.');
+                            window.location.replace('../w/' + realName);
                         }
-                    }
+                    });
+                } else {
+                    reasonOfMove = '편집';
+                    window.location.replace('../w/' + realName);
                 }
-            }
-            console.log(relList)//인접행렬 만듬
-        })
-    });
+            });
+        });
+    }
 }
-
-
-
 
 
 
@@ -1164,7 +1085,6 @@ function inv_serialize(serial) {
     }
 }
 
-//관련도 만들기 함수
 function friendMaker(content, docName) {
     return new Promise(function (resolve) {
         //씨리얼 목록 파일 받아옴
@@ -1175,7 +1095,10 @@ function friendMaker(content, docName) {
         firebase.database().ref('RELATIONSHIP').child(serialize(docName)).once('value', function (snap) {
             friendList = snap.val();
 
-            var saved_std_fdp = (friendList || []);
+            var saved_std_fdp = [];
+            if (friendList != null) {
+                saved_std_fdp = friendList
+            }
 
 
             console.log(1);
@@ -1206,23 +1129,21 @@ function friendMaker(content, docName) {
 
             finalUpdate.sort();
             console.log(finalUpdate);
-            console.log(saved_std_fdp);
             var finalObject = new Object();
 
             for (i = 0; i < finalUpdate.length; i++) {
                 eval("var relative" + "=" + "5*(1-0.8**(cnt_" + finalUpdate[i] + "));");
+
                 if (saved_std_fdp[finalUpdate[i]] == undefined) {
-                    finalObject[finalUpdate[i]] = { tot_fdp: relative, std_fdp: 0 };
+                    finalObject[finalUpdate[i]] = { tot_fdp: relative, std_fdp: 0 }
                 } else {
                     if (saved_std_fdp[finalUpdate[i]]['std_fdp'] == undefined) {
                         finalObject[finalUpdate[i]] = { tot_fdp: relative, std_fdp: 0 };
                     } else {
                         finalObject[finalUpdate[i]] = { tot_fdp: relative, std_fdp: saved_std_fdp[finalUpdate[i]]['std_fdp'] }
                     }
+                    //console.log(finalObject)
                 }
-
-
-                //console.log(finalObject)
 
             }
             firebase.database().ref('RELATIONSHIP').child(serialize(docName)).set(null).then(() => {
@@ -1237,7 +1158,7 @@ function friendMaker(content, docName) {
     });
 }
 
-function saveFunction(CONTENT, TITLE, HISTORY, LEVEL, REF, COMMENT) {
+function saveFunction(CONTENT, TITLE, HISTORY, LEVEL, REF, COMMENT, KEYWORD) {
 
     return new Promise(function (success, fail) {
         var BYTE = getByteLength(CONTENT);
@@ -1276,23 +1197,24 @@ function saveFunction(CONTENT, TITLE, HISTORY, LEVEL, REF, COMMENT) {
                 comment: COMMENT,
                 private: false,
             }).then(function () {
+                firebase.database().ref('KEYWORD').child(serialize(TITLE)).set(KEYWORD).then(() => {
 
-
-                if (REF.id != 'class' && REF.id != 'file') {
-                    logRef.child(TITLE).set({
-                        name: TITLE,
-                        time: t.getTime()
-                    }).catch(err => {
-                        console.log(err);
-                    }).then(() => {
+                    if (REF.id != 'class' && REF.id != 'file') {
+                        logRef.child(TITLE).set({
+                            name: TITLE,
+                            time: t.getTime()
+                        }).catch(err => {
+                            console.log(err);
+                        }).then(() => {
+                            success();
+                            // loadLog({ source: 'server' }).then(() => {
+                            //     success();
+                            // });
+                        })
+                    } else {
                         success();
-                        // loadLog({ source: 'server' }).then(() => {
-                        //     success();
-                        // });
-                    })
-                } else {
-                    success();
-                }
+                    }
+                });
             });
         });
     });

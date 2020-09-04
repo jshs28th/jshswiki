@@ -1,0 +1,19 @@
+article a {
+    font-size: 2.5rem;
+    margin: 0;
+    padding: 1rem 1.4rem;
+    border: .1rem solid rgba(80, 0, 255, .5);
+    border-radius: 1rem;
+    margin-bottom: .7rem;
+    color: black;
+}
+
+article a:hover {
+    border: .1rem solid rgba(80, 0, 255, .5);
+    background-color: rgba(80, 0, 255, .04);
+}
+
+article hr {
+    width: 100%;
+    margin: .5rem auto;
+}
