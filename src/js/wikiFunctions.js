@@ -112,28 +112,31 @@ function addWarn() {
 
 //검색 관련 작업들!//검색 관련 작업들!//검색 관련 작업들!//검색 관련 작업들!//검색 관련 작업들!//검색 관련 작업들!
 $("#searchBtn").click(function () {
-    search();
+    window.location.href='../s/' + $('#searchTxt').val();
+    
 });
 
-function search() {
 
-    if (autoCompleteNum == 0) {
-        var inputT = $("#searchTxt").val();
-        var autoT = $("#auto_1>a").text();
-        if (inputT.toUpperCase().replace(/ /g, '') == autoT.toUpperCase().replace(/ /g, '')) {
-            var input = $("#auto_1>a").text();
-        } else {
-            var input = $("#searchTxt").val();
-        }
-    } else {
-        var input = $("#auto_" + autoCompleteNum + '>a').text();
-    }
 
-    var s = input.replace(" ", "%20");
+// function search() {
 
-    window.location.replace("../w/" + s);
+//    if (autoCompleteNum == 0) {
+//        var inputT = $("#searchTxt").val();
+//        var autoT = $("#auto_1>a").text();
+//        if (inputT.toUpperCase().replace(/ /g, '') == autoT.toUpperCase().replace(/ /g, '')) {
+//            var input = $("#auto_1>a").text();
+//        } else {
+//            var input = $("#searchTxt").val();
+//        }
+//    } else {
+//        var input = $("#auto_" + autoCompleteNum + '>a').text();
+//    }
 
-}
+//    var s = input.replace(" ", "%20");
+
+//    window.location.replace("../w/" + s);
+
+// }
 
 
 var autoCompleteNum = 0;
@@ -508,7 +511,7 @@ function checkLevel() {
                     userRef.child(userGisu).child(userName).once('value', function (val2) {
                         rankRef.child(userName + '(' + userGisu + '기)').child('edit').once('value', function (val3) {
 
-                        
+
 
                             //console.log(val2.val());
                             if (val2.val() == null) {
@@ -530,13 +533,13 @@ function checkLevel() {
                                             $('#nickP').html(userNick + '(선생님)');
                                         } else {
                                             if (userLevel >= 15) {
-                                                $('#nickP').html('<span class="adminNameSpan"><b>' + userNick + '</b>(' + userGisu + '기)' + '</span>'+ '<bn>' + '<span style="font-size:1.7rem">' +' 기여도:' + val3.val() +'</span>' );
+                                                $('#nickP').html('<span class="adminNameSpan"><b>' + userNick + '</b>(' + userGisu + '기)' + '</span>' + '<bn>' + '<span style="font-size:1.7rem">' + ' 기여도:' + val3.val() + '</span>');
                                             } else if (userLevel >= 10) {
-                                                $('#nickP').html('<span style="color:rgb(50, 100, 255)"><b>' + userNick + '</b>(' + userGisu + '기)' + '</span>' + '<bn>' + '<span style="font-size:1.7rem">' +' 기여도:' + val3.val() +'</span>');
+                                                $('#nickP').html('<span style="color:rgb(50, 100, 255)"><b>' + userNick + '</b>(' + userGisu + '기)' + '</span>' + '<bn>' + '<span style="font-size:1.7rem">' + ' 기여도:' + val3.val() + '</span>');
                                             } else if (userLevel >= 7) {
-                                                $('#nickP').html('<span style="color:rgb(105, 201, 192)"><b>' + userNick + '</b>(' + userGisu + '기)' + '</span>' + '<bn>' + '<span style="font-size:1.7rem">' +' 기여도:' + val3.val() +'</span>');
+                                                $('#nickP').html('<span style="color:rgb(105, 201, 192)"><b>' + userNick + '</b>(' + userGisu + '기)' + '</span>' + '<bn>' + '<span style="font-size:1.7rem">' + ' 기여도:' + val3.val() + '</span>');
                                             } else {
-                                                $('#nickP').html(userNick + '(' + userGisu + '기)' + '<bn>' + '<span style="font-size:1.7rem">' +' 기여도:' + val3.val() +'</span>' );
+                                                $('#nickP').html(userNick + '(' + userGisu + '기)' + '<bn>' + '<span style="font-size:1.7rem">' + ' 기여도:' + val3.val() + '</span>');
                                             }
                                         }
                                         resolve(userLevel);
@@ -562,20 +565,20 @@ function checkLevel() {
                                             $('#nickP').html(userNick + '(선생님)');
                                         } else {
                                             if (userLevel >= 15) {
-                                                $('#nickP').html('<span class="adminNameSpan"><b>' + userNick + '</b>(' + userGisu + '기)' +'</span>' + '<br>' + '<span style="font-size:1.7rem">' +' 기여도:' + val3.val() +'</span>');
+                                                $('#nickP').html('<span class="adminNameSpan"><b>' + userNick + '</b>(' + userGisu + '기)' + '</span>' + '<br>' + '<span style="font-size:1.7rem">' + ' 기여도:' + val3.val() + '</span>');
                                             } else if (userLevel >= 10) {
-                                                $('#nickP').html('<span style="color:rgb(50, 100, 255)"><b>' + userNick + '</b>(' + userGisu + '기)' + '</span>' + '<bn>' + '<span style="font-size:1.7rem">' +' 기여도:' + val3.val() +'</span>');
+                                                $('#nickP').html('<span style="color:rgb(50, 100, 255)"><b>' + userNick + '</b>(' + userGisu + '기)' + '</span>' + '<bn>' + '<span style="font-size:1.7rem">' + ' 기여도:' + val3.val() + '</span>');
                                             } else if (userLevel >= 7) {
-                                                $('#nickP').html('<span style="color:rgb(105, 201, 192)"><b>' + userNick + '</b>(' + userGisu + '기)' + '</span>' + '<bn>' + '<span style="font-size:1.7rem">' +' 기여도:' + val3.val() +'</span>');
+                                                $('#nickP').html('<span style="color:rgb(105, 201, 192)"><b>' + userNick + '</b>(' + userGisu + '기)' + '</span>' + '<bn>' + '<span style="font-size:1.7rem">' + ' 기여도:' + val3.val() + '</span>');
                                             } else {
-                                                $('#nickP').html(userNick + '(' + userGisu + '기)' + '<bn>' + '<span style="font-size:1.7rem">' +' 기여도:' + val3.val() +'</span>');
+                                                $('#nickP').html(userNick + '(' + userGisu + '기)' + '<bn>' + '<span style="font-size:1.7rem">' + ' 기여도:' + val3.val() + '</span>');
                                             }
                                         }
                                         resolve(userLevel);
                                     });
                                 }
                             }
-                        });    
+                        });
                     });
                 });
             });
@@ -828,7 +831,7 @@ function realLoad(colName, num, realName, sharp) {
 
 
                                     });
-                                
+
                                     var indexList = indexTxt.split('<br>');
                                     var trash = indexList.pop();
 
@@ -840,7 +843,7 @@ function realLoad(colName, num, realName, sharp) {
 
                                     $('#document').html(newTxt.join('<hr/>'));
 
-                                    $('article[class^=whiteBlock]').append('<div id="learning"><p>이 문서와 가장 관련있다고 생각하는 문서 1개의 제목을 아래에 입력해 주세요. 여러분의 많은 참여가 전곽위키를 발전시킵니다.</p><input id="lrn" type="text" name="title"><input type="button" onclick="learning_function()" value="확인"></div>')
+                                    $('article[class^=whiteBlock]  ').append('<div id="learning" style="display:none"><p>이 문서와 가장 관련있다고 생각하는 문서 1개의 제목을 아래에 입력해 주세요. 여러분의 많은 참여가 전곽위키를 발전시킵니다.</p><input id="lrn" type="text" name="title"><input type="button" onclick="learning_function()" value="확인"></div>')
 
                                     $("a[id^=note]").each(function (index) {
                                         var note = $(this).attr("name");
@@ -920,7 +923,7 @@ function learning_function() {
     if (serialize(targetle.replace(/\./g, '&DOT&')) != undefined) {
         if (targetle == fullName) {
             alert("이 문서는 추천할 수 없습니다.")
-        } else{
+        } else {
             var titleSerial = serialize(targetle.replace(/\./g, '&DOT&'));
             if (relations[serialize(fullName.replace(/\./g, '&DOT&'))][titleSerial] != undefined) {
                 if (relations[serialize(fullName.replace(/\./g, '&DOT&'))][titleSerial]['std_fdp'] == undefined) {
@@ -934,33 +937,33 @@ function learning_function() {
                         $("div[id=learning]").remove();
                     });
                 } else {
-                    eval("firebase.database().ref('RELATIONSHIP').child("+serialize(fullName.replace(/\./g, '&DOT&'))+").update({"+titleSerial+": { tot_fdp: 0, std_fdp: (saveed_std + 0.4) } })").then(() => {
+                    eval("firebase.database().ref('RELATIONSHIP').child(" + serialize(fullName.replace(/\./g, '&DOT&')) + ").update({" + titleSerial + ": { tot_fdp: 0, std_fdp: (saveed_std + 0.4) } })").then(() => {
                         console.log("done");
                         $("div[id=learning]").remove();
                     });
                 }
             } else {
-                eval("firebase.database().ref('RELATIONSHIP').child("+serialize(fullName.replace(/\./g, '&DOT&'))+").update({"+titleSerial+": { tot_fdp: 0, std_fdp: 0.4 } })").then(() => {
+                eval("firebase.database().ref('RELATIONSHIP').child(" + serialize(fullName.replace(/\./g, '&DOT&')) + ").update({" + titleSerial + ": { tot_fdp: 0, std_fdp: 0.4 } })").then(() => {
                     console.log("done");
                     $("div[id=learning]").remove();
                 });
             }
         }
-        
-    }  else {
+
+    } else {
         alert("존재하지 않는 문서입니다.")
     }
 
 
-    
-    
+
+
 }
 
 var realClassContent;
 
 //위키 문서 저장하기//위키 문서 저장하기//위키 문서 저장하기//위키 문서 저장하기//위키 문서 저장하기//위키 문서 저장하기
 var byte = 0;
-function saveDoc(content) {
+function saveDoc(content, keyword) {
 
     var realName = $("#titleH1").text();
     var colName = realName.split(':');
@@ -977,7 +980,9 @@ function saveDoc(content) {
 
     if (his == 0) {
 
-        $.post('../src/php/allDoc.php', { title: realName.replace(/ /g, '%20') }).then(function () {
+        $.post('../src/php/allDoc.php', {
+            title: realName.replace(/ /g, '%20')
+        }).then(function () {
 
 
 
@@ -991,7 +996,7 @@ function saveDoc(content) {
                     firebase.database().ref('SERIAL').child(realName).set(docCnt).then(() => {
 
                         serialNote[realName] = docCnt;
-                        saveFunction(content, realName, his, makeLevel, wikiCol, comment).then(function () {
+                        saveFunction(content, realName, his, makeLevel, wikiCol, comment, keyword).then(function () {
 
                             wikiDoc.doc('all').update({
 
@@ -1001,10 +1006,10 @@ function saveDoc(content) {
                                 rankRef.child(userName + '(' + userGisu + '기)').update({
                                     edit: userEdit + 3
                                 }).then(() => {
-                                    if (userEdit + 3 == userLevel * userLevel * 10
-                                        || userEdit + 3 == userLevel * userLevel * 10 + 1
-                                        || userEdit + 3 == userLevel * userLevel * 10 + 2
-                                        && userLevel < 10) {
+                                    if (userEdit + 3 == userLevel * userLevel * 10 ||
+                                        userEdit + 3 == userLevel * userLevel * 10 + 1 ||
+                                        userEdit + 3 == userLevel * userLevel * 10 + 2 &&
+                                        userLevel < 10) {
                                         userRef.child(userGisu).child(userName).child('level').set(userLevel + 1).then(() => {
                                             if (userLevel < 7) {
                                                 alert('기여도를 ' + (userEdit + 3) + '만큼 쌓으셨네요.\n권한 등급이 ' + (userLevel + 1) + '(으)로 올랐습니다.');
@@ -1033,7 +1038,7 @@ function saveDoc(content) {
         });
     } else {
 
-        saveFunction(content, realName, his, level, wikiCol, comment).then(function () {
+        saveFunction(content, realName, his, level, wikiCol, comment, keyword).then(function () {
             rankRef.child(userName + '(' + userGisu + '기)').update({
                 edit: userEdit + 1
             }).then(() => {
@@ -1062,192 +1067,7 @@ function saveDoc(content) {
     }
 }
 
-//검색엔쥔
-function searchMaker() {
-    function matrixProductMatrix(matrix1, matrix2) {//행렬곱
-        if (matrix1[0].length == matrix2.length) {
-            var resultMatrix = new Array(matrix1[0].length);
-            for (var i = 0; i < matrix1[0].length; i++) {
-                resultMatrix[i] = new Array(matrix2.length);
-            }
 
-            for (var i = 0; i < matrix1[0].length; i++) {
-                for (var j = 0; j < matrix2.length; j++) {
-                    var sumOfCalcul = 0;
-                    for (var k = 0; k < matrix1[0].length; k++) {
-                        sumOfCalcul += matrix1[i][k] * matrix2[k][j]
-                    }
-                    resultMatrix[i][j] = sumOfCalcul;
-                }
-            }
-            return resultMatrix;
-        } else {
-            return [];
-        }
-
-    }
-    function matrixProductVector(matrix, vector) {//행렬과 벡터 곱셈
-        if (matrix[0].length == vector.length) {
-            var resultMatrix = new Array(matrix[0].length);
-            for (var i = 0; i < matrix[0].length; i++) {
-                var sumOfCalcul = 0;
-                for (var k = 0; k < matrix[0].length; k++) {
-                    sumOfCalcul += matrix[i][k] * vector[k]
-                }
-                resultMatrix[i] = sumOfCalcul;
-            }
-            return resultMatrix;
-        } else {
-            return [];
-        }
-    }
-    function vectorNomalization(vector) {//벡터 표준화
-        var vectorSize = 0;
-        for (var i = 0; i < vector.length; i++) {
-            vectorSize += vector[i] ** 2;
-        }
-        for (var i = 0; i < vector.length; i++) {
-            vector[i] = vector[i] / (vectorSize ** 0.5);
-        }
-        return vector
-    }
-
-
-    var relship;
-    firebase.database().ref('RELATIONSHIP').once('value', function (snap) {
-        relship = snap.val();
-    }).then(() => {
-        var searchedTxt;
-        if ($("#searchTxt").val() != "") {
-            var searchedTxt = $("#searchTxt").val();
-        } else {
-            alert("검색어를 입력해 주세요.")
-            return;
-        }//검색어 받아옴
-        var keywordObject = new Object();//키워드 리스트 받아올 거
-        var searchedObject = new Object();
-        firebase.database().ref('KEYWORD').once('value', function (snap) {
-            keywordObject = snap.val()
-            for (key in keywordObject) {
-                var temptkey = key;
-                for (key in keywordObject[temptkey]) {
-                    if (key == searchedTxt) {
-                        searchedObject[temptkey] = keywordObject[temptkey][key]
-                    }
-
-                }
-            }
-        }).then(() => {
-            //console.log(searchedObject)//{문서의 시리얼: 검색어를 가지고 있는 개수, 시리얼: 개수, .....} 요렇게 나오면 됨
-            var totalList = new Set();//검색된 문서와 연관된 문서(검색어를 포함하든 안하든)를 다 모음 중복 없이
-            var addedList = new Set();//검색어가 없는 문서지만 연관된 문서 즉 새롭게 추가될 문서들만 모음
-            for (searchedDoc in searchedObject) {
-                totalList.add(String(searchedDoc));
-                for (relatedDoc in relship[searchedDoc]) {
-                    totalList.add(String(relatedDoc))
-
-                    if (searchedObject[relatedDoc] == undefined) {
-                        addedList.add(String(relatedDoc))
-                    }
-                }
-            }
-            var addedRealList = [...addedList].sort(); // addedList를 Set그대로 쓰려니 오류가 생겨서 List로 바꿔줌
-            var totalRealList = [...totalList].sort(); // 얘도 위와 같은 이유
-            for (var i = 0; i < addedRealList.length; i++) {
-                searchedObject[addedRealList[i]] = 0.3
-            }
-            var relMatrix = new Array(totalRealList.length); // nXn 인접행렬 생성
-            for (var i = 0; i < relMatrix.length; i++) {
-                relMatrix[i] = new Array(totalRealList.length);
-            }
-            console.log("ready!!")
-            console.log(totalRealList);
-            for (var i = 0; i < totalRealList.length; i++) {
-                for (var j = 0; j < totalRealList.length; j++) {
-                    if (i == j) {
-                        relMatrix[j][i] = 0
-                    } else {
-                        if (relship[totalRealList[i]] == undefined) {
-                            relMatrix[j][i] = 0
-                        } else {
-                            if (relship[totalRealList[i]][totalRealList[j]] == undefined) {
-                                relMatrix[j][i] = 0
-                            } else {
-                                relMatrix[j][i] = ((relship[totalRealList[i]][totalRealList[j]]["tot_fdp"] + relship[totalRealList[i]][totalRealList[j]]["std_fdp"]) * (1 - 1.2 ** (-searchedObject[totalRealList[j]] * searchedObject[totalRealList[i]])))
-                            }
-                        }
-                    }
-                }
-
-            }
-            //console.log(relMatrix)//인접행렬 만듬
-            var gen_relMatrix = new Array(totalRealList.length);//열정규화 작업
-            for (var i = 0; i < gen_relMatrix.length; i++) {
-                gen_relMatrix[i] = new Array(totalRealList.length);
-            }
-            for (var i = 0; i < totalRealList.length; i++) {
-                var column_sum = 0;
-                for (var j = 0; j < totalRealList.length; j++) {
-                    column_sum += relMatrix[j][i];
-                }
-                for (var j = 0; j < totalRealList.length; j++) {
-                    if (relMatrix[j][i] == 0) {
-                        if (addedList.has(totalRealList[i]) == true) {
-                            gen_relMatrix[j][i] = (relMatrix[j][i] / Math.log(2+column_sum)) * (0.577);
-                        } else {
-                            gen_relMatrix[j][i] = (relMatrix[j][i] / Math.log(2+column_sum));
-                        }
-
-                    } else {
-                        gen_relMatrix[j][i] = 0.001 * 1.747565 / totalRealList.length
-                    }
-                }
-            }
-            //console.log(gen_relMatrix)//정규화됨!! 초기에 검색되지 않았던 문서의 열 합과 검색된 문서의 합의 비율이 0.577과 1이다. 0.577은 오일러 마스케로니 상수이다 1.747565는 NaCl의 마델룽 상수이다
-            var gen_relMatrix_T = new Array(totalRealList.length);// 완성된 인접행렬의 전치행렬
-
-            for (var i = 0; i < gen_relMatrix.length; i++) {
-                gen_relMatrix_T[i] = new Array(totalRealList.length);
-            }
-            for (var i = 0; i < totalRealList.length; i++) {
-                for (var j = 0; j < totalRealList.length; j++) {
-                    gen_relMatrix_T[i][j] = gen_relMatrix[j][i]
-                }
-            }
-            //console.log(gen_relMatrix, gen_relMatrix_T)//테스트 완료
-
-            var authorityVector = new Array(gen_relMatrix.length);
-            for (var i = 0; i < gen_relMatrix.length; i++) {
-                var row_sum = 0;
-                for (var j = 0; j < gen_relMatrix.length; j++) {
-                    row_sum += gen_relMatrix[i][j];
-                }
-                authorityVector[i] = row_sum
-            }
-            
-            var calculationMatrix = matrixProductMatrix(gen_relMatrix, gen_relMatrix_T);
-
-            for (var i = 0; i < 800 * Math.log(2+gen_relMatrix.length); i++) {
-                authorityVector = vectorNomalization(matrixProductVector(calculationMatrix,authorityVector))
-            }
-            var resultList = new Array(gen_relMatrix.length)
-            for (var i = 0; i < gen_relMatrix.length; i++) {
-                resultList[i] = [totalRealList[i],authorityVector[i]]
-            }
-            for (var i = 0; i < gen_relMatrix.length; i++) {
-                for (var j = 1; j < gen_relMatrix.length - i; j++) {
-                    if (resultList[j][1] > resultList[j - 1][1]) {
-                        temp = resultList[j - 1];
-                        resultList[j - 1] = resultList[j];
-                        resultList[j] = temp;
-                    }
-                }
-            }
-            console.log(resultList)//이게 결과 리스트 [[씨리얼,중요도],[씨리얼,중요도],....] 이렇게 나온다. 조원희 일해라
-
-        })
-    });
-}
 
 var serialNote;
 var friendList;
@@ -1275,7 +1095,10 @@ function friendMaker(content, docName) {
         firebase.database().ref('RELATIONSHIP').child(serialize(docName)).once('value', function (snap) {
             friendList = snap.val();
 
-            var saved_std_fdp = (friendList || []);
+            var saved_std_fdp = [];
+            if (friendList != null) {
+                saved_std_fdp = friendList
+            }
 
 
             console.log(1);
@@ -1311,12 +1134,16 @@ function friendMaker(content, docName) {
             for (i = 0; i < finalUpdate.length; i++) {
                 eval("var relative" + "=" + "5*(1-0.8**(cnt_" + finalUpdate[i] + "));");
 
-                if (saved_std_fdp[finalUpdate[i]]['std_fdp'] == undefined) {
-                    finalObject[finalUpdate[i]] = { tot_fdp: relative, std_fdp: 0 };
+                if (saved_std_fdp[finalUpdate[i]] == undefined) {
+                    finalObject[finalUpdate[i]] = { tot_fdp: relative, std_fdp: 0 }
                 } else {
-                    finalObject[finalUpdate[i]] = { tot_fdp: relative, std_fdp: saved_std_fdp[finalUpdate[i]]['std_fdp'] }
+                    if (saved_std_fdp[finalUpdate[i]]['std_fdp'] == undefined) {
+                        finalObject[finalUpdate[i]] = { tot_fdp: relative, std_fdp: 0 };
+                    } else {
+                        finalObject[finalUpdate[i]] = { tot_fdp: relative, std_fdp: saved_std_fdp[finalUpdate[i]]['std_fdp'] }
+                    }
+                    //console.log(finalObject)
                 }
-                //console.log(finalObject)
 
             }
             firebase.database().ref('RELATIONSHIP').child(serialize(docName)).set(null).then(() => {
@@ -1331,7 +1158,7 @@ function friendMaker(content, docName) {
     });
 }
 
-function saveFunction(CONTENT, TITLE, HISTORY, LEVEL, REF, COMMENT) {
+function saveFunction(CONTENT, TITLE, HISTORY, LEVEL, REF, COMMENT, KEYWORD) {
 
     return new Promise(function (success, fail) {
         var BYTE = getByteLength(CONTENT);
@@ -1370,22 +1197,24 @@ function saveFunction(CONTENT, TITLE, HISTORY, LEVEL, REF, COMMENT) {
                 comment: COMMENT,
                 private: false,
             }).then(function () {
+                firebase.database().ref('KEYWORD').child(serialize(TITLE)).set(KEYWORD).then(() => {
 
-                if (REF.id != 'class' && REF.id != 'file') {
-                    logRef.child(TITLE).set({
-                        name: TITLE,
-                        time: t.getTime()
-                    }).catch(err => {
-                        console.log(err);
-                    }).then(() => {
+                    if (REF.id != 'class' && REF.id != 'file') {
+                        logRef.child(TITLE).set({
+                            name: TITLE,
+                            time: t.getTime()
+                        }).catch(err => {
+                            console.log(err);
+                        }).then(() => {
+                            success();
+                            // loadLog({ source: 'server' }).then(() => {
+                            //     success();
+                            // });
+                        })
+                    } else {
                         success();
-                        // loadLog({ source: 'server' }).then(() => {
-                        //     success();
-                        // });
-                    })
-                } else {
-                    success();
-                }
+                    }
+                });
             });
         });
     });
