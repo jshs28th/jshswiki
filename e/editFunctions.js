@@ -1084,37 +1084,28 @@ function cardGrammar(text, num) {
 //num 5는 분류 문서 편집할 때 미리보기에 사용
 //num 6도 분류에서 사용
 
-
 //키워드 받아오기
 var keywordObject = {};
 
 function addKeyword(keyword) {
     //console.log(keyword);
     keyword = keyword.replace(/&lt;/g, '<');
-    var keywordList = keyword.split(/(?:<|>| |\(|\)|\[|\]|{|}|\||\.|\/|#|\$|:|\?|,)/g);
+    var keywordList = keyword.split(/(?:>|<| |\[|\(|\)|\]|{|}|\||\.|\/|#|\$|:|\?|,)/g);
 
-    // var abcd = [];
-    // for (var i = 0; i < keywordList.length; i++) {
-    //     console.log(keywordList[i].split(/ /));
-    //     if (keywordList[i].split(/ /).length > 1) {
-    //         abcd = abcd.concat(keywordList[i].split(/ /));
-    //     }
-    // }
-
-    // keywordList = keywordList.concat(abcd);
-
-    for (var i = 0; i < keywordList.length; i++) {
-        if (keywordList[i].length >= 1 && keywordList[i].search(/\\/g) == -1) {
-            if (keywordObject[keywordList[i]] != undefined) {
-                var count = keywordObject[keywordList[i]];
-                keywordObject[keywordList[i]] = count + 1;
+    if (keywordList == keyword) {
+        if (keyword.length >= 2 && keyword.search(/\\/g) == -1) {
+            if (keywordObject[keyword] != undefined) {
+                var count = keywordObject[keyword];
+                keywordObject[keyword] = count + 1;
             } else {
-                keywordObject[keywordList[i]] = 1;
+                keywordObject[keyword] = 1;
             }
         }
+    } else {
+        for (var i = 0; i < keywordList.length; i++) {
+            addKeyword(keywordList[i]);
+        }
     }
-
-    console.log(keywordObject);
 }
 
 function grammar(text, num) {
@@ -1421,8 +1412,6 @@ $("#saveBtn").off('click').on('click', function () {
                                     classRef.child(onlyDocName).child('history').once('value', function (snap) {
                                         classRef.child(onlyDocName).child('history').set(snap.val() + 1).then(() => {
                                             classGrammar(editTxt + realClassContent, 6).then(text => {
-
-                                                addKeyword($('#titleH1').text());
                                                 saveDoc(noGrammar(text, 1), keywordObject);
                                             });
                                         });
@@ -1430,7 +1419,6 @@ $("#saveBtn").off('click').on('click', function () {
 
                                 } else {
                                     grammar(editTxt, 1).then(text => {
-                                        addKeyword($('#titleH1').text());
                                         saveDoc(text, keywordObject);
                                     });
                                 }
