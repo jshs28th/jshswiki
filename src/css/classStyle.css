@@ -1,0 +1,272 @@
+/* 미리 만들어 자주 쓰는 것들 */
+/* 근데 거의 안씀...ㅋㅋ */
+
+.container {
+    display: flex;
+}
+
+.inBlock {
+    display: inline-block;
+}
+
+.fn {
+    flex: none;
+}
+
+.fa {
+    flex: auto;
+}
+
+.hidden {
+    display: none;
+}
+
+.whiteBlock {
+    background-color: white;
+    border: rgb(199, 199, 199) solid .1rem;
+}
+
+.greyBlock {
+    background-color: rgb(240, 240, 240);
+    border: rgb(200, 200, 200) dashed .15rem;
+}
+
+.F1 {
+    font-size: 1rem;
+}
+
+.F2 {
+    font-size: 2rem;
+}
+
+.F3 {
+    font-size: 3rem;
+}
+
+.F5 {
+    font-size: 5rem;
+}
+
+.F7 {
+    font-size: 7rem;
+}
+
+.F9 {
+    font-size: 9rem;
+}
+
+.F11 {
+    font-size: 11rem;
+}
+
+/* padding */
+
+.P0 {
+    padding: 0;
+}
+
+.P05 {
+    padding: .5rem;
+}
+
+.P1 {
+    padding: 1rem;
+}
+
+.PP1 {
+    padding: 1%;
+}
+
+.PP2 {
+    padding: 2%;
+}
+
+.TBP05 {
+    padding: .5rem 0;
+}
+
+.TBP1 {
+    padding: 1rem 0;
+}
+
+.TP05 {
+    padding-top: .5rem;
+}
+
+.TP1 {
+    padding-top: 1rem;
+}
+
+.BP05 {
+    padding-top: .5rem;
+}
+
+.BP1 {
+    padding-top: 1rem;
+}
+
+/* margin */
+
+.M0 {
+    margin: 0;
+}
+
+.M05 {
+    margin: .5rem;
+}
+
+.M1 {
+    margin: 1rem;
+}
+
+.MA {
+    margin: auto;
+}
+
+.MM1 {
+    margin: 1%;
+}
+
+.MM2 {
+    margin: 2%;
+}
+
+.TBM05 {
+    margin: .5rem 0;
+}
+
+.TBM1 {
+    margin: 1rem 0;
+}
+
+.TM05 {
+    margin-top: 0.5rem;
+}
+
+.TM1 {
+    margin-top: 1rem;
+}
+
+.TMA {
+    margin-top: auto;
+}
+
+.BM05 {
+    margin-bottom: 0.5rem;
+}
+
+.BM1 {
+    margin-bottom: 1rem;
+}
+
+.BMA {
+    margin-bottom: auto;
+}
+
+/* 너비 */
+
+.W30 {
+    width: 30rem;
+}
+
+.W50 {
+    width: 50rem;
+}
+
+.W70 {
+    width: 70rem;
+}
+
+.W90 {
+    width: 90rem;
+}
+
+.W110 {
+    width: 110rem;
+}
+
+.WW10 {
+    width: 10%;
+}
+
+.WW20 {
+    width: 20%;
+}
+
+.WW30 {
+    width: 30%;
+}
+
+.WW40 {
+    width: 40%;
+}
+
+.WW50 {
+    width: 50%;
+}
+
+.WA {
+    width: auto;
+}
+
+.WM {
+    width: max-content;
+}
+
+.WW {
+    width: -webkit-fill-available;
+}
+
+.MWW {
+    max-width: -webkit-fill-available;
+}
+
+/* 높이 */
+
+.H30 {
+    height: 30rem;
+}
+
+.H50 {
+    height: 50rem;
+}
+
+.H70 {
+    height: 70rem;
+}
+
+.H90 {
+    height: 90rem;
+}
+
+.H110 {
+    height: 110rem;
+}
+
+.HH10 {
+    height: 10%;
+}
+
+.HH20 {
+    height: 20%;
+}
+
+.HH30 {
+    height: 30%;
+}
+
+.HH40 {
+    height: 40%;
+}
+
+.HH50 {
+    height: 50%;
+}
+
+.HM {
+    height: max-content;
+}
+
+.HW {
+    height: -webkit-fill-available;
+}

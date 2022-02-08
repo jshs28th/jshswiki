@@ -1,0 +1,2 @@
+<?php
+readfile('allDoc.txt');

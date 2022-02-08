@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <!-- metadata -->
+    <meta charset="utf-8">
+    <title>전곽위키</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="숨겨두었던 전곽위키">
+    <link href="../src/img/icon2.png" rel="shortcut icon" type="image/x-icon">
+
+    <!-- css -->
+    <link rel="stylesheet" href="searchStyle.css" />
+    <link rel="stylesheet" href="../src/css/wikiStyle.css" />
+    <link rel="stylesheet" href="../src/css/metaStyle.css" />
+    <link rel="stylesheet" href="../src/css/classStyle.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@1.0/nanumsquare.css">
+
+    <!-- script -->
+    <script src="../src/js/jquery-3.4.1.min.js"></script>
+    <script src="https://unpkg.com/hangul-js" type="text/javascript"></script>
+    <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_HTMLorMML&delayStartupUntil=configured">
+        MathJax.Hub.Config({
+            TeX: {
+                equationNumbers: {
+                    autoNumber: "AMS"
+                }
+            },
+            tex2jax: {
+                inlineMath: [
+                    ['$', '$']
+                ],
+                displayMath: [
+                    ['$$', '$$']
+                ],
+                processEscapes: true,
+            }
+        });
+    </script>
+
+
+</head>
+
+
+<!-- id를 가장 앞에 쓰고 그 뒤에 class 그 뒤에 나머지 속성을 쓴다. -->
+<!-- id는 거의 모두 쓰되 각 역할을 앞에, 태그의 이름을 뒤에 붙여 쓴다. -->
+<!-- 예외로 input중 text는 Txt로 button은 Btn으로 쓴다. -->
+
+<body>
+
+    <div id="loginDiv" class="container">
+        <!-- 로그인 전 -->
+        <div id="signInDiv" class="whiteBlock container hidden">
+            <p>로그인</p>
+            <hr>
+
+            <form>
+                <input id="idTxt" class="signInput" type="text"
+                    onkeydown="javascript:if(event.keyCode == 13){signIn($('#idTxt').val(), $('#pwTxt').val());}"
+                    placeholder="아이디">
+                <input id="pwTxt" class="signInput" type="password"
+                    onkeydown="javascript:if(event.keyCode == 13){signIn($('#idTxt').val(), $('#pwTxt').val());}"
+                    placeholder="비밀번호">
+            </form>
+
+            <button id="signInBtn" class="signBtn" onclick="signIn($('#idTxt').val(), $('#pwTxt').val())">로그인</button>
+        </div>
+
+        <!-- 로딩중 -->
+        <div id="authLoadDiv" class="whiteBlock container">
+            <hr>
+            <p>LOADING...</p>
+            <hr>
+        </div>
+
+    </div>
+
+    <!-- header -->
+    <header class="container">
+
+        <!-- 로고 이미지 -->
+        <div>
+            <span id="logoImg" onclick="javascript:location.href='../w/전곽위키:대문'">전곽위키</span>
+            <span style="color: rgb(80, 0, 255);
+        font-size: 2rem;
+        position: relative;
+        top: 1rem;
+        width: 1.5rem;">beta</span>
+        </div>
+        <!-- <img id="logoImg" src="../src/img/icon.png" alt="logo" onclick="javascript:location.href='전곽위키:대문'" /> -->
+
+        <!-- 검색 관련 -->
+        <div id="searchDiv" class="container">
+            <input id="searchTxt" type="search" autocomplete="off" onkeydown="autoUpDown(event.keyCode)" />
+            <button id="searchBtn">검색</button>
+        </div>
+
+    </header>
+
+    <!-- navigation -->
+    <nav class="container">
+
+        <div id="navDiv" class="container">
+            <!-- 업로드 버튼 -->
+            <label for="uploadInput" class="navBtn">업로드</label>
+            <input id="uploadInput" class="hidden" type="checkbox">
+
+            <!-- 업로드 관련 태그들 -->
+            <div id="uploadDiv" class="container" style="margin-right:1rem">
+                <label for="fileInput"
+                    onclick="if($('#uploadDiv > label').text() != '파일 선택') { uploadFile(); return false;}">파일 선택</label>
+                <input id="fileInput" class="hidden" name="file" type="file" onchange="changeFile(this.files)">
+                <p id="checkFileP" class="hidden"></p>
+            </div>
+
+            <!-- 랜덤문서 버튼 -->
+            <label for="randomInput" class="navBtn" id="randomLabel">랜덤문서</label>
+            <input id="randomInput" class="hidden" type="checkbox">
+
+            <!-- 랜덤문서 관련 태그들 -->
+            <div id="randomDiv" class="container"></div>
+
+        </div>
+
+    </nav>
+
+    <!-- section -->
+    <section class="container">
+
+        <!-- article -->
+        <article class="whiteBlock container">
+            <!-- 검색 결과 나오는 곳 -->
+        </article>
+
+
+        <!-- aside -->
+        <aside class="container">
+            <div>
+
+                <!-- 로그인 후 -->
+                <div id="authDiv" class="whiteBlock container hidden asideDiv">
+                    <p id="nickP">익명</p>
+                    <hr>
+                    <button id="signOutBtn" class="signBtn" onclick="signOut()">로그아웃</button>
+                </div>
+
+                <!-- 관련된 문서 -->
+                <!-- <div id="relDiv" class="whiteBlock container asideDiv">
+
+                    <p>관련된 문서</p>
+                    <hr>
+
+                </div> -->
+
+                <!-- 기여도 순위 -->
+                <div id="rankDiv" class="whiteBlock container asideDiv">
+
+                    <p>기여도 순위</p>
+                    <hr>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- 수정된 문서 -->
+            <div id="logDiv" class="whiteBlock container asideDiv">
+                <p>수정된 문서</p>
+                <hr>
+            </div>
+
+        </aside>
+
+    </section>
+
+    <!-- footer -->
+    <footer class="container">
+        <div class="container">
+            <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/2.0/kr/">
+                <img alt="크리에이티브 커먼즈 라이선스" style="border-width:0"
+                    src="https://i.creativecommons.org/l/by-nc-sa/2.0/kr/88x31.png" />
+            </a>
+            <p>
+                <strong><a href="전곽위키:대문">전곽위키</a></strong> made by <strong>projCORONA</strong>
+            </p>
+        </div>
+    </footer>
+
+    <!-- firebase -->
+    <script src="https://www.gstatic.com/firebasejs/7.8.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.8.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.8.1/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.8.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.8.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.8.1/firebase-storage.js"></script>
+
+    <!-- scripts -->
+    <script src="../src/js/wikiFunctions.js"></script>
+    <script src="searchFunctions.js"></script>
+    <script>
+        loading(true);
+        loadRank();
+        loadLog();
+    </script>
+
+
+</body>
+
+</html>
