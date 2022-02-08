@@ -983,6 +983,7 @@ function mathGrammar(text, num) {
 //틀 불러오기 문법
 
 var oldFrameList = [];
+
 function frameGrammar(text, num) {
     return new Promise((resolve, reject) => {
         if (num == 0 || num == 2) {
@@ -1032,7 +1033,9 @@ function findFrame(frameNameList, matchNum, loopNum, num, changeTxt) {
         if (loopNum == matchNum) {
             resolve(changeTxt);
         } else {
-            firebase.firestore().collection('document').doc('frame').collection('틀:' + frameNameList[loopNum]).orderBy('history', 'desc').limit(1).get({ source: 'server' }).then(value => {
+            firebase.firestore().collection('document').doc('frame').collection('틀:' + frameNameList[loopNum]).orderBy('history', 'desc').limit(1).get({
+                source: 'server'
+            }).then(value => {
                 //console.log(value);
                 if (value.empty) {
                     alert('틀:' + frameNameList[loopNum] + ' 문서가 존재하지 않습니다.');
@@ -1081,6 +1084,7 @@ function cardGrammar(text, num) {
 //num 5는 분류 문서 편집할 때 미리보기에 사용
 //num 6도 분류에서 사용
 
+//키워드 받아오기
 var keywordObject = {};
 
 function addKeyword(keyword) {
@@ -1343,7 +1347,9 @@ $("#saveBtn").off('click').on('click', function () {
 
         checkLevel().then(userLevel => {
 
-            wikiCol.collection($('#titleH1').text()).orderBy('history', 'desc').limit(1).get({ source: 'server' }).then(snapshot => {
+            wikiCol.collection($('#titleH1').text()).orderBy('history', 'desc').limit(1).get({
+                source: 'server'
+            }).then(snapshot => {
 
                 if (!snapshot.empty) {
                     level = snapshot.docs[0].data().level;
@@ -1384,7 +1390,9 @@ $("#saveBtn").off('click').on('click', function () {
                     if (confirm("저장하시겠습니까?\n\n문서를 저장하게 되면 당신이 기여한 내용을 CC-BY-NC-SA 2.0으로 배포하는 것과 주소만으로 출처를 밝히는 데에 동의하는 것으로 간주합니다. 동의는 철회할 수 없습니다.")) {
 
                         loading(true);
-                        wikiCol.collection(fullName).orderBy('history', 'desc').limit(1).get({ source: 'server' }).then(field => {
+                        wikiCol.collection(fullName).orderBy('history', 'desc').limit(1).get({
+                            source: 'server'
+                        }).then(field => {
                             var nowHistoryNum = 0;
                             if (!field.empty) {
                                 nowHistoryNum = field.docs[0].data().history;

@@ -2,7 +2,7 @@ $("#editBtn").click(function () {
     if (docPrivate) {
         alert('숨김 처리된 문서입니다.');
     } else {
-        if (level == 7) {
+        if (false) {
 
             alert('학생 문서보다는 학술적인 문서를 만들어야 하지 않을까요??\n당분간 학생 문서는 편집이 불가합니다.');
 

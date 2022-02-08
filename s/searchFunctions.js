@@ -149,6 +149,7 @@ function searchMaker() {
 
             }).then(() => {
                 console.log(searchedObject) //{문서의 시리얼: 검색어를 가지고 있는 개수, 시리얼: 개수, .....} 요렇게 나오면 됨
+
                 var totalList = new Set(); //검색된 문서와 연관된 문서(검색어를 포함하든 안하든)를 다 모음 중복 없이
                 var addedList = new Set(); //검색어가 없는 문서지만 연관된 문서 즉 새롭게 추가될 문서들만 모음
                 for (searchedDoc in searchedObject) {
@@ -256,7 +257,6 @@ function searchMaker() {
                 }
                 console.log(resultList)
                 resolve(resultList); //이게 결과 리스트 [[씨리얼,중요도],[씨리얼,중요도],....] 이렇게 나온다. 조원희 일해라
-
             })
         });
     });
