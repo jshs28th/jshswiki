@@ -1,366 +1,353 @@
-
-
-function abc() {
-    userLoop(0).then(() => {
-        console.log('done');
-    })
-}
-
-function userLoop(i) {
-    return new Promise(resolve => {
-        if (autoDocList[i] == undefined) {
-            resolve();
-        } else {
-            if (autoDocList[i].search(/.+\(28기\)/g) != -1) {
-                firebase.firestore().collection('document').doc('user').collection(autoDocList[i]).orderBy('history', 'desc').limit(1).get().then(snap => {
-                    firebase.firestore().collection('document').doc('user').collection(autoDocList[i]).doc(snap.docs[0].id).update({
-                        private: true
-                    }).then(() => {
-                        console.log(autoDocList[i]);
-                        userLoop(i + 1).then(() => {
-                            resolve();
-                        });
-                    });
-                });
-            } else {
-                userLoop(i + 1).then(() => {
-                    resolve();
-                });
-            }
-        }
-    });
-}
-
-
-
-
+MathJax = {
+  tex: {
+    inlineMath: [
+      ['$|', '|$']
+    ],
+    displayMath: [
+      ['$$|', '|$$']
+    ]
+  }
+};
 
 //로딩중 함수
 var load = 0;
+
 function loading(now) {
-    if (now) {
+  if (now) {
+    if (load == 0) {
+      //로딩시작
+      //console.log('loading start');
+      $('#uploadDiv').css('opacity', 0);
 
-        if (load == 0) {
-            //로딩시작
-            //console.log('loading start');
-            $('#uploadDiv').css('opacity', 0);
 
-
-            $('#loginDiv').removeClass('hidden');
-        }
-        load = load + 1;
-        //console.log(load);
-    } else {
-        load = load - 1;
-        //console.log(load);
-        if (load == 0) {
-
-            //console.log('loading end');
-            $('#uploadDiv').css('opacity', 1);
-
-            //$('#loginDiv').addClass('hidden');
-            MathJax.Hub.Configured();
-        }
+      $('#loginDiv').removeClass('hidden');
     }
+    load = load + 1;
+    //console.log(load);
+  } else {
+    load = load - 1;
+    if (load < 0) {
+      load = 0;
+    }
+    //console.log(load);
+    if (load == 0) {
+
+      //console.log('loading end');
+      $('#uploadDiv').css('opacity', 1);
+
+      $('#loginDiv').addClass('hidden');
+    }
+  }
+}
+
+//시간을 받아서 형식화시킴
+function timeFormat(time) {
+  return time.getFullYear() + '/' + (time.getMonth() + 1) + '/' + time.getDate() + ' ' + time.getHours() + ':' + time.getMinutes();
 }
 
 //바이트 구하는 함수
 function getByteLength(s, b, i, c) {
-    for (b = i = 0; c = s.charCodeAt(i++); b += c >> 11 ? 3 : c >> 7 ? 2 : 1);
-    return b;
+  for (b = i = 0; c = s.charCodeAt(i++); b += c >> 11 ? 3 : c >> 7 ? 2 : 1);
+  return b;
 }
 
 //신고 확인하기
 function checkReport() {
-    checkLevel().then(() => {
-        if (userLevel >= 15) {
-            reportRef.once('value', function (snapshot) {
-                snapshot.forEach(function (value) {
-                    console.log(value.key);
-                    console.log(value.val());
-                });
-            });
-        }
-    });
+  checkLevel().then(() => {
+    if (userInfo.level >= 20) {
+      reportRef.once('value', function (snapshot) {
+        snapshot.forEach(function (value) {
+          console.log(value.key);
+          console.log(value.val());
+        });
+      });
+    }
+  });
 }
 
 //신고 삭제하기 (완료된 신고처리)
 function deleteReport(time) {
-    checkLevel().then(() => {
-        if (userLevel >= 15) {
-            reportRef.child(time).set(null).then(() => {
-                console.log('완료');
-            });
-        }
-    });
+  checkLevel().then(() => {
+    if (userInfo.level >= 20) {
+      reportRef.child(time).set(null).then(() => {
+        console.log('완료');
+      });
+    }
+  });
 }
 
 //경고 주기
-function addWarn() {
-    checkLevel().then(() => {
-        if (userLevel >= 15) {
-            var name = prompt('본명?');
-            var gisu = prompt('기수?');
-            userRef.child(gisu).child(name).child('warn').once('value', function (warn) {
-                userRef.child(gisu).child(name).child('warn').set(warn.val() + 1).then(() => {
-                    console.log(name + '의 경고를 ' + Number(warn.val() + 1) + '로 바꾸었습니다.');
-                });
-            });
-        }
-    });
+function addWarn(name, add) {
+  checkLevel().then(() => {
+    if (userInfo.level >= 20) {
+      if (!isNaN(add)) {
+        userRef.child(name).child('warn').once('value', function (warn) {
+          userRef.child(name).child('warn').set(warn.val() + add).then(() => {
+            if (Number(warn.val() + add) >= 3) {
+              var dt = new Date();
+              userRef.child(name).child('time').set(dt.getTime() + (2 ** (warn.val() + add - 2)) * 86400000).then(() => {
+
+                alert(name + '의 경고 횟수를 ' + Number(warn.val() + add) + '(으)로 바꾸었습니다.\n' +
+                  name + '의 계정이 ' + (2 ** (warn.val() + add - 2)) + '일간 차단됩니다.');
+              });
+            } else {
+              alert(name + '의 경고 횟수를 ' + Number(warn.val() + add) + '(으)로 바꾸었습니다.');
+            }
+          });
+        });
+      }
+    }
+  });
 }
+
+
+
 
 //검색 관련 작업들!//검색 관련 작업들!//검색 관련 작업들!//검색 관련 작업들!//검색 관련 작업들!//검색 관련 작업들!
 $("#searchBtn").click(function () {
-    window.location.href='../s/' + $('#searchTxt').val();
-    
+  search();
+
 });
 
+function search() {
+  //console.log(autoCompleteNum);
+  if (autoCompleteNum == 0) {
+    var inputT = $("#searchTxt").val();
+    var autoT = $("#auto_1>a").text();
+    if (inputT.toUpperCase().replace(/ /g, '') == autoT.toUpperCase().replace(/ /g, '')) {
+      var input = $("#auto_1>a").text();
+      //console.log(input);
+      movePage(input, '', '', 'w');
+    } else {
+      var input = $("#searchTxt").val();
+      //console.log(input);
+      movePage(input, '', '', 's');
+    }
+  } else {
+    var input = $("#auto_" + autoCompleteNum + '>a').text();
+    //console.log(input);
+    movePage(input, '', '', 'w');
+  }
 
-
-// function search() {
-
-//    if (autoCompleteNum == 0) {
-//        var inputT = $("#searchTxt").val();
-//        var autoT = $("#auto_1>a").text();
-//        if (inputT.toUpperCase().replace(/ /g, '') == autoT.toUpperCase().replace(/ /g, '')) {
-//            var input = $("#auto_1>a").text();
-//        } else {
-//            var input = $("#searchTxt").val();
-//        }
-//    } else {
-//        var input = $("#auto_" + autoCompleteNum + '>a').text();
-//    }
-
-//    var s = input.replace(" ", "%20");
-
-//    window.location.replace("../w/" + s);
-
-// }
+}
 
 
 var autoCompleteNum = 0;
+
 function autoUpDown(kc) {
 
-    if (kc == 13) {
-        //엔터
-        search();
-    } else if (kc == 38) {
-        //위 방향키
-        if (autoCompleteNum > 1) {
-            $('#auto_' + autoCompleteNum).removeClass('choiceUpDown');
-            autoCompleteNum -= 1;
-            $('#auto_' + autoCompleteNum).addClass('choiceUpDown');
-        } else if (autoCompleteNum == 1) {
-            autoCompleteNum -= 1;
-            $('#auto_1').removeClass('choiceUpDown');
-            $('#searchTxt')[0].setSelectionRange(0, $('#searchTxt').val().length);
-        }
-    } else if (kc == 40) {
-        //아래 방향키
-        if ($('#auto_' + Number(autoCompleteNum + 1)).length == 1) {
-            console.log('#auto_' + Number(autoCompleteNum + 1));
-            console.log($('#auto_' + Number(autoCompleteNum + 1)).length);
-            if (autoCompleteNum == 0) {
-                autoCompleteNum += 1;
-                $('#auto_' + autoCompleteNum).addClass('choiceUpDown');
-            } else {
-                $('#auto_' + autoCompleteNum).removeClass('choiceUpDown');
-                autoCompleteNum += 1;
-                $('#auto_' + autoCompleteNum).addClass('choiceUpDown');
-            }
-        }
+  if (kc == 13) {
+    //엔터
+    search();
+  } else if (kc == 38) {
+    //위 방향키
+    if (autoCompleteNum > 1) {
+      $('#auto_' + autoCompleteNum).removeClass('choiceUpDown');
+      autoCompleteNum -= 1;
+      $('#auto_' + autoCompleteNum).addClass('choiceUpDown');
+    } else if (autoCompleteNum == 1) {
+      autoCompleteNum -= 1;
+      $('#auto_1').removeClass('choiceUpDown');
+      $('#searchTxt')[0].setSelectionRange(0, $('#searchTxt').val().length);
     }
+  } else if (kc == 40) {
+    //아래 방향키
+    if ($('#auto_' + Number(autoCompleteNum + 1)).length == 1) {
+      //console.log('#auto_' + Number(autoCompleteNum + 1));
+      //console.log($('#auto_' + Number(autoCompleteNum + 1)).length);
+      if (autoCompleteNum == 0) {
+        autoCompleteNum += 1;
+        $('#auto_' + autoCompleteNum).addClass('choiceUpDown');
+      } else {
+        $('#auto_' + autoCompleteNum).removeClass('choiceUpDown');
+        autoCompleteNum += 1;
+        $('#auto_' + autoCompleteNum).addClass('choiceUpDown');
+      }
+    }
+  }
 }
 
 //검색어 자동 완성
-var autoDocList = new Array();
-$(document).ready(function () {
-    $.post('../src/php/auto.php', function (documents) {
-
-        autoDocList = documents.split(' ').sort();
-
-    });
-});
-
 var matchList;
 //propertychange change keyup paste input
 $('#searchTxt').on("change keyup paste", function () {
-    var keycode = event.keyCode;
-    console.log(keycode);
-    if (keycode != 40 && keycode != 38) {
-        //$(this).focusout();
-        autoCompleteNum = 0;
-        $('#auto_1').remove();
-        $('#auto_2').remove();
-        $('#auto_3').remove();
-        $('#auto_4').remove();
-        $('#auto_5').remove();
-        $('#auto_6').remove();
+  var keycode = event.keyCode;
+  //console.log(keycode);
+  if (keycode != 40 && keycode != 38) {
+    //$(this).focusout();
+    changeKey();
 
-        var input = $('#searchTxt').val();
-
-        if (input != '') {
-            //console.log("현재 검색어 => "+input);
-            matchList = new Array();
-            //var matchRangeList = new Array();
-            for (var i = 0; autoDocList.length > i; i++) {
-
-                if (Hangul.search(autoDocList[i].replace(/%20/g, '').toUpperCase(), input.replace(/ /g, '').toUpperCase()) != -1) {
-                    matchList.push(autoDocList[i]);
-                    //console.log(matchList);
-                    //matchRangeList.push(Hangul.rangeSearch(autoDocList[i], input.replace(/ /g, '%20')));
-                }
-
-                if (matchList.length >= 6) {
-                    break;
-                }
-            }
-
-            matchList.forEach(function (val, index) {
-
-                var width = window.innerWidth || document.body.clientWidth;
-                var top = 0;
-                if (width <= 800) {
-                    top = index * 4.2 + 16;
-                } else {
-                    top = index * 4.5 + 13;
-                }
-                $('#searchDiv').append('<div id="auto_' + (index + 1) + '" style="top:' +
-                    top + 'rem;"><a href="../w/' + val + '">' +
-                    val.replace(/%20/g, ' ') + '</a></div>');
-            });
-        }
-    } else if (keycode == 40) {
-        //이상하게도 오류가 생겨서 필요함.
-        if (autoCompleteNum == 0) {
-            if (!$('#auto_1').hasClass('choiceUpDown')) {
-                autoUpDown(40);
-            }
-        }
-
+  } else if (keycode == 40) {
+    //이상하게도 오류가 생겨서 필요함.
+    if (autoCompleteNum == 0) {
+      if (!$('#auto_1').hasClass('choiceUpDown')) {
+        autoUpDown(40);
+      }
     }
+
+  }
 });
+
+function changeKey() {
+  autoCompleteNum = 0;
+  $('#auto_1').remove();
+  $('#auto_2').remove();
+  $('#auto_3').remove();
+  $('#auto_4').remove();
+  $('#auto_5').remove();
+  $('#auto_6').remove();
+
+  var input = $('#searchTxt').val();
+
+  if (input != undefined) {
+    //console.log("현재 검색어 => " + input);
+    matchList = new Array();
+    for (var i = 0; docNote.length > i; i++) {
+
+      if (Hangul.search(docNote[i].replace(/ /g, '').toUpperCase(), input.replace(/ /g, '').toUpperCase()) != -1) {
+        matchList.push(docNote[i]);
+      }
+    }
+
+    //자동완성된 검색어들을 정렬
+    matchList.sort(function (a, b) {
+      //검색어 내에 원하는 검색어가 앞에 있을수록 순위가 높음.
+      if (Hangul.search(a, input) > Hangul.search(b, input)) {
+        return 1;
+      } else if (Hangul.search(a, input) < Hangul.search(b, input)) {
+        return -1;
+      } else {
+        //위치가 같다면 길이가 더 짧은 검색어가 순위가 높음.
+        if (a.length < b.length) {
+          return -1;
+        } else if (a.length > b.length) {
+          return 1;
+        } else {
+          //길이마저 같다면 아스키 순서로
+          if (a > b) {
+            return 1;
+          } else if (a < b) {
+            return -1;
+          } else {
+            //이럴 수는 없다.
+            return 0;
+          }
+        }
+      }
+    });
+
+    matchList.splice(5);
+
+    //console.log(matchList);
+
+    matchList.forEach(function (val, index) {
+
+      var width = window.innerWidth || document.body.clientWidth;
+      var top = 0;
+      if (width <= 800) {
+        top = index * 4.2 + 14;
+      } else {
+        top = index * 4.5 + 11;
+      }
+      $('#searchDiv').append('<div id="auto_' + (index + 1) + '" style="top:' +
+        top + 'rem;"><a href="w/' + val + '">' +
+        val.replace(/%20/g, ' ') + '</a></div>');
+    });
+
+    addAnchorEventListener();
+  }
+}
 
 var autoHref;
 
 $(document).on("mouseenter", "div[id^=auto]", function () {
-    $(this).children('a').addClass('autoHover');
-    autoHref = $('.autoHover').attr('href');
+  $(this).children('a').addClass('autoHover');
+  autoHref = $('.autoHover').attr('href').split('/').slice(1).join('/');
 });
 
 $(document).on("mouseleave", "div[id^=auto]", function () {
-    $(this).children('a').removeClass('autoHover');
-    autoHref = $('.autoHover').attr('href');
+  $(this).children('a').removeClass('autoHover');
+  autoHref = undefined;
 });
 
 
-$(document).on('blur', '#searchTxt', function () {
-    if (autoHref != undefined) {
-        location.href = autoHref;
-    } else {
-        $('#auto_1').remove();
-        $('#auto_2').remove();
-        $('#auto_3').remove();
-        $('#auto_4').remove();
-        $('#auto_5').remove();
-        $('#auto_6').remove();
-    }
+$('#searchTxt').on('blur', function () {
+  if (autoHref == undefined) {
+
+    $('#auto_1').remove();
+    $('#auto_2').remove();
+    $('#auto_3').remove();
+    $('#auto_4').remove();
+    $('#auto_5').remove();
+    $('#auto_6').remove();
+  } else {
+    movePage(autoHref, '', '', 'w');
+  }
 });
 
-$(document).on('focus', '#searchTxt', function () {
-    if (matchList != undefined) {
-        matchList.forEach(function (val, index) {
-
-            var width = window.innerWidth || document.body.clientWidth;
-            var top = 0;
-            if (width <= 800) {
-                top = index * 4.2 + 16;
-            } else {
-                top = index * 4.5 + 13;
-            }
-
-            $('#searchDiv').append('<div id="auto_' + (index + 1) + '" style="top:' +
-                top + 'rem;"><a href="../w/' + val + '">' +
-                val.replace(/%20/g, ' ') + '</a></div>');
-        });
-    }
+$('#searchTxt').on('focus', function () {
+  changeKey();
 });
 
 
+var isC = true;
 //랜덤문서
 $('#randomLabel').on('click', function () {
+  isC = true;
+  console.log(isC);
+  if (!$('#randomInput').is(':checked')) {
+    $('#randomDiv').children().remove();
+    let count = docNote.length;
 
-    if (!$('#randomInput').is(':checked')) {
-        $('#randomDiv').children().remove();
-        var count = autoDocList.length;
-
-        var width = window.innerWidth || document.body.clientWidth;
-        if (width <= 600) {
-            var randomDoc = autoDocList[Math.floor(Math.random() * (count))];
-            if (randomDoc == '') {
-                randomDoc = '전곽위키:대문';
-            }
-            $('#randomDiv').append('<p style="margin:0 2rem" onclick="location.replace(`../w/' + randomDoc.replace(/%20/g, ' ') + '`);">'
-                + randomDoc.replace(/%20/g, ' ') + '</p>');
-        } else if (width <= 800) {
-            for (var i = 0; i < 2; i++) {
-                var randomDoc = autoDocList[Math.floor(Math.random() * (count))];
-                if (randomDoc == '') {
-                    randomDoc = '전곽위키:대문';
-                }
-
-                if (i == 0) {
-                    $('#randomDiv').append('<p style="margin-left: 2rem" onclick="location.replace(`../w/' + randomDoc.replace(/%20/g, ' ') + '`);">'
-                        + randomDoc.replace(/%20/g, ' ') + '</p>');
-                } else if (i == 1) {
-                    $('#randomDiv').append('<p style="margin:0 2rem" onclick="location.replace(`../w/' + randomDoc.replace(/%20/g, ' ') + '`);">'
-                        + randomDoc.replace(/%20/g, ' ') + '</p>');
-                }
-            }
-        } else {
-            for (var i = 0; i < 3; i++) {
-                var randomDoc = autoDocList[Math.floor(Math.random() * (count))];
-                if (randomDoc == '') {
-                    randomDoc = '전곽위키:대문';
-                }
-
-                if (i == 0 || i == 2) {
-                    $('#randomDiv').append('<p style="margin: 0 2rem" onclick="location.replace(`../w/' + randomDoc.replace(/%20/g, ' ') + '`);">'
-                        + randomDoc.replace(/%20/g, ' ') + '</p>');
-                } else if (i == 1) {
-                    $('#randomDiv').append('<p onclick="location.replace(`../w/' + randomDoc.replace(/%20/g, ' ') + '`);">'
-                        + randomDoc.replace(/%20/g, ' ') + '</p>');
-                }
-            }
+    // 77은 상관없는 숫자임.
+    if (Math.floor(Math.random() * 77) == 0) {
+      isC = false;
+      $('#randomDiv').append('<p class="adminNameSpan" onclick="javascript:isC = true; alert(`당신이 원하는 곳으로 인도하겠습니다...`); firebase.auth().signOut(); history.go(0);">눌러보고 싶지 아니한가</p>');
+      window.setTimeout(function () {
+        if (!isC) {
+          alert('A | E s e E g #1\ne->g->tmxjrm3');
         }
-        //location.replace('../w/' + randomDoc.replace(/%20/g, ' '));
+      }, 8000);
+    } else {
+      let width = window.innerWidth || document.body.clientWidth;
+
+      for (var i = 0; i < 3;) {
+        let randomDoc = docNote[Math.floor(Math.random() * (count))];
+        $('#randomDiv').append("<p onclick='movePage(`" + randomDoc + "`, ``, ``, `w`);'>" + randomDoc + '</p>');
+        if (width <= 800) {
+          i += 3;
+        } else if (width <= 1300) {
+          i += 2;
+        } else {
+          i += 1;
+        }
+      }
     }
+  }
 });
 
 //서버작업//서버작업//서버작업//서버작업//서버작업//서버작업//서버작업//서버작업//서버작업//서버작업
-var firebaseConfig = {
-    apiKey: "AIzaSyBo1n7N-LhS5DmtCSRqAIHcDeo6oT-heeA",
-    authDomain: "jshswiki.firebaseapp.com",
-    databaseURL: "https://jshswiki.firebaseio.com",
-    projectId: "jshswiki",
-    storageBucket: "jshswiki.appspot.com",
-    messagingSenderId: "100649838292",
-    appId: "1:100649838292:web:3b24692bb098faedff3d41",
-    measurementId: "G-445Q0P6WKK"
+const firebaseConfig = {
+  apiKey: "AIzaSyCQvwbRqPzW6td9QdibAaDaFDQNjs7idJw",
+  authDomain: "ideawiki-2020.firebaseapp.com",
+  databaseURL: "https://ideawiki-2020.firebaseio.com",
+  projectId: "ideawiki-2020",
+  storageBucket: "ideawiki-2020.appspot.com",
+  messagingSenderId: "903071152955",
+  appId: "1:903071152955:web:07ebba81b14fd511d5151e",
+  measurementId: "G-MSGMXBXMPL"
 };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 firebase.analytics();
-//firebase.firestore().enablePersistence();
 
-var jshsusConfig = {
-    apiKey: "AIzaSyDqRx5NGq7WqSNviytOnGg-_8QYRLqXYBw",
-    authDomain: "jshsus-6144b.firebaseapp.com",
-    databaseURL: "https://jshsus-6144b.firebaseio.com",
-    projectId: "jshsus-6144b",
-    storageBucket: "jshsus-6144b.appspot.com",
-    messagingSenderId: "709620057314"
+const jshsusConfig = {
+  apiKey: "AIzaSyDqRx5NGq7WqSNviytOnGg-_8QYRLqXYBw",
+  authDomain: "jshsus-6144b.firebaseapp.com",
+  databaseURL: "https://jshsus-6144b.firebaseio.com",
+  projectId: "jshsus-6144b",
+  storageBucket: "jshsus-6144b.appspot.com",
+  messagingSenderId: "709620057314"
 };
 
 var jshsus = firebase.initializeApp(jshsusConfig, "other");
@@ -373,1620 +360,2068 @@ var Pw;
 
 const jshsusUser = jshsus.database().ref('USER');
 
-function signIn(id, pw) {
+//qjxms zmfflr ghlttn
+var bcn = 0;
 
-    if (id == "" || pw == "") {
-        logErr("모든 항목을 채워 주세요.");
+var pw = '';
+var id = '';
+
+function signIn(_id, password) {
+
+  pw = password;
+  id = _id;
+
+  if (id == "" || pw == "") {
+    bcn += 1;
+    if (bcn == 6) {
+      alert('C | E,a,s,t,e,r,E,g,g #2\n/eeqr');
     } else {
-        //var continuelogged = $('#loginContinueCheck').is(':checked');
-        var emailCheckRegex = /^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
-
-        $('#signInDiv').addClass('hidden');
-        $('#authLoadDiv').removeClass('hidden');
-        if (emailCheckRegex.test(id)) {
-            realLogIn(id, pw);
-        } else {
-            jshsusUser.child('ID/' + id).once('value', function (snapshot) {
-                if (snapshot.val() == null) {
-                    alert('일치하는 회원정보가 존재하지 않습니다.\n전곽위키는 과구리의 계정과 연동됩니다.\n아직 과구리에 가입하지 않으셨다면 가입하고 다시 로그인 해 보세요.');
-                    $('#signInDiv').removeClass('hidden');
-                    $('#authLoadDiv').addClass('hidden');
-                } else {
-                    realLogIn(snapshot.val().email, pw);
-                }
-            });
-        }
+      alert("모든 항목을 채워 주세요.");
     }
+  } else {
+    //var emailCheckRegex = /^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+
+    $('#signInDiv').addClass('hidden');
+    $('#authLoadDiv').removeClass('hidden');
+    firebase.database().ref('ID').child(id).once('value', function (snap) {
+      if (snap.val() == null) {
+        jshsusUser.child('ID/' + id).once('value', function (snapshot) {
+          if (snapshot.val() == null) {
+            alert('일치하는 회원정보가 존재하지 않습니다.\n상상위키는 과구리의 계정과 연동됩니다.\n아직 과구리에 가입하지 않으셨다면 가입하고 다시 로그인 해 보세요.');
+            $('#signInDiv').removeClass('hidden');
+            $('#authLoadDiv').addClass('hidden');
+          } else {
+            jshsLogIn(snapshot.val().email, pw);
+          }
+        });
+      } else {
+        wikiLogIn(snap.val(), pw);
+      }
+    })
+  }
 }
 
-function realLogIn(email, pw) {
-    auth.signInWithEmailAndPassword(email, pw).catch(function (error) {
-        // Handle Errors here.
-        if (error.code == "auth/wrong-password") {
-            alert('아이디 또는 비밀번호가 일치하지 않습니다.');
-        } else if (error.code == "auth/user-not-found") {
-            alert('일치하는 회원정보가 존재하지 않습니다.\n전곽위키는 과구리의 계정과 연동됩니다.\n아직 과구리에 가입하지 않으셨다면 가입하고 다시 로그인 해 보세요.');
-        } else {
-            alert('예기치 않은 오류가 발생했습니다.\n잠시 후에 다시 이용해 주세요.');
-        }
-        $('#signInDiv').removeClass('hidden');
-        $('#authLoadDiv').addClass('hidden');
-    });
+function wikiLogIn(email, pw) {
+  firebase.auth().signInWithEmailAndPassword(email, pw).catch(function (error) {
+    if (error.code == "auth/wrong-password") {
+      alert('아이디 또는 비밀번호가 일치하지 않습니다.');
+    } else if (error.code == "auth/user-not-found") {
+      alert('일치하는 회원정보가 존재하지 않습니다.');
+    } else {
+      alert('예기치 않은 오류가 발생했습니다.\n잠시 후에 다시 이용해 주세요.');
+    }
+    $('#signInDiv').removeClass('hidden');
+    $('#authLoadDiv').addClass('hidden');
+  });
+}
+
+function jshsLogIn(email, pw) {
+  auth.signInWithEmailAndPassword(email, pw).catch(function (error) {
+    if (error.code == "auth/wrong-password") {
+      alert('아이디 또는 비밀번호가 일치하지 않습니다.');
+    } else if (error.code == "auth/user-not-found") {
+      alert('일치하는 회원정보가 존재하지 않습니다.\n상상위키는 과구리의 계정과 연동됩니다.\n아직 과구리에 가입하지 않으셨다면 가입하고 다시 로그인 해 보세요.');
+    } else {
+      alert('예기치 않은 오류가 발생했습니다.\n잠시 후에 다시 이용해 주세요.');
+    }
+    $('#signInDiv').removeClass('hidden');
+    $('#authLoadDiv').addClass('hidden');
+  });
 }
 
 function signCheck(txt1, txt2) {
-    if (txt1 != '' && txt2 != '') {
-        return true;
-    } else {
-        return false;
-    }
+  if (txt1 != '' && txt2 != '') {
+    return true;
+  } else {
+    return false;
+  }
 }
-
-//0: 게스트
-//1: 학생
-//2: 선생님
-//3: 자주 훼손되는 문서
-//5: 교편위
-//21: 전곽위키 부관리자
-//101: 전곽위키 관리자
-//3: 자주 훼손되는 문서
-//5: 특별한 사람
-//10: 교편위
-//15: 교편위보다도 특별한 사람
-//20: 부관리자?
-//100: 관리자
 
 //정보 불러오기
 const userRef = firebase.database().ref('USER');
-const rankRef = firebase.database().ref('RANK');
-var userLevel = 0;
-var userGisu = -1;
-var userName = '실명';
-var userNick = '별명';
-var userEdit = 0;
-var userWarn = 0;
-
-auth.onAuthStateChanged(function (user) {
-
-    console.log('로그인 중');
-    if (user) {
-        checkLevel().then(function () {
-
-            console.log('로그인 됨');
-            $("#signInDiv").addClass('hidden');
-            $("#loginDiv").addClass('hidden');
-            $('#authDiv').removeClass('hidden');
-            $("#loginDiv").addClass('hidden');
-
-        });
-    } else {
-        //로그아웃
-        userLevel = 0;
-        $('#authDiv').addClass('hidden');
-        $("#signInDiv").removeClass('hidden');
-        $("#loginDiv").removeClass('hidden');
-        $('#authLoadDiv').addClass('hidden');
-
-    }
-});
+var userInfo = {
+  level: 1,
+  warn: 0,
+  edit: 0,
+  private: 'true',
+  time: 0,
+  gisu: -1,
+  name: '익명',
+  nick: '<>익명<>',
+  full: '익명(99기)',
+  serial: 0 //토론에 쓰임
+};
 
 // 로그아웃
-function signOut() {
+function signOut(reason) {
 
+  if (reason == 'check') {
+    firebase.auth().signOut();
+    reasonOfMove = '로그아웃';
+    history.go(0);
+  } else {
     if (confirm('로그아웃 하시겠습니까?')) {
 
-        auth.signOut();
-        reasonOfMove = '로그아웃';
-        history.go(0);
+      firebase.auth().signOut();
+      reasonOfMove = '로그아웃';
+      history.go(0);
 
     }
+  }
 }
 
 function checkLevel() {
-    return new Promise(resolve => {
+  return new Promise(resolve => {
 
-        var title = $('#titleH1').text();
-        if (title.search(':') != -1) {
-            checkCol(title.split(':')[0], title.split(':')[1]);
+    console.log('checkLevel');
+
+    var user = firebase.auth().currentUser;
+
+    //유저가 존재하는지 확인
+    if (user == null) {
+      userInfo.level = 0;
+      resolve();
+    } else {
+
+      console.log('로그인 중 2');
+
+      //방금 정보를 가지고 위키유저의 정보에서 검색
+      userRef.child(user.uid).once('value', function (snap) {
+
+
+        if (snap.val() == null) {
+
+          console.log('newAccount');
+
+          //최초 로그인 한 경우
+
+          createUser(user).then(() => {
+            auth.signOut().then(() => {
+              movePage('상상위키:규정', '', '', 'w');
+              alert('처음 방문하셨군요! "상상위키:규정" 문서를 꼭 읽어주세요!');
+              resolve();
+            })
+          })
+
+
+
         } else {
-            checkCol('', title);
-        }
 
-        var user = jshsus.auth().currentUser;
-        if (user == null) {
-            userLevel = 0;
-            resolve(userLevel);
-        } else {
-            var email = user.email.split('.').join('%');
-            jshsusUser.child('EMAIL').child(email).once('value', function (snapshot) {
-                //console.log(snapshot.val());
-                userGisu = snapshot.val().gisu;
-                userName = snapshot.val().name;
+          //console.log('존재하던 계정임');
 
-                jshsusUser.child(userGisu).child(encodeURI(userName)).once('value', function (val) {
-                    var jshsInfo = val.val();
-                    userNick = jshsInfo.nick;
+          //비밀번호 제거
+          pw = '';
+
+          //기존 사용자
+
+          let gt = new Date();
+
+          userInfo = snap.val();
 
 
-                    userRef.child(userGisu).child(userName).once('value', function (val2) {
-                        rankRef.child(userName + '(' + userGisu + '기)').child('edit').once('value', function (val3) {
+          //차단 여부 확인
+          if (userInfo.warn > 2 && userInfo.time > gt.getTime()) {
+
+            let dt = new Date(userInfo.time);
+            alert('이 계정은 ' + (dt.getMonth() + 1) + '월 ' + dt.getDate() + '일까지 차단되었습니다.');
+            firebase.auth().signOut();
+            history.go(0);
+
+          } else {
+
+            if (userInfo.warn > 2) {
+              //차단 풀림
+              userRef.child(userInfo.uid).update({
+                warn: 2,
+                time: 0
+              }).then(() => {
+                alert('차단이 해제되었습니다. 다시 로그인해주세요.');
+                auth.signOut();
+                history.go(0);
+              });
+
+            } else {
+              //차단 상관 없을 때
 
 
+              //문서 숨김 해제 확인 절차
+              if (userInfo.time == -1) {
+                if (prompt('본인이 직접 문서 숨김을 해제하셨다면 "확인"을 입력해주세요') == "확인") {
+                  firebase.firestore().collection(String(serialize(userInfo.full))).orderBy('history', 'desc').limit(1).get().then(snap => {
+                    //console.log(snap.docs[0].data());
 
-                            //console.log(val2.val());
-                            if (val2.val() == null) {
-                                userLevel = Number(jshsInfo.level.split(',')[0]) + 1;
-
-                                if (userLevel == 2) {
-                                    //선생님
-                                    userLevel = 7;
-                                }
-
-                                userRef.child(userGisu).child(userName).set({
-                                    level: userLevel,
-                                    warn: 0,
-                                }).then(() => {
-                                    rankRef.child(userName + '(' + userGisu + '기)').set({
-                                        edit: 0
-                                    }).then(() => {
-                                        if (userGisu == 0 || userGisu == '0') {
-                                            $('#nickP').html(userNick + '(선생님)');
-                                        } else {
-                                            if (userLevel >= 15) {
-                                                $('#nickP').html('<span class="adminNameSpan"><b>' + userNick + '</b>(' + userGisu + '기)' + '</span>' + '<bn>' + '<span style="font-size:1.7rem">' + ' 기여도:' + val3.val() + '</span>');
-                                            } else if (userLevel >= 10) {
-                                                $('#nickP').html('<span style="color:rgb(50, 100, 255)"><b>' + userNick + '</b>(' + userGisu + '기)' + '</span>' + '<bn>' + '<span style="font-size:1.7rem">' + ' 기여도:' + val3.val() + '</span>');
-                                            } else if (userLevel >= 7) {
-                                                $('#nickP').html('<span style="color:rgb(105, 201, 192)"><b>' + userNick + '</b>(' + userGisu + '기)' + '</span>' + '<bn>' + '<span style="font-size:1.7rem">' + ' 기여도:' + val3.val() + '</span>');
-                                            } else {
-                                                $('#nickP').html(userNick + '(' + userGisu + '기)' + '<bn>' + '<span style="font-size:1.7rem">' + ' 기여도:' + val3.val() + '</span>');
-                                            }
-                                        }
-                                        resolve(userLevel);
-                                    });
-                                });
-
-                            } else {
-                                var userInfo = val2.val();
-                                userWarn = userInfo.warn;
-                                userLevel = userInfo.level;
-
-                                if (userWarn >= 2) {
-
-                                    alert('이 계정은 차단되었습니다.');
-                                    auth.signOut();
-                                    history.go(0);
-
-                                } else {
-
-                                    rankRef.child(userName + '(' + userGisu + '기)').once('value', function (data) {
-                                        userEdit = data.val().edit;
-                                        if (userGisu == 0 || userGisu == '0') {
-                                            $('#nickP').html(userNick + '(선생님)');
-                                        } else {
-                                            if (userLevel >= 15) {
-                                                $('#nickP').html('<span class="adminNameSpan"><b>' + userNick + '</b>(' + userGisu + '기)' + '</span>' + '<br>' + '<span style="font-size:1.7rem">' + ' 기여도:' + val3.val() + '</span>');
-                                            } else if (userLevel >= 10) {
-                                                $('#nickP').html('<span style="color:rgb(50, 100, 255)"><b>' + userNick + '</b>(' + userGisu + '기)' + '</span>' + '<bn>' + '<span style="font-size:1.7rem">' + ' 기여도:' + val3.val() + '</span>');
-                                            } else if (userLevel >= 7) {
-                                                $('#nickP').html('<span style="color:rgb(105, 201, 192)"><b>' + userNick + '</b>(' + userGisu + '기)' + '</span>' + '<bn>' + '<span style="font-size:1.7rem">' + ' 기여도:' + val3.val() + '</span>');
-                                            } else {
-                                                $('#nickP').html(userNick + '(' + userGisu + '기)' + '<bn>' + '<span style="font-size:1.7rem">' + ' 기여도:' + val3.val() + '</span>');
-                                            }
-                                        }
-                                        resolve(userLevel);
-                                    });
-                                }
-                            }
-                        });
+                    firebase.firestore().collection(String(serialize(userInfo.full))).doc(String(snap.docs[0].data().history)).update({
+                      state: 0
+                    }).then(() => {
+                      userRef.child(userInfo.uid).update({
+                        time: gt.getTime() + 259200000,
+                        private: false
+                      }).then(() => {
+                        userInfo.private = false;
+                        alert('문서가 숨김 해제되었습니다.\n이제 당신의 문서를 누구나 편집하거나 열람할 수 있습니다.\n다시 편집할 수 없게 하고 싶다면 3일 뒤에 설정에서 "거부"를 입력해주세요.');
+                        history.go(0);
+                      });
                     });
-                });
-            });
+                  });
+                } else {
+                  userRef.child(userInfo.uid).update({
+                    time: 0,
+                  }).then(() => {
+                    alert('누군가가 사용자의 문서를 숨김 해제하려고 시도했습니다.');
+                    //프로필 설정
+                    $('#nickP').html(userInfo.nick + '<br><span style="font-size:1.7rem">기여도:' + userInfo.edit + ' | 등급:' + userInfo.level + ' | 경고:' + userInfo.warn + '</span>');
+                    resolve();
+                  });
+                }
+              } else {
+                //프로필 설정
+                $('#nickP').html(userInfo.nick + '<br><span style="font-size:1.7rem">기여도:' + userInfo.edit + ' | 등급:' + userInfo.level + ' | 경고:' + userInfo.warn + '</span>');
+                resolve();
+              }
+
+            }
+          }
         }
+      });
+    }
+  });
+}
+
+//과구리에 로그인했다는 것은 아직 계정이 없다는 것.
+auth.onAuthStateChanged(function (user) {
+  if (user) {
+    let email = user.email;
+    if (pw == '') {
+      //어쩌다가 로그인되어버린 상황이라 로그아웃 시킨다.
+      auth.signOut();
+    } else {
+      firebase.auth().createUserWithEmailAndPassword(email, pw).then(() => {
+        //비밀번호 제거
+        pw = '';
+      });
+    }
+  }
+});
+
+function createUser(user) {
+  return new Promise((resolve, reject) => {
+
+    //이메일을 통해 기수와 이름을 확인
+    email = user.email.split('.').join('%');
+    jshsusUser.child('EMAIL').child(email).once('value', function (snapshot) {
+      console.log(snapshot.val());
+      userInfo.gisu = snapshot.val().gisu;
+      userInfo.name = snapshot.val().name;
+
+      if (userInfo.gisu == 0) {
+        userInfo.nick = '선생님:' + userInfo.name;
+        userInfo.full = '선생님:' + userInfo.name;
+      } else {
+        userInfo.nick = userInfo.gisu + '기:' + userInfo.name;
+        userInfo.full = userInfo.gisu + '기:' + userInfo.name;
+      }
+
+      console.log(user);
+      userInfo.uid = user.uid;
+      userInfo.level = 1;
+      userInfo.warn = 0;
+      userInfo.private = false;
+      userInfo.time = 0;
+
+      $('#nickP').html(userInfo.nick + '<br><span style="font-size:1.7rem">기여도:0 | 등급:1 | 경고:0</span>');
+
+      //id와 email 저장
+      firebase.database().ref('ID').child(id).set(user.email).then(() => {
+        //userInfo 저장
+        if (serialize(userInfo.full) != undefined) {
+          //본인의 문서가 이미 존재
+          userInfo.serial = serialize(userInfo.full);
+          userRef.child(userInfo.uid).set(userInfo).then(() => {
+            resolve();
+          });
+
+        } else {
+          //본인의 문서가 아직 없음
+
+          //처음에 본인 문서 만들면서 오르기 때문에 미리 마이너스.
+          userInfo.edit = -2;
+          userInfo.make = -1;
+
+          let keywordObject = {
+            [userInfo.name]: 1,
+            [userInfo.gisu]: 1
+          };
+
+          let byte = getByteLength(userInfo.gisu + "기 " + userInfo.name + "의 문서입니다.");
+
+          checkAcl(userInfo.full).then(() => {
+
+            saveFunction({
+              name: userInfo.full,
+              state: 0,
+              history: 0,
+              document: {
+                content: userInfo.gisu + "기 " + userInfo.name + "의 문서입니다."
+              },
+              byte: byte,
+              time: new Date().getTime(),
+              comment: '',
+              editorNick: userInfo.nick,
+              editorFull: userInfo.full,
+              keyword: keywordObject,
+              link: {},
+              highClass: ['미분류'],
+              lowClass: [],
+              lowDoc: [],
+              changedByte: byte
+            }, 1).then(() => {
+
+              console.log(userInfo);
+
+              userInfo.serial = serialList.length - 1;
+
+              userRef.child(userInfo.uid).set(userInfo).then(() => {
+
+                //미분류에 분류시키기.
+                addDocToClass(userInfo.full, ['미분류'], 0).then(() => {
+                  resolve();
+
+                })
+
+              });
+            });
+          });
+        }
+      });
+    });
+  });
+}
+
+//user 기여도 변동시 처리 함수.
+function userScoreChange() {
+  return new Promise((resolve, reject) => {
+    if (userInfo.edit >= userInfo.level * userInfo.level * 3 && userInfo.level < 15) {
+      //레벨업 조건을 충족하면
+      userInfo.level += 1;
+      userRef.child(userInfo.uid).child('level').set(userInfo.level).then(() => {
+
+        $('#nickP').html(userInfo.nick + '<br><span style="font-size:1.7rem">기여도:' + userInfo.edit + ' | 등급:' + userInfo.level + ' | 경고:' + userInfo.warn + '</span>');
+        alert('기여도를 ' + userInfo.edit + '만큼 쌓으셨네요.\n등급이 ' + userInfo.level + '(으)로 올랐습니다.');
+        userLevelChange().then(() => {
+          loadRank();
+          resolve();
+        })
+      });
+    } else {
+      $('#nickP').html(userInfo.nick + '<br><span style="font-size:1.7rem">기여도:' + userInfo.edit + ' | 등급:' + userInfo.level + ' | 경고:' + userInfo.warn + '</span>');
+      loadRank();
+      resolve();
+    }
+  });
+}
+
+function userLevelChange() {
+  return new Promise((resolve, reject) => {
+
+    if (userInfo.level >= 20) {
+      userInfo.nick = '<span class="adminNameSpan"><b>' + userInfo.full + '</b></span>';
+    } else if (userInfo.level >= 15) {
+      userInfo.nick = '<span class="BNNameSpan"><b>' + userInfo.full + '</b></span>';
+    } else if (userInfo.level >= 12) {
+      userInfo.nick = '<span style="color:rgb(50, 50, 200)"><b>' + userInfo.full + '</b></span>';
+    } else if (userInfo.level >= 9) {
+      userInfo.nick = '<span style="color:rgb(50, 100, 255)"><b>' + userInfo.full + '</b></span>';
+    } else if (userInfo.level >= 5) {
+      userInfo.nick = '<span style="color:rgb(100, 220, 100)"><b>' + userInfo.full + '</b></span>';
+    } else {
+      userInfo.nick = userInfo.full;
+    }
+
+    userRef.child(userInfo.uid).child('nick').set(userInfo.nick).then(() => {
+      resolve();
     })
+  });
 }
 
 
 
 //문서와 관련된 작업//문서와 관련된 작업//문서와 관련된 작업//문서와 관련된 작업//문서와 관련된 작업//문서와 관련된 작업
 
-const fstore = firebase.firestore();
-const wikiDoc = fstore.collection('document');
-var wikiCol;
-var his = 0;
-var txt;
-var serial = 0;
-//문서 등급
-var level = 1;
-//문서 생성 등급
-var makeLevel = 1;
-
-//어떤 종류의 문서인지 체크
-function checkCol(col, doc) {
-
-    if (col == '전곽위키') {
-        //console.log('it is wiki');
-        wikiCol = wikiDoc.doc('wiki');
-        makeLevel = 15;
-    } else if (col == '파일') {
-        //console.log('it is file');
-        wikiCol = wikiDoc.doc('file');
-        makeLevel = 1;
-    } else if (doc.search(/\([1-9]*기\)/) != -1) {
-        //console.log('it is student');
-        wikiCol = wikiDoc.doc('user');
-        makeLevel = 7;
-    } else if (doc.search('(선생님)') != -1) {
-        //console.log('it is ssam');
-        wikiCol = wikiDoc.doc('ssam');
-        makeLevel = 7;
-    } else if (col == '분류') {
-        //console.log('it is class');
-        wikiCol = wikiDoc.doc('class');
-        makeLevel = 100;
-    } else if (col == '틀') {
-        //console.log('it is frame');
-        wikiCol = wikiDoc.doc('frame');
-        makeLevel = 1;
-    } else {
-        //console.log('it is document');
-        wikiCol = wikiDoc.doc('doc');
-        makeLevel = 1;
-    }
-}
-
 //위키 문서 불러오기//위키 문서 불러오기//위키 문서 불러오기//위키 문서 불러오기//위키 문서 불러오기//위키 문서 불러오기
-//num = 0 읽기 num = 1 편집
-var status;
-//숨김 문서 확인
-var docPrivate = false;
-var onlyDocName = '';
-var onlyColName = '';
-var fullName = '';
-function loadDoc(colName, docName, num, realName) {
 
 
-    status = num;
-    fullName = realName;
-    onlyDocName = docName;
-    onlyColName = colName;
-    checkCol(colName, docName);
+//모든 문서를 시리얼 순서로 정리한 리스트 //이름은 decoding 된 상태이다.
+var docNote = [];
+//삭제된 문서들의 시리얼을 저장해 논 오브젝트이다. // 문서이름: 시리얼
+var removeNote = {};
 
-    // console.log("colName => " + colName);
-    // console.log("docName => " + onlyDocName);
-    // console.log('title => ' + realName);
+var docInfo = {
+  state: 0,
+  history: 0, //기존의 편집 횟수 -> 저장 시 +1
+  byte: 1, //기존의 바이트 -> 저장 시 편집된 바이트
+  changedByte: 1, //바뀐 바이트 양
+  name: '상상위키:대문', //관리자(28기) //점이나 스페이스 바 그대로 가져옴.
+  comment: '',
+  editorFull: '', // 편집자의 이름과 기수 (선생님은 기수가 0)
+  editorNick: '', // 편집자의 닉네임 (꾸며진 이름/색깔같은 것/역사에 표시)
+  time: 0,
+  type: 'user',
+  document: {}, //문서의 내용이 체계화되어 정리됨.//목차 제목만 인코딩
+  highClass: [], //상위 분류 배열//디코딩
+  lowClass: [], //하위 분류 배열 //디코딩
+  lowDoc: [], //하위 문서 배열 //디코딩
+  redirect: '', //넘겨주기 문서 이름 //디코딩
+  keyword: {}, //키워드 오브젝트이다.
+  lastClass: [], //원래 분류가 들어있는 배열 //디코딩
+  serial: 0, //시리얼 넘버
+  link: {} //역링크용
+}
+
+var movePoint = {
+  type: 'w',
+  doc: '상상위키:대문',
+  hash: '',
+  question: ''
+}
+
+//아스키 코드 16진수
+function decode(text) {
+  text = text.replace(/%2E/g, '.');
+  text = text.replace(/%23/g, '#');
+  text = text.replace(/%24/g, '$');
+  text = text.replace(/%5B/g, '[');
+  text = text.replace(/%5D/g, ']');
+  text = text.replace(/%2F/g, '/');
+  text = text.replace(/%3F/g, '?');
+  text = text.replace(/%5C/g, '\\');
+  text = text.replace(/%7C/g, '|');
+  return text;
+}
+
+function encode(text) {
+  text = text.replace(/\./g, '%2E');
+  text = text.replace(/\#/g, '%23');
+  text = text.replace(/\$/g, '%24');
+  text = text.replace(/\[/g, '%5B');
+  text = text.replace(/\]/g, '%5D');
+  text = text.replace(/\//g, '%2F');
+  text = text.replace(/\?/g, '%3F');
+  text = text.replace(/\\/g, '%5C');
+  text = text.replace(/\|/g, '%7C');
+  return text;
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------
+
+
+//movePoint는 {type: e, doc: document, hash: p-1-2, question: from=redirect } 형식이다. document의 점이나 스페이스바는 그대로 들어온다.
+function movePage(docData, hashData, questionData, typeData, btnData) {
+
+  // console.log(hashData);
+  // console.log(rediData);
+  // console.log(docData);
+  // console.log(typeData);
+
+
+  docData = decode(docData);
+  var lastDocName = movePoint.doc;
+  var lastDocType = movePoint.type;
+  var lastDocQuestion = movePoint.question;
+
+  movePoint.doc = docData;
+  movePoint.type = typeData;
+  movePoint.hash = hashData;
+  movePoint.question = questionData;
+
+  if (docData == '.') {
+    if (movePoint.question == '') {
+      movePoint.question = 'doc=.';
+    } else {
+      movePoint.question = 'doc=.&' + movePoint.question;
+    }
+  }
+
+  console.log(movePoint);
+
+  $('#commentInput').val('');
+  $('.titleH1').text(docData);
+
+  if (btnData == undefined) {
+    var hash = (movePoint.hash == '') ? '' : '#' + movePoint.hash;
+    var question = (movePoint.question == '') ? '' : '?' + movePoint.question;
+    //console.log('히스토리 추가 => ' + hash);
+
+    window.history.pushState(null, null, '/' + movePoint.type + '/' + movePoint.doc + question + hash);
+
+  }
+
+  if (lastDocName != movePoint.doc || lastDocType != movePoint.type) {
+
+    loadDoc();
+  } else if (movePoint.type == 'h' && lastDocName == movePoint.doc && lastDocQuestion != movePoint.question) {
+    loadDoc();
+  }
+
 
 }
 
-function realLoad(colName, num, realName, sharp) {
+//문서 불러오기
+function loadDoc() {
 
-    //alert('0.6');
-    wikiCol.collection(realName).orderBy('history', 'desc').limit(1).get({ source: 'server' }).then(field => {
-        //console.log('loading');
-        //alert('0.8');
+  console.log('loadDoc');
 
-        firebase.database().ref('SERIAL').once('value', function (happySerial) {
-            serialNote = happySerial.val();
-            if (field.empty) {
+  if (movePoint.type == 's') {
+    loadSearchType();
+  } else if (movePoint.type == 'debate') {
 
-                //console.log("empty");
-                if (num == 0) {
-                    //읽기//읽기//읽기//읽기//읽기//읽기//읽기//읽기//읽기//읽기//읽기//읽기
+    loadAllDebate().then(() => {
+      window.scrollTo(0, 0);
 
-                    $('#document').html('아직 존재하지 않는 문서입니다.');
-                    loading(false);
-                } else if (num == 1) {
+      if (movePoint.doc == 'all') {
+        showAllDebate();
+      } else if (movePoint.doc == 'new') {
+        newDebate();
+      } else {
+        loadDebateType();
+      }
+    })
 
-                    //편집//편집//편집//편집//편집//편집//편집//편집//편집//편집//편집//편집//편집//편집
+  } else if (movePoint.type == 'd') {
 
-                    $('#document').text('새로운 문서를 편집합니다.');
-                    $('#historyNumP').text('1번째 편집');
-                    loading(false);
-                }
+  } else if (movePoint.type == 'upload') {
 
-            } else {
-                txt = field.docs[0].data().content;
-                his = field.docs[0].data().history;
-                level = field.docs[0].data().level;
+    loadUploadType();
 
-                if (field.docs[0].data().private != undefined) {
-                    docPrivate = field.docs[0].data().private;
-                }
+  } else if (movePoint.type == 'h') {
 
-                //console.log(txt);
+    loadHistoryType();
 
-                if (docPrivate) {
+  } else {
 
-                    $('#document').html('이 문서는 숨김 처리된 문서입니다.\n열람 및 편집을 금합니다.');
-                    loading(false);
+    docInfo = {};
 
-                } else {
+    docInfo.name = movePoint.doc;
 
-                    //console.log('-----------');
-                    if (num == 0) {
-                        //읽기//읽기//읽기//읽기//읽기//읽기//읽기//읽기//읽기//읽기//읽기//읽기
+    //문서 존재 여부//삭제된 문서는 제외 (역사번호를 알아야 하기 때문에 불러와야 함.)
+    if (serialNote[docInfo.name] == undefined && removeNote[docInfo.name] == undefined) {
 
-                        var url = decodeURI(document.URL.split("/").pop());
-
-                        if (txt.search(/(?<!\\)\[넘겨주기\(.+?\)\]/) != -1 && url.search(/\?re/) == -1) {
-
-                            var redirectDocName = txt.match(/(?<!\\)\[넘겨주기\((.+?)\)\]/)[1];
-
-                            location.href = redirectDocName.replace(/ /gi, "%20") + '?re=' + url;
-
-                        } else {
-
-                            //틀 찾아서 넣는 함수
-                            function showFrame(frameNameList, frameMatchNum, frameLoopNum, txt) {
-                                return new Promise((resolve, reject) => {
-                                    if (frameMatchNum == frameLoopNum) {
-                                        resolve(txt);
-                                    } else {
-                                        wikiDoc.doc('frame').collection('틀:' + frameNameList[frameLoopNum]).orderBy('history', 'desc').limit(1).get({ source: 'server' }).then(value => {
-                                            //console.log(value);
-                                            if (value.empty) {
-                                                console.log('틀:' + frameNameList[frameLoopNum] + ' 문서가 존재하지 않습니다.');
-                                                txt = txt.replace(/(?<!\\)\[틀\((.+?)\)\](?:<br>)?/, "");
-                                                //console.log(txt);
-                                                showFrame(frameNameList, frameMatchNum, frameLoopNum + 1, txt).then(text => {
-                                                    resolve(text);
-                                                });
-                                            } else if (value.docs[0].data().private) {
-                                                console.log('틀:' + frameNameList[frameLoopNum] + ' 문서가 숨김 처리되어 있습니다.');
-                                                txt = txt.replace(/(?<!\\)\[틀\((.+?)\)\](?:<br>)?/, "");
-                                                //console.log(txt);
-                                                showFrame(frameNameList, frameMatchNum, frameLoopNum + 1, txt).then(text => {
-                                                    resolve(text);
-                                                });
-                                            } else {
-                                                //console.log(txt);
-                                                txt = txt.replace(/(?<!\\)\[틀\((.+?)\)\](?:<br>)?/, "<div class='frameDiv' id='틀:$1'>" + value.docs[0].data().content.split('<hr/>')[1] + "<\/div>");
-                                                //console.log(txt);
-                                                showFrame(frameNameList, frameMatchNum, frameLoopNum + 1, txt).then(text => {
-                                                    resolve(text);
-                                                });
-                                            }
-                                        });
-                                    }
-                                });
-                            }
-
-                            var frameMatchNum = (txt.match(/(?<!\\)\[틀\((.+?)\)\]/g) || []).length;
-
-                            var frameNameList = [];
-
-                            txt.replace(/(?<!\\)\[틀\((.+?)\)\]/g, function (match, capture) {
-                                frameNameList.push(capture);
-                                return match;
-                            });
-
-                            showFrame(frameNameList, frameMatchNum, 0, txt).then(text => {
-
-                                //문법 적용 취소
-                                txt = text.replace(/\\\[틀\((.+?)\)\]/g, '[틀($1)]');
-                                txt = txt.replace(/\\\[넘겨주기\((.+?)\)\]/g, '[넘겨주기($1)]');
-
-                                $('#document').html(txt);
-
-                                if (colName != '분류') {
-
-                                    var match;
-                                    var indexTxt = "<div id='index' class='whiteBlock'>";
-                                    var cnt = $("h2[id^=index_]").length;
-                                    if ($("h2[id=index_1_]").html() != undefined) {
-                                        for (var i = 1; i <= cnt; i++) {
-                                            match = $("h2[id=index_" + i + "_]").html().split(/<a href="#index">.+?<\/a>/)[1];
-                                            indexTxt = indexTxt.concat("<a href='#index_" + i + "_'>" + i + ".</a>" + match + "<br>");
-                                            //console.log(indexTxt);
-                                            var ccnt = $("h3[id^=index_" + i + "]").length;
-                                            for (var j = 1; j <= ccnt; j++) {
-                                                match = $("h3[id=index_" + i + "_" + j + "_]").html().split(/<a href="#index">.+?<\/a>/)[1];
-                                                indexTxt = indexTxt.concat("&nbsp&nbsp<a href='#index_" + i + "_" + j + "_'>" + i + "." + j + ".</a>" + match + "<br>");
-                                                //console.log(indexTxt);
-                                                var cccnt = $("h4[id^=index_" + i + "_" + j + "]").length;
-                                                for (var k = 1; k <= cccnt; k++) {
-                                                    match = $("h4[id=index_" + i + "_" + j + "_" + k + "_]").html().split(/<a href="#index">.+?<\/a>/)[1];
-                                                    indexTxt = indexTxt.concat("&nbsp&nbsp&nbsp&nbsp<a href='#index_" + i + "_" + j + "_" + k + "_'>" + i + "." + j + "." + k + ".</a>" + match + "<br>");
-                                                    //console.log(indexTxt);
-                                                    var ccccnt = $("h5[id^=index_" + i + "_" + j + "_" + k + "]").length;
-                                                    for (var l = 1; l <= ccccnt; l++) {
-                                                        match = $("h5[id=index_" + i + "_" + j + "_" + k + "_" + l + "_]").html().split(/<a href="#index">.+?<\/a>/)[1];
-                                                        indexTxt = indexTxt.concat("&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<a href='#index_" + i + "_" + j + "_" + k + "_" + l + "_'>" + i + "." + j + "." + k + "." + l + ".</a>" + match + "<br>");
-                                                        //console.log(indexTxt);
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                    //추천 문서 띄우기
-
-                                    var relation;
-                                    firebase.database().ref('RELATIONSHIP').once('value', function (snap) {
-                                        relation = snap.val()
-                                        var tag = relation[serialize(realName.replace(/\./g, '&DOT&'))]
-                                        if (relation[serialize(realName.replace(/\./g, '&DOT&'))] == undefined) {
-                                            $('aside[class^=container]').append('<div id="suyeon146" class="whiteBlock container asideDiv">' + '<p>추천 문서 없음</p>' + '<hr>' + '<div class= "container"><p>글을 한번 편집해 주세요.</p></div>' + '</div>')
-                                        } else {
-                                            $('aside[class^=container]').append('<div id="suyeon146" class="whiteBlock container asideDiv">' + '<p>추천 문서</p>' + '<hr></div>')
-                                            var arr = new Array();
-                                            for (tititle in tag) {
-                                                if (tag[tititle]['std_fdp'] == undefined) {
-                                                    tag[tititle]['std_fdp'] = 0;
-                                                }
-                                                var tt = tag[tititle]['tot_fdp'] + tag[tititle]['std_fdp']
-                                                arr.push([tititle, tt])
-
-                                            };
-                                            arr.sort(function (a, b) {
-                                                return a[1] - b[1];
-                                            });
-                                            arr.reverse();
-                                            //console.log(arr);
-                                            for (i = 0; i < arr.length; i++) {
-                                                if (inv_serialize(arr[i][0]) != undefined) {
-                                                    $('div[id=suyeon146]').append('<div class="container">' + '<a href="' + inv_serialize(arr[i][0]) + '">' + inv_serialize(arr[i][0]) + '</a></div>' + '<hr>');
-                                                };
-                                            };
-                                        }
+      docInfo.history = 0;
+      docInfo.document = {
+        content: ''
+      };
+      docInfo.byte = 0;
+      docInfo.state = 0;
 
 
-                                    });
+      if (movePoint.type == 'w') {
+        //읽기
+        loadReadType(true);
 
-                                    var indexList = indexTxt.split('<br>');
-                                    var trash = indexList.pop();
+      } else if (movePoint.type == 'e') {
 
-                                    var newTxt = txt.split('<hr/>');
-                                    newTxt[2] = newTxt[1] + '<hr/>' + newTxt[2];
-                                    newTxt[1] = indexList.join('<br>') + '</div>';
-                                    newTxt[1] = newTxt[1] + newTxt[2];
-                                    trash = newTxt.pop();
+        //편집
+        docInfo.link = {}; //빈 오브젝트가 존재해야 함.
+        checkAcl(docInfo.name);
+        refreshDocInfo(docInfo.name);
+        loadEditType(true);
 
-                                    $('#document').html(newTxt.join('<hr/>'));
+      }
+    } else {
 
-                                    $('article[class^=whiteBlock]  ').append('<div id="learning" style="display:none"><p>이 문서와 가장 관련있다고 생각하는 문서 1개의 제목을 아래에 입력해 주세요. 여러분의 많은 참여가 전곽위키를 발전시킵니다.</p><input id="lrn" type="text" name="title"><input type="button" onclick="learning_function()" value="확인"></div>')
+      firebase.firestore().collection(String(serialize(docInfo.name))).orderBy('history', 'desc').limit(1).get({
+        source: 'server'
+      }).then(field => {
 
-                                    $("a[id^=note]").each(function (index) {
-                                        var note = $(this).attr("name");
-                                        console.log(note);
-                                        if (note.search(/<blockquote/g) != -1) {
+        docInfo = field.docs[0].data();
 
-                                            $(this).append('<div class="noteDiv container" style="min-width:max-content; justyficontent:center;"><a href="#foot_' + (index + 1) + '">[' + (index + 1) + ']</a><p>' + note + '</div>');
+        docInfo.highClass = classListFormat(docInfo.highClass, 1);
+        docInfo.lowClass = classListFormat(docInfo.lowClass, 1) || [];
+        docInfo.lowDoc = classListFormat(docInfo.lowDoc, 3) || [];
 
-                                        } else {
+        //console.log(docInfo);
 
-                                            $(this).append('<div class="noteDiv container"><a href="#foot_' + (index + 1) + '">[' + (index + 1) + ']</a><p>' + note + '</p></div>');
-                                        }
-                                    });
-                                }
-                                //console.log(sharp);
-                                if (sharp != undefined) {
-                                    window.location.replace(fullName + '#' + sharp);
-                                }
+        docInfo.name = inv_serialize(docInfo.serial);
+        refreshDocInfo(docInfo.name);
 
-                                //넘겨받은 뒤 표시
-                                if (url.search(/\?re=/) != -1) {
-                                    $('#document').prepend('<p id="redirectAlertP"><a href="' + question.split('re=')[1] + '?re">'
-                                        + question.split('re=')[1] + '</a> 에서 넘어옴</p>');
-                                }
+        //서버에서 불러온 체계화된 정보를 하나의 텍스트로 바꾸는 과정임.
+        docInfo.content = '';
 
-                                loading(false);
-                            });
-                        }
+        if (movePoint.type == 'w') {
 
-                    } else if (num == 1) {
-                        console.log(colName);
-                        //편집//편집//편집//편집//편집//편집//편집//편집//편집//편집//편집//편집//편집//편집
-                        if (colName != '분류') {
-                            //alert('1 => ' + load);
-                            //alert(txt);
-                            grammar(txt, 0);
-                            //alert('2 => ' + load);
-                            $('#historyNumP').text((his + 1) + '번째 편집');
-                            //alert('3 => ' + load);
-                            loading(false);
-                            //alert('4 => ' + load);
-                        } else {
-                            //분류 문서면 분류 부분만 보여주기
-                            var classTxt = txt.split('<hr/>')[0];
-                            realClassContent = txt.split('<hr/>')[1];
-                            //console.log(realClassContent);
+          mainGrammar('load').then(() => {
+            grammar('load').then(() => {
+              loadReadType(false);
+            });
+          });
 
-                            classTxt = classTxt.replace(/<a title='(.+?)' href='.+?'>(.+?)<\/a>/g, function (match, first, second) {
-                                return "[[" + first + "|" + second + "]]";
-                            });
+        } else if (movePoint.type == 'e') {
 
-                            classGrammar(classTxt, 0).then((text) => {
-                                $('#historyNumP').text((his + 1) + '번째 편집 | 상위분류만 적어주세요.');
-                                text = text.replace(/<br>/g, "\n");
-                                $("#document").text(text);
-                                loading(false);
-                            });
-                        }
-                    }
-                }
-            }
-        });
+          checkAcl(docInfo.name).then(() => {
+            checkLevel().then(() => {
+              mainGrammar('edit').then(() => {
+                grammar('edit').then(() => {
+                  if (aclInfo.edit > userInfo.level) {
+                    alert('이 문서를 편집하기에는 권한이 부족합니다.');
+                    loadEditType(false);
+                  } else {
+                    loadEditType(false);
+                  }
+                })
+              });
+            })
+          })
+        }
+      });
+    }
+  }
+}
+
+function checkType(docName) {
+
+  if (docName.split(':')[0] == '상상위키') {
+
+    return 'wiki';
+
+  } else if (docName.split(':')[0] == '파일') {
+
+    return 'file';
+
+  } else if (docName.split(':')[0].search(/[1-9]+기/) != -1) {
+
+    return 'user';
+
+  } else if (docName.split(':')[0] == '선생님') {
+
+    return 'user';
+
+  } else if (docName.split(':')[0] == '분류') {
+
+    return 'class';
+
+  } else if (docName.split(':')[0] == '틀') {
+
+    return 'frame';
+
+  } else {
+
+    return 'doc';
+  }
+}
+
+
+//docInfo의 name과 type와 level을 정한다.
+function refreshDocInfo(docName) {
+
+  docInfo.name = docName;
+
+  docInfo.type = checkType(docInfo.name);
+}
+
+//읽기 모드 w
+function loadReadType(isNew) {
+
+  //각주가 겹쳐버리기 때문에 제거
+  $('#debateArticle').empty();
+  $('#showHistoryP').empty();
+  $('#documentW').empty();
+
+  //#때문에 미리 스크롤 해둔다.
+  window.scrollTo(0, 0);
+
+  if (isNew) {
+
+    $('#documentW').html('아직 존재하지 않는 문서입니다.');
+    $('.historyNumP').text('(새 문서)');
+    loadEnd('w');
+
+
+  } else if (docInfo.state == 2) {
+
+    $('#documentW').html('아직 존재하지 않는 문서입니다.');
+    $('.historyNumP').text('(새 문서)');
+    loadEnd('w');
+
+  } else {
+
+    makeIndexList().then(indexTxt => {
+
+      //console.log(indexTxt);
+
+      //console.log(docInfo.content);
+
+      if (indexTxt != '<div id="index" class="whiteBlock"></div>') {
+        docInfo.content = docInfo.content.split('<hr/>');
+        docInfo.content[1] = indexTxt + docInfo.content[1];
+        docInfo.content = docInfo.content.join('<hr/>');
+      }
+
+      //숨김 여부
+      if (docInfo.state == 1) {
+
+        $('#documentW').html('이 문서는 숨김 처리된 문서입니다.\n열람 및 편집을 금합니다.');
+        $('.historyNumP').text('(숨김)');
+
+      } else {
+        $('#documentW').html(docInfo.content);
+        $('.historyNumP').text((docInfo.history) + '번째 수정판');
+      }
+
+      addRedirectAlert();
+
+
+      addParagraphBtn();
+
+      addAnchorEventListener();
+
+      addNoteBubble();
+
+      loadEnd('w');
+
+
+
     });
+  }
 }
-// 학습버튼
+
+//분류 문서 편집시 잘라낸 나머지
+var realClassContent;
+//편집 모드 e$
+function loadEditType(isNew) {
+
+  //각주가 겹쳐버리기 때문에 제거
+  $('#debateArticle').empty();
+  $('#showHistoryP').empty();
+  $('#documentW').empty();
+
+  window.scrollTo(0, 0);
+
+  if (isNew) {
+
+    $('#documentE').val('새로운 문서를 편집합니다.');
+    $('.historyNumP').text('1번째 편집');
+    loadEnd('e');
 
 
-var relations;
-firebase.database().ref('RELATIONSHIP').once('value', function (happyRelation) {
-    relations = happyRelation.val();
-});
+  } else if (docInfo.state == 2) {
 
-//학습버튼 함수
-function learning_function() {
-    var targetle = $('#lrn').val();
-    console.log(targetle);
-    if (serialize(targetle.replace(/\./g, '&DOT&')) != undefined) {
-        if (targetle == fullName) {
-            alert("이 문서는 추천할 수 없습니다.")
+    $('#documentE').val('새로운 문서를 편집합니다.');
+    $('.historyNumP').text((docInfo.history + 1) + '번째 편집');
+    loadEnd('e');
+
+
+  } else {
+
+    if (docInfo.state == 1) {
+
+      $('#documentE').val('이 문서는 숨김 처리된 문서입니다.\n열람 및 편집을 금합니다.');
+      $('.historyNumP').text('(숨김)');
+      loadEnd('e');
+
+
+    } else {
+
+      $('#documentE').val(docInfo.content);
+
+      //grammar(docInfo.content, 0);
+      $('.historyNumP').text((docInfo.history + 1) + '번째 편집');
+      loadEnd('e');
+
+    }
+  }
+}
+
+function loadSearchType() {
+
+  window.scrollTo(0, 0);
+
+  $('article').addClass('hidden');
+  $('#searchArticle').removeClass('hidden');
+
+  $('#searchTxt').val(movePoint.doc);
+
+  //console.log('blur');
+  $('#searchTxt').blur();
+
+  startSearch();
+}
+
+function loadDebateType() {
+
+  //각주가 겹쳐버리기 때문에 제거
+  $('#debateArticle').empty();
+  $('#showHistoryP').empty();
+  $('#documentW').empty();
+
+  $('article').addClass('hidden');
+  $('#debateArticle').removeClass('hidden');
+
+  loadDebate(movePoint.doc);
+}
+
+function loadUploadType() {
+
+  $('article').addClass('hidden');
+  $('#uploadArticle').removeClass('hidden');
+
+  loadUploadInterface();
+}
+
+function loadHistoryType() {
+
+  //각주가 겹쳐버리기 때문에 제거
+  $('#debateArticle').empty();
+  $('#showHistoryP').empty();
+  $('#documentW').empty();
+
+  $('article').addClass('hidden');
+  $('.historyNumP').text('(역사)');
+  $('#checkHistoryDiv').text('역사를 불러오는 중입니다.');
+  $('#historyArticle').removeClass('hidden');
+
+  addBtnListener();
+  loadHistory(movePoint);
+}
+
+//문서 로딩 끝
+function loadEnd(type) {
+
+  $('#searchTxt').val('');
+  changeKey();
+
+  $('#auto_1').remove();
+  $('#auto_2').remove();
+  $('#auto_3').remove();
+  $('#auto_4').remove();
+  $('#auto_5').remove();
+  $('#auto_6').remove();
+
+  autoCompleteNum = 0;
+
+
+  if (type == 'w') {
+
+    MathJax.typeset();
+
+
+    $('article').addClass('hidden');
+    $('#documentArticle').removeClass('hidden');
+
+    $('.preTxt').empty();
+
+    moveToHash();
+
+  } else if (type == 'e') {
+
+    $('article').addClass('hidden');
+    $('#editArticle').removeClass('hidden');
+
+    $('#documentE').scrollTop(0);
+  }
+
+  $('.alertPre').remove();
+  //   $('article').prepend(`<pre class="alertPre"
+  //     style="font-size: 1.7rem;
+  //     margin: 0;
+  //     border: 0.3rem solid red;
+  //     padding: 1rem;
+  //     word-break: break-word;
+  //     white-space: break-spaces;
+  //     margin-bottom: 2rem">
+  // <b style="color: red">한동안은 학생 및 선생님에 관한 언급과 문서 생성 및 편집을 금지합니다.</b>
+  // 학교 수업에서 배운 내용을 정리하거나 동아리 문서를 편집하는 등의 활동을 해주세요.
+  // 규정을 꼭 읽고, 교지 수준의 검열을 한다고 생각하고 작성하세요.
+  // </pre>`);
+  addBtnListener();
+  loading(false);
+}
+
+//앵커 태그 무효화
+function addAnchorEventListener() {
+
+  //console.log('anchor');
+
+  $('a').off('click');
+
+  $('a').on('click', function (event) { // a태그 클릭시 작동
+
+    var hrefTxt = $(this).attr("href");
+
+    //console.log(hrefTxt);
+
+    if (hrefTxt[0] == '?') {
+      //역사에서 쓰이는 그런 것
+      event.preventDefault();
+      movePage(movePoint.doc, '', hrefTxt.substring(1), movePoint.type);
+    } else if (hrefTxt.search(/https?:\/\//g) != -1) {
+      //alert('link');
+    } else if (hrefTxt[0] != '#' && (hrefTxt[0] == 'w' || hrefTxt[0] == 'e' || hrefTxt[0] == 'd' || hrefTxt[0] == 'h') && hrefTxt[1] == '/') {
+      event.preventDefault();
+      //console.log(hrefTxt);
+
+      //링크의 타입 w, e, h 등
+      var hrefType = hrefTxt.split('/')[0];
+      //링크 목적지 #이나 ?있을 수 있음.
+      hrefTxt = hrefTxt.split('/').slice(1).join('/');
+      //문서 제목이 존재하는지 확인
+      if (serialize(hrefTxt) == undefined) {
+        //없다면 #이나 ?때문임. 또는 그냥 없는 문서
+
+        if (hrefTxt.length == 1) {
+          //문서 제목이 ?나 #인 경우임.
+          movePage(hrefTxt, '', '', hrefType);
+        } else if (hrefTxt.search(/\#$/) != -1 || hrefTxt.search(/\?$/) != -1) {
+          //문서 제목이 ?나 #으로 끝나는 경우
+          movePage(hrefTxt, '', '', hrefType);
         } else {
-            var titleSerial = serialize(targetle.replace(/\./g, '&DOT&'));
-            if (relations[serialize(fullName.replace(/\./g, '&DOT&'))][titleSerial] != undefined) {
-                if (relations[serialize(fullName.replace(/\./g, '&DOT&'))][titleSerial]['std_fdp'] == undefined) {
-                    var saveed_std = 0
-                } else {
-                    var saveed_std = relations[serialize(fullName.replace(/\./g, '&DOT&'))][titleSerial]['std_fdp'];
-                }
-                if (relations[serialize(fullName.replace(/\./g, '&DOT&'))][titleSerial]['tot_fdp'] != undefined) {
-                    firebase.database().ref('RELATIONSHIP').child(serialize(fullName.replace(/\./g, '&DOT&'))).child(titleSerial).update({ std_fdp: (saveed_std + 0.4) }).then(() => {
-                        console.log("done");
-                        $("div[id=learning]").remove();
-                    });
-                } else {
-                    eval("firebase.database().ref('RELATIONSHIP').child(" + serialize(fullName.replace(/\./g, '&DOT&')) + ").update({" + titleSerial + ": { tot_fdp: 0, std_fdp: (saveed_std + 0.4) } })").then(() => {
-                        console.log("done");
-                        $("div[id=learning]").remove();
-                    });
-                }
+
+          let temporaryLink;
+          let hashLink;
+          let questionLink;
+
+          if (hrefTxt.search(/#/) != -1) {
+            //#존재
+            temporaryLink = hrefTxt.split('#');
+            hashLink = temporaryLink.pop();
+            temporaryLink = temporaryLink.join('#');
+
+            if (temporaryLink.search(/\?/) != -1) {
+              //?도 존재
+              temporaryLink = temporaryLink.split('?');
+              questionLink = temporaryLink.pop();
+              temporaryLink = temporaryLink.join('?');
+              movePage(temporaryLink, hashLink, questionLink, hrefType);
             } else {
-                eval("firebase.database().ref('RELATIONSHIP').child(" + serialize(fullName.replace(/\./g, '&DOT&')) + ").update({" + titleSerial + ": { tot_fdp: 0, std_fdp: 0.4 } })").then(() => {
-                    console.log("done");
-                    $("div[id=learning]").remove();
-                });
+              //?는 없음
+              movePage(temporaryLink, hashLink, '', hrefType);
             }
+
+          } else if (hrefTxt.search(/\?/) != -1) {
+            //?있음
+            temporaryLink = hrefTxt.split('?');
+            questionLink = temporaryLink.pop();
+            temporaryLink = temporaryLink.join('?');
+            movePage(temporaryLink, '', questionLink, hrefType);
+          } else {
+            //아직 없는 문서
+            movePage(hrefTxt, '', '', hrefType);
+          }
+
+        }
+      } else {
+        //아무것도 없음.
+        movePage(hrefTxt, '', '', hrefType);
+      }
+    } else if (hrefTxt[0] == '#') {
+
+      //각주 같은 것
+
+      //각주라면
+      if (hrefTxt[1] == 'f' && hrefTxt[2] == '-') {
+
+        //console.log($(this).attr('id'));
+        if ($(this).attr('id') == undefined) {
+          //이 부분은 휴대폰에서 각주 안에 있는 a태그를 클릭했을 때를 의미한다.
+          window.location.href = hrefTxt;
+        } else {
+
+
+          var width = window.innerWidth || document.body.clientWidth;
+          //console.log(width);
+          //화면이 작다면 => 휴대폰에서는 클릭 시 각주 보이게
+          if (width <= 800) {
+            //console.log(id);
+            event.preventDefault();
+            if ($(this).children('div').css('visibility') == 'hidden') {
+              $('.noteDiv').css('visibility', 'hidden');
+              $(this).children('div').css('visibility', 'visible');
+            } else {
+              $(this).children('div').css('visibility', 'hidden');
+            }
+          }
+        }
+      } else {
+        //일반 앵커
+        //window.location.href = hrefTxt;
+      }
+    } else {
+      event.preventDefault();
+      //console.log(hrefTxt);
+
+      movePage(hrefTxt, '', '', 'w');
+      //console.log(hrefTxt);
+      //window.history.pushState(null, null, hrefTxt);
+    }
+  });
+}
+
+//목차 바로가기 생성
+function makeIndexList(DOCINFO) {
+  return new Promise(resolve => {
+
+    if (DOCINFO == undefined) {
+      DOCINFO = docInfo;
+    }
+    if (DOCINFO.type != 'class') {
+
+      //목차 생성
+      var indexTxt = '<div id="index" class="whiteBlock">';
+
+      //index list로 [{hNum: 1, pNum: 2, title: title}, {}, {}] 형식으로 저장됨
+      var indexMatchList = [];
+
+      //replace 함수로 목차 리스트 찾아서 받아오기
+      DOCINFO.content.replace(/<h([1-5]) id="p-(.+?)"><a href="#index">.+?<\/a>&nbsp;(.+?)<\/h[1-5]>/g,
+        function (match, hNum, pNum, title) {
+          indexMatchList.push({
+            hNum: hNum,
+            pNum: pNum,
+            title: title
+          });
+          return match; //이 줄은 필요없을 듯. 혹시 모르니
+        });
+
+      //console.log(indexMatchList);
+
+      for (var indexMatchNum = 0; indexMatchNum < indexMatchList.length; indexMatchNum++) {
+
+        var indexInfo = indexMatchList[indexMatchNum];
+
+        for (var i = 2; i < indexInfo.hNum; i++) {
+          indexTxt = indexTxt.concat('&nbsp;&nbsp;');
         }
 
+        indexTxt = indexTxt.concat('<a href="#p-' + indexInfo.pNum + '">' + indexInfo.pNum.split('-').join('.') + '.</a>&nbsp;' +
+          indexInfo.title + "<br>");
+      }
+
+      resolve(indexTxt + "</div>");
     } else {
-        alert("존재하지 않는 문서입니다.")
+      resolve('');
     }
-
-
-
-
-}
-
-var realClassContent;
-
-//위키 문서 저장하기//위키 문서 저장하기//위키 문서 저장하기//위키 문서 저장하기//위키 문서 저장하기//위키 문서 저장하기
-var byte = 0;
-function saveDoc(content, keyword) {
-
-    var realName = $("#titleH1").text();
-    var colName = realName.split(':');
-    var docName = colName.pop();
-    checkCol(colName, docName);
-
-    //console.log(realName);
-    var comment = prompt("기록해야 될 사항이 있다면 작성해주세요.\n없는 경우 확인을 눌러주세요.");
-
-    if (comment == 'dltmxjdprm2') {
-        comment = '';
-        alert('Easter Egg 2');
-    }
-
-    if (his == 0) {
-
-        $.post('../src/php/allDoc.php', {
-            title: realName.replace(/ /g, '%20')
-        }).then(function () {
-
-
-
-            firebase.database().ref('VALUE').child('docCnt').once('value', function (snap) {
-
-                var docCnt = snap.val();
-                firebase.database().ref('VALUE').update({
-                    docCnt: docCnt + 1
-                }).then(() => {
-
-                    firebase.database().ref('SERIAL').child(realName).set(docCnt).then(() => {
-
-                        serialNote[realName] = docCnt;
-                        saveFunction(content, realName, his, makeLevel, wikiCol, comment, keyword).then(function () {
-
-                            wikiDoc.doc('all').update({
-
-                                all: firebase.firestore.FieldValue.arrayUnion(realName)
-
-                            }).then(function () {
-                                rankRef.child(userName + '(' + userGisu + '기)').update({
-                                    edit: userEdit + 3
-                                }).then(() => {
-                                    if (userEdit + 3 == userLevel * userLevel * 10 ||
-                                        userEdit + 3 == userLevel * userLevel * 10 + 1 ||
-                                        userEdit + 3 == userLevel * userLevel * 10 + 2 &&
-                                        userLevel < 10) {
-                                        userRef.child(userGisu).child(userName).child('level').set(userLevel + 1).then(() => {
-                                            if (userLevel < 7) {
-                                                alert('기여도를 ' + (userEdit + 3) + '만큼 쌓으셨네요.\n권한 등급이 ' + (userLevel + 1) + '(으)로 올랐습니다.');
-                                                window.location.replace('../w/' + realName);
-                                            } else if (userLevel == 7) {
-                                                alert('기여도를 ' + (userEdit + 3) + '만큼 쌓으셨네요.\n권한 등급이 7로 올랐습니다.\n이제 "학생 문서"와 "선생님 문서"가 편집이 가능합니다.\n또한, 편집 시 역사의 별명이 연두색이 됩니다.');
-                                                window.location.replace('../w/' + realName);
-                                            } else if (userLevel < 9) {
-                                                alert('기여도를 ' + (userEdit + 3) + '만큼 쌓으셨네요.\n권한 등급이 ' + (userLevel + 1) + '(으)로 올랐습니다.');
-                                                window.location.replace('../w/' + realName);
-                                            } else if (userLevel == 9) {
-                                                alert('기여도를 ' + (userEdit + 3) + '만큼 쌓으셨네요.\n권한 등급이 최대(10)가 되었습니다.\n이제 편집 시 역사의 별명이 푸른색이 됩니다.');
-                                                window.location.replace('../w/' + realName);
-                                            }
-                                        });
-                                    } else {
-                                        reasonOfMove = '편집';
-                                        window.location.replace('../w/' + realName);
-                                    }
-                                });
-                            });
-                        });
-                    });
-                });
-            });
-        });
-    } else {
-
-        saveFunction(content, realName, his, level, wikiCol, comment, keyword).then(function () {
-            rankRef.child(userName + '(' + userGisu + '기)').update({
-                edit: userEdit + 1
-            }).then(() => {
-                if (userEdit + 1 == userLevel * userLevel * 10 && userLevel < 10) {
-                    userRef.child(userGisu).child(userName).child('level').set(userLevel + 1).then(() => {
-                        if (userLevel < 7) {
-                            alert('기여도를 ' + (userEdit + 1) + '만큼 쌓으셨네요.\n권한 등급이 ' + (userLevel + 1) + '(으)로 올랐습니다.');
-                            window.location.replace('../w/' + realName);
-                        } else if (userLevel == 7) {
-                            alert('기여도를 ' + (userEdit + 1) + '만큼 쌓으셨네요.\n권한 등급이 7로 올랐습니다.\n이제 "학생 문서"와 "선생님 문서"가 편집이 가능합니다.\n또한, 편집 시 역사의 별명이 연두색이 됩니다.');
-                            window.location.replace('../w/' + realName);
-                        } else if (userLevel < 9) {
-                            alert('기여도를 ' + (userEdit + 1) + '만큼 쌓으셨네요.\n권한 등급이 ' + (userLevel + 1) + '(으)로 올랐습니다.');
-                            window.location.replace('../w/' + realName);
-                        } else if (userLevel == 9) {
-                            alert('기여도를 ' + (userEdit + 1) + '만큼 쌓으셨네요.\n권한 등급이 최대(10)가 되었습니다.\n이제 편집 시 역사의 별명이 푸른색이 됩니다.');
-                            window.location.replace('../w/' + realName);
-                        }
-                    });
-                } else {
-                    reasonOfMove = '편집';
-                    window.location.replace('../w/' + realName);
-                }
-            });
-        });
-    }
+  });
 }
 
 
+//#으로 지정된 곳으로 이동
+function moveToHash() {
 
-var serialNote;
+  console.log('moveToHash');
+  if (movePoint.hash != '') {
+    isHash = true;
+    window.location.href = '#' + movePoint.hash;
+
+  }
+
+}
+
+//리다이렉트 시 알림 추가
+function addRedirectAlert() {
+  if (movePoint.question.split('=')[0] == 'from' && movePoint.question != 're=-1') {
+    var fromDoc = movePoint.question.split('from=').pop();
+    $('#documentW').prepend('<p id="redirectAlertP"><a style="cursor:pointer" href="w/' + fromDoc + '?re=-1">' +
+      fromDoc + '</a> 에서 넘어옴</p>');
+    addAnchorEventListener();
+  }
+}
+
+//각주들에 말풍선 달아주기 //#f-3 이런 식
+function addNoteBubble() {
+
+  console.log('addNoteBubble');
+
+  $('.noteDiv').remove();
+
+  $("a[id^=n-]").each(function () {
+    let note = $("div[id^=f-" + $(this).attr("href").split('-')[1] + "]").html();
+    //console.log(note);
+
+    $(this).append('<div class="noteDiv container">' + note + '</div>');
+
+  });
+  addNoteListener();
+
+}
+
+//문단마다 접고 펴는 버튼 추가
+function addParagraphBtn() {
+
+  $('.bpLabel').remove();
+  $('input[id^=bp-]').remove();
+
+  var hTags = $('*[id^=p-]');
+
+  //console.log(hTags);
+
+  for (var i = 0; i < hTags.length; i++) {
+    $(hTags[i]).prepend('<input type="checkbox" class="fold hidden" id="b' + $(hTags[i]).attr('id') + '">' +
+      '<label style="user-select: none" class="bpLabel" for="b' + $(hTags[i]).attr('id') + '">' +
+      '<img src="/src/img/foldbutton.png" style="width: 2rem; display: inline-block; margin-right: .5rem;">' +
+      '</label>');
+  }
+
+  //문단 접고 펴는 버튼 작동 함수
+  $(".fold + label").on('click', function () {
+
+    //console.log($(this).prev().is(":checked"));
+    $(this).parent().next().slideToggle(300);
+    if (!$(this).prev().is(":checked")) {
+      $(this).children().css('transform', 'rotate(' + (-90) + 'deg)');
+    } else {
+      $(this).children().css('transform', 'rotate(' + 0 + 'deg)');
+    }
+  });
+}
+
+//----------------------------------------------------------------------------------------------------------------------------
+
+//추천 문서 보여주기 //수정 필요
+function showRecommend() {
+
+  var relation;
+  firebase.database().ref('RELATIONSHIP').once('value', function (snap) {
+    relation = snap.val()
+    var tag = relation[serialize(docInfo.name)]
+    if (relation[serialize(docInfo.name)] == undefined) {
+      $('aside[class^=container]').append('<div id="suyeon146" class="whiteBlock container asideDiv">' + '<p>추천 문서 없음</p>' + '<hr>' + '<div class= "container"><p>글을 한번 편집해 주세요.</p></div>' + '</div>')
+    } else {
+      $('aside[class^=container]').append('<div id="suyeon146" class="whiteBlock container asideDiv">' + '<p>추천 문서</p>' + '<hr></div>')
+      var arr = new Array();
+      for (tititle in tag) {
+        if (tag[tititle]['std_fdp'] == undefined) {
+          tag[tititle]['std_fdp'] = 0;
+        }
+        var tt = tag[tititle]['tot_fdp'] + tag[tititle]['std_fdp']
+        arr.push([tititle, tt])
+
+      };
+      arr.sort(function (a, b) {
+        return a[1] - b[1];
+      });
+      arr.reverse();
+      //console.log(arr);
+      for (i = 0; i < arr.length; i++) {
+        if (inv_serialize(arr[i][0]) != undefined) {
+          $('div[id=suyeon146]').append('<div class="container">' + '<a href="w/' + inv_serialize(arr[i][0]) + '">' + inv_serialize(arr[i][0]) + '</a></div>' + '<hr>');
+        };
+      };
+    }
+
+
+  });
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------
+
+
+//$('article[class^=whiteBlock]').append('<div id="learning" style="display:none"><p>이 문서와 가장 관련있다고 생각하는 문서 1개의 제목을 아래에 입력해 주세요. 여러분의 많은 참여가 상상위키를 발전시킵니다.</p><input id="lrn" type="text" name="title"><input type="button" onclick="learning_function()" value="확인"></div>')
+// 학습버튼
+var relations;
+firebase.database().ref('RELATIONSHIP').once('value', function (happyRelation) {
+  relations = happyRelation.val();
+});
+
+//학습버튼 함수 //수정 필요
+function learning_function() {
+  var targetle = $('#lrn').val();
+  //console.log(targetle);
+  if (serialize(targetle) != undefined) {
+    if (targetle == fullName) {
+      alert("이 문서는 추천할 수 없습니다.")
+    } else {
+      var titleSerial = serialize(targetle);
+      if (relations[serialize(docInfo.name)][titleSerial] != undefined) {
+        if (relations[serialize(docInfo.name)][titleSerial]['std_fdp'] == undefined) {
+          var saveed_std = 0
+        } else {
+          var saveed_std = relations[serialize(docInfo.name)][titleSerial]['std_fdp'];
+        }
+        if (relations[serialize(docInfo.name)][titleSerial]['tot_fdp'] != undefined) {
+          firebase.database().ref('RELATIONSHIP').child(serialize(docInfo.name)).child(titleSerial).update({
+            std_fdp: (saveed_std + 0.4)
+          }).then(() => {
+            //console.log("done");
+            $("div[id=learning]").remove();
+          });
+        } else {
+          eval("firebase.database().ref('RELATIONSHIP').child(" + serialize(docInfo.name) + ").update({" + titleSerial + ": { tot_fdp: 0, std_fdp: (saveed_std + 0.4) } })").then(() => {
+            //console.log("done");
+            $("div[id=learning]").remove();
+          });
+        }
+      } else {
+        eval("firebase.database().ref('RELATIONSHIP').child(" + serialize(docInfo.name) + ").update({" + titleSerial + ": { tot_fdp: 0, std_fdp: 0.4 } })").then(() => {
+          //console.log("done");
+          $("div[id=learning]").remove();
+        });
+      }
+    }
+
+  } else {
+    alert("존재하지 않는 문서입니다.")
+  }
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------
+
+//문서 제목: 시리얼 의 형태로 저장되어 있는 오브젝트
+var serialNote = {};
+//시리얼: 문서 제목 의 형태롤 저장되어 있는 오브젝트
+var inv_serialNote = {};
+
 var friendList;
-
 //앞으로 쓸 씨리얼 함수
 function serialize(title) {
-    return serialNote[title];
+  if (serialList.indexOf(title) == -1) {
+    return undefined;
+  } else {
+    return serialList.indexOf(title);
+  }
 }
 //씨리얼 역함수
 function inv_serialize(serial) {
-    for (key in serialNote) {
-        if (serialNote[key] == serial) {
-            return key;
+  return serialList[serial];
+}
+
+
+function friendMaker(DOCINFO) {
+  return new Promise(function (resolve) {
+    //console.log(serialNote[docInfo.name]);
+
+    firebase.database().ref('RELATIONSHIP').child(DOCINFO.serial).once('value', function (snap) {
+      friendList = snap.val();
+
+      var saved_std_fdp = [];
+      if (friendList != null) {
+        saved_std_fdp = friendList
+      }
+      var list_update = [];
+      var tempList = (DOCINFO.content.match(/\[\[.+?]]/g) || []);
+      for (p = 0; p < tempList.length; p++) {
+        if (serialize(tempList[p].split("|", 1)[0].replace("[[", "").replace("]]", "")) != undefined) {
+          list_update.push(serialize(tempList[p].split("|", 1)[0].replace("[[", "").replace("]]", "")));
+          //console.log(list_update);
+        };
+      };
+      //console.log(list_update);
+
+      //content의 docInfo.name을 시리얼로 받아 list_update에 추가
+      //console.log(1);
+      var finalUpdate = [];
+
+      function listcountmaker() {
+        for (p = 0; p < list_update.length; p++) {
+          eval("cnt_" + list_update[p] + "=" + "0");
+        };
+      }
+
+      listcountmaker(); //(cnt+list_update[p])을 전역변수로 선언
+      //console.log(1);
+      var p = list_update.length;
+      while (p != 0) {
+        eval("cnt_" + list_update[p - 1] + "+=" + "1");
+        if (-1 == finalUpdate.indexOf(list_update[p - 1])) {
+          finalUpdate.push(list_update[p - 1])
         }
+        var k = list_update.pop(p - 1);
+        p = list_update.length
+      }
+
+      finalUpdate.sort();
+      //console.log(finalUpdate);
+      var finalObject = new Object();
+
+      for (i = 0; i < finalUpdate.length; i++) {
+        eval("var relative" + "=" + "5*(1-0.8**(cnt_" + finalUpdate[i] + "));");
+
+        if (saved_std_fdp[finalUpdate[i]] == undefined) {
+          finalObject[finalUpdate[i]] = {
+            tot_fdp: relative,
+            std_fdp: 0
+          }
+        } else {
+          if (saved_std_fdp[finalUpdate[i]]['std_fdp'] == undefined) {
+            finalObject[finalUpdate[i]] = {
+              tot_fdp: relative,
+              std_fdp: 0
+            };
+          } else {
+            finalObject[finalUpdate[i]] = {
+              tot_fdp: relative,
+              std_fdp: saved_std_fdp[finalUpdate[i]]['std_fdp']
+            }
+          }
+          //console.log(finalObject)
+        }
+
+      }
+      firebase.database().ref('RELATIONSHIP').child(DOCINFO.serial).set(null).then(() => {
+        firebase.database().ref('RELATIONSHIP').child(DOCINFO.serial).set(finalObject).then(() => {
+          //console.log("done");
+          resolve();
+        });
+      });
+    });
+  });
+}
+
+
+//위키 문서 저장하기//위키 문서 저장하기//위키 문서 저장하기//위키 문서 저장하기//위키 문서 저장하기//위키 문서 저장하기
+//type = 2 => 삭제 / undefined => 저장 / 1 => 사용자 문서 생성중. / 3 => 분류 변경 (생성, 삭제 아님) / 4 => 분류 생성
+function saveFunction(_DOCINFO, type) {
+
+  return new Promise((resolve, reject) => {
+
+    $('#logP').text('사용자 정보를 수정하는 중');
+
+    console.log('start saveEffect');
+
+    saveEffect(_DOCINFO, type).then((DOCINFO) => {
+
+      if (type != 2) {
+        $('#logP').text(inv_serialize(DOCINFO.serial) + ' 문서를 분류하는 중');
+      }
+
+      console.log('start saveClass');
+
+      saveClass(DOCINFO).then(() => {
+
+        console.log('format DOCINFO');
+
+        if (type != 2) {
+          $('#logP').text(inv_serialize(DOCINFO.serial) + ' 문서를 저장하는 중');
+        }
+
+        delete DOCINFO.addedClass;
+        delete DOCINFO.removedClass;
+
+
+        DOCINFO.highClass = classListFormat(DOCINFO.highClass, 0);
+        DOCINFO.lowClass = (classListFormat(DOCINFO.lowClass, 0) || []);
+        DOCINFO.lowDoc = classListFormat(DOCINFO.lowDoc, 2) || [];
+
+        let contributionInfo = {
+          serial: DOCINFO.serial,
+          time: DOCINFO.time,
+          history: DOCINFO.history,
+          changedByte: DOCINFO.changedByte,
+          comment: DOCINFO.comment
+        }
+
+        let keywordInfo = (DOCINFO.keyword || {});
+
+        let linkInfo = (DOCINFO.link || {});
+
+        let historyInfo = {
+          editorFull: DOCINFO.editorFull,
+          editorNick: DOCINFO.editorNick,
+          time: DOCINFO.time,
+          history: DOCINFO.history,
+          changedByte: DOCINFO.changedByte,
+          serial: DOCINFO.serial,
+          comment: DOCINFO.comment
+        };
+
+        let logInfo = {
+          time: DOCINFO.time,
+          serial: DOCINFO.serial
+        };
+
+        //editFunctions.js 저장 완료 후에 필요
+        docInfo = DOCINFO;
+
+        console.log(DOCINFO);
+
+        //문서의 내용이 집약된 content는 저장량을 줄이기 위해 저장하지 않는다.
+        delete DOCINFO.content
+        //keyword 또한 마찬가지.
+        delete DOCINFO.keyword
+        //lastClass 또한 마찬가지.
+        delete DOCINFO.lastClass;
+        //용량 줄이기
+        delete DOCINFO.link;
+        delete DOCINFO.type;
+        delete DOCINFO.editorFull;
+        delete DOCINFO.editorNick;
+        delete DOCINFO.changedByte;
+
+        console.log('start saveDoc');
+
+        saveDoc(DOCINFO).then(() => {
+          if (type != 3) {
+            console.log('start saveKeyword');
+            saveKeyword(keywordInfo, DOCINFO.serial).then(() => {
+              console.log('start saveLink');
+              saveLink(linkInfo, DOCINFO.serial).then(() => {
+                console.log('start saveHistory');
+                $('#logP').text(inv_serialize(DOCINFO.serial) + ' 문서의 편집 기록을 저장하는 중');
+                saveHistory(historyInfo).then(() => {
+                  console.log('start saveLog');
+                  saveLog(logInfo).then(() => {
+                    console.log('start saveContribution');
+                    saveContribution(contributionInfo).then(() => {
+                      console.log('start userScoreChange');
+                      userScoreChange().then(() => {
+                        console.log('end saveFunction');
+                        resolve();
+                      });
+                    })
+                  })
+                });
+              })
+            })
+          } else {
+            resolve();
+          }
+        })
+      });
+    })
+  });
+}
+
+function saveClass(DOCINFO) {
+  return new Promise((resolve, reject) => {
+    let docName = inv_serialize(DOCINFO.serial);
+    let addedClass = DOCINFO.addedClass || [];
+    let removedClass = DOCINFO.removedClass || [];
+
+    if (docName.split(':')[0] == '분류') {
+      if (docName == '분류:분류') {
+        resolve();
+      } else {
+        addClassToClass(docName, addedClass, 0).then(() => {
+          removeClassToClass(docName, removedClass, 0).then(() => {
+            resolve();
+          });
+        });
+      }
+    } else {
+      addDocToClass(docName, addedClass, 0).then(() => {
+        removeDocToClass(docName, removedClass, 0).then(() => {
+          resolve();
+        });
+      });
     }
+  });
 }
 
-function friendMaker(content, docName) {
-    return new Promise(function (resolve) {
-        //씨리얼 목록 파일 받아옴
-
-        console.log(serialNote[docName]);
-        //친구 목록 불러옴. 저장하는 과정에서 실행. 앞에서 title과 content 변수를 가져왔을거라 예상. docName은 저장하는 문서의 제목이다
-
-        firebase.database().ref('RELATIONSHIP').child(serialize(docName)).once('value', function (snap) {
-            friendList = snap.val();
-
-            var saved_std_fdp = [];
-            if (friendList != null) {
-                saved_std_fdp = friendList
-            }
-
-
-            console.log(1);
-            var list_update = [];
-            content.replace(/<a title='(.+?)'/g, function (match, targettitle) {
-                if (serialize(targettitle) != undefined) {
-                    list_update.push(serialize(targettitle));
-                }
-            });//content의 docName을 시리얼로 받아 list_update에 추가
-            console.log(1);
-            var finalUpdate = [];
-            function listcountmaker() {
-                for (p = 0; p < list_update.length; p++) {
-                    eval("cnt_" + list_update[p] + "=" + "0");
-                };
-            }
-            listcountmaker();//(cnt+list_update[p])을 전역변수로 선언
-            console.log(1);
-            var p = list_update.length;
-            while (p != 0) {
-                eval("cnt_" + list_update[p - 1] + "+=" + "1");
-                if (-1 == finalUpdate.indexOf(list_update[p - 1])) {
-                    finalUpdate.push(list_update[p - 1])
-                }
-                var k = list_update.pop(p - 1);
-                p = list_update.length
-            }
-
-            finalUpdate.sort();
-            console.log(finalUpdate);
-            var finalObject = new Object();
-
-            for (i = 0; i < finalUpdate.length; i++) {
-                eval("var relative" + "=" + "5*(1-0.8**(cnt_" + finalUpdate[i] + "));");
-
-                if (saved_std_fdp[finalUpdate[i]] == undefined) {
-                    finalObject[finalUpdate[i]] = { tot_fdp: relative, std_fdp: 0 }
-                } else {
-                    if (saved_std_fdp[finalUpdate[i]]['std_fdp'] == undefined) {
-                        finalObject[finalUpdate[i]] = { tot_fdp: relative, std_fdp: 0 };
-                    } else {
-                        finalObject[finalUpdate[i]] = { tot_fdp: relative, std_fdp: saved_std_fdp[finalUpdate[i]]['std_fdp'] }
-                    }
-                    //console.log(finalObject)
-                }
-
-            }
-            firebase.database().ref('RELATIONSHIP').child(serialize(docName)).set(null).then(() => {
-                firebase.database().ref('RELATIONSHIP').child(serialize(docName)).set(finalObject).then(() => {
-                    console.log("done");
-                    resolve();
-                });
-            });
-
-
-        });
+//state 0=열림, 1=숨김, 2=삭제됨
+function saveDoc(newDoc) {
+  return new Promise((resolve, reject) => {
+    firebase.firestore().collection(String(newDoc.serial)).doc(String(newDoc.history)).set(newDoc).then(() => {
+      resolve();
     });
+  });
 }
 
-function saveFunction(CONTENT, TITLE, HISTORY, LEVEL, REF, COMMENT, KEYWORD) {
+//시리얼 추가, USER의 변화 등을 담당.
+//type == 2 => 삭제하는 중. // type == 1 => 사용자 문서 생성중 // type == 3 => 분류 변경 // type == 4 => 분류 생성
+function saveEffect(newDoc, type) {
+  return new Promise((resolve, reject) => {
+    if ((newDoc.history == 0 || newDoc.state == 2) && type != 2) {
 
-    return new Promise(function (success, fail) {
-        var BYTE = getByteLength(CONTENT);
-        //console.log(CONTENT);
-        //console.log(TITLE);
-        //console.log(HISTORY);
-        //console.log(LEVEL);
-        //console.log(BYTE);
-        //console.log(REF.path);
+      //새로 만드는 문서
+      newDoc.history += 1;
+
+      //aclInfo 생성
+      checkAcl(newDoc.name).then(() => {
+
+        //시리얼 추가
+        addSerial(newDoc.name, newDoc.serial).then((serial) => {
+
+          newDoc.serial = serial;
+
+          newDoc.state = 0;
+
+          delete newDoc.name;
+
+          if (type != 4) {
+            //acl 저장 //시리얼보다 나중이어야 함.
+            saveAcl(aclInfo, newDoc.serial).then(() => {
 
 
+              userInfo.make += 1;
+              userRef.child(userInfo.uid).child('make').set(userInfo.make).then(() => {
+                userInfo.edit += 2;
+                userRef.child(userInfo.uid).child('edit').set(userInfo.edit).then(() => {
+                  if (type != 1) {
+                    friendMaker(newDoc).then(() => {
+                      resolve(newDoc);
+                    });
+                  } else {
+                    //사용자 문서 생성 때는 friendMaker 작동하면 안됨.
+                    //docInfo.content가 없기 때문
+                    resolve(newDoc);
+                  }
+                })
+              })
+            })
+          } else {
+            //분류 생성이긴 한데 삭제됐던 분류는 acl을 유지해야 함.
+            if (newDoc.history == 1) {
+              //진짜 새로 생긴 분류 문서
+              saveAcl({
+                edit: 1,
+                move: 50,
+                delete: 50
+              }, newDoc.serial).then(() => {
+                resolve(newDoc);
+              });
+            } else {
+              //삭제됐다가 생긴 문서
+              resolve(newDoc);
+            }
+          }
+        })
+      });
+    } else {
+      //일반적인 편집
+      if (type != 3) {
+        //분류 변경이 아닌 경우에만 역사 +1.
+        newDoc.history += 1;
+      }
 
-
-        var hisName = userNick + '(' + userGisu + '기)';
-
-        if (userName + '(' + userGisu + '기)' == fullName) {
-            hisName = '<span style="color:rgb(249, 166, 2)"><b>본인</b></span>';
-        } else if (userLevel >= 15) {
-            hisName = '<span class="adminNameSpan"><b>' + userNick + '</b>(' + userGisu + '기)' + '</span>';
-        } else if (userLevel >= 10) {
-            hisName = '<span style="color:rgb(50, 100, 255)"><b>' + userNick + '</b>(' + userGisu + '기)' + '</span>';
-        } else if (userLevel >= 7) {
-            hisName = '<span style="color:rgb(105, 201, 192)"><b>' + userNick + '</b>(' + userGisu + '기)' + '</span>';
+      if (newDoc.name != userInfo.full && (newDoc.name.search(/기:/) != -1 || newDoc.name.search(/선생님:/) != -1)) {
+        //본인을 제외한 다른 학생이나 선생님을 편집한 것.
+        delete newDoc.name;
+        friendMaker(newDoc).then(() => {
+          if (userInfo.time == 0) {
+            userInfo.time = new Date().getTime();
+          }
+          userRef.child(userInfo.uid).child('time').set(userInfo.time + 86400000).then(() => {
+            if (newDoc.changedByte < 200) {
+              resolve(newDoc);
+            } else {
+              userInfo.edit += 1;
+              userRef.child(userInfo.uid).child('edit').set(userInfo.edit).then(() => {
+                resolve(newDoc);
+              });
+            }
+          });
+        });
+      } else {
+        delete newDoc.name;
+        if (type != 3 && type != 2) {
+          friendMaker(newDoc).then(() => {
+            if (newDoc.changedByte < 200) {
+              resolve(newDoc);
+            } else {
+              //분류 변경이 아닌 경우에만 기여도 상승.
+              userInfo.edit += 1;
+              userRef.child(userInfo.uid).child('edit').set(userInfo.edit).then(() => {
+                resolve(newDoc);
+              });
+            }
+          });
+        } else {
+          resolve(newDoc);
         }
-        var t = new Date();
-
-        friendMaker(CONTENT, TITLE).then(() => {
-            REF.collection(TITLE).doc(String(-1000000 + (HISTORY + 1))).set({
-                content: CONTENT,
-                nick: hisName,
-                name: userName + '(' + userGisu + '기)',
-                level: LEVEL,
-                byte: BYTE,
-                history: HISTORY + 1,
-                time: t.getTime(),
-                comment: COMMENT,
-                private: false,
-            }).then(function () {
-                firebase.database().ref('KEYWORD').child(serialize(TITLE)).set(KEYWORD).then(() => {
-
-                    if (REF.id != 'class' && REF.id != 'file') {
-                        logRef.child(TITLE).set({
-                            name: TITLE,
-                            time: t.getTime()
-                        }).catch(err => {
-                            console.log(err);
-                        }).then(() => {
-                            success();
-                            // loadLog({ source: 'server' }).then(() => {
-                            //     success();
-                            // });
-                        })
-                    } else {
-                        success();
-                    }
-                });
-            });
-        });
-    });
+      }
+    }
+  });
 }
 
-//문서 삭제하기//문서 삭제하기//문서 삭제하기//문서 삭제하기//문서 삭제하기//문서 삭제하기//문서 삭제하기//문서 삭제하기
-function deleteDoc(colName, docName, realName) {
-    return new Promise(resolve => {
-        //console.log(realName + '의 log delete complete!');
-
-        firebase.database().ref('SERIAL').child(realName.replace(/\./g, '&DOT&')).set(null).then(() => {
-            console.log('시리얼에서 삭제 완료');
-            deleteAllDoc(realName).then(function () {
-                //console.log(realName + '의 allDoc delete complete!');
-                //문서 없애기 (컬렉션)
-                //oldClassList 얻기
-
-
-                if (colName != '분류') {
-                    checkCol(colName, docName);
-                    wikiCol.collection(realName).orderBy('history', 'desc').limit(1).get({ source: 'server' }).then(snapshot => {
-
-                        console.log('삭제 진행 중인 문서 이름 => ' + realName);
-
-                        var content = snapshot.docs[0].data().content.split(/<\/hr>/g)[0];
-                        content = content.replace(/<a title='(.+?)' href='.+?'>(.+?)<\/a>/g, function (match, first, second) {
-                            if (first != second) {
-                                return "[[" + first + "|" + second + "]]";
-                            }
-                        });
-                        var oldClass = new Array();
-                        content = content.split('<hr/>')[0];
-                        content = content.replace(/(?<!\\)(?:&nbsp)?\|?(?:&nbsp)?\[\[.+?\|(.+?)]](?!])/g, function (match, val) {
-                            oldClass.push(val);
-                            return '[#' + val + '#]<br>';
-                        });
-                        //console.log(realName + '의 내용 => '+content);
-                        //console.log(realName + '의 oldClass');
-                        console.log(realName + '의 상위 분류');
-                        console.log(oldClass);
-
-                        deleteDocClass(realName, oldClass, 0).then(() => {
-                            checkCol(colName, docName);
-                            //console.log(realName + '의 class delete complete!');
-                            wikiCol.collection(realName).get().then(val => {
-
-                                deleteDocuments(0, val.docs, realName).then(() => {
-                                    if (colName != '파일') {
-                                        deleteLog(realName).then(function () {
-                                            console.log(realName + ' 완전히 제거 성공');
-                                            resolve();
-                                        });
-                                    } else {
-                                        console.log(realName + ' 완전히 제거 성공');
-                                        resolve();
-                                    }
-                                });
-                            });
-                        });
-                    });
-                } else {
-                    checkCol(colName, docName);
-                    //console.log(realName + '의 class delete complete!');
-                    wikiCol.collection(realName).get().then(val => {
-                        deleteDocuments(0, val.docs, realName).then(() => {
-                            console.log(realName + ' 완전히 제거 성공');
-                            resolve();
-                        });
-                    });
-                }
-            });
-        });
+function saveLog(newLog) {
+  return new Promise((resolve, reject) => {
+    logRef.child(newLog.serial).set(newLog).then(() => {
+      resolve();
     });
+  });
+}
+
+function saveHistory(newHistory) {
+  return new Promise((resolve, reject) => {
+
+    firebase.database().ref('HISTORY').child(newHistory.serial).child(newHistory.history).set(newHistory).then(() => {
+      resolve();
+    });
+
+  });
+}
+
+//권한 info
+var aclInfo = {
+  edit: 1,
+  delete: 1,
+  move: 1
+}
+
+function loadAcl(docSerial) {
+  return new Promise((resolve, reject) => {
+    firebase.database().ref('ACL').child(docSerial).once('value', function (snap) {
+      aclInfo = snap.val();
+      resolve();
+    });
+  });
+}
+
+function checkAcl(docName) {
+  return new Promise((resolve, reject) => {
+
+    if (serialList.indexOf(docName) == -1) {
+      //존재한 적이 없는 문서
+      if (docName.split(':')[0] == '상상위키') {
+        aclInfo = {
+          edit: 50,
+          delete: 50,
+          move: 50
+        }
+      } else if (docName.split(':')[0] == '선생님' || docName.split(':')[0].search(/[0-9]+기/) != -1 || docName.split(':')[0] == '분류') {
+        aclInfo = {
+          edit: 1,
+          delete: 50,
+          move: 50 //개명할지도...
+        }
+      } else if (docName.split(':')[0] == '파일') {
+        aclInfo = {
+          edit: 1,
+          delete: 1,
+          move: 100
+        }
+      } else if (docName.split(':')[0] == '분류') {
+        aclInfo = {
+          edit: 1,
+          delete: 100,
+          move: 1
+        }
+      } else {
+        aclInfo = {
+          edit: 1,
+          delete: 1,
+          move: 1
+        }
+      }
+
+      resolve();
+
+    } else {
+      loadAcl(serialize(docName)).then(() => {
+        resolve();
+      })
+    }
+  });
+}
+
+function saveAcl(newAcl, docSerial) {
+  return new Promise((resolve, reject) => {
+    firebase.database().ref('ACL').child(docSerial).set(newAcl).then(() => {
+      resolve();
+    });
+  });
+}
+
+function saveLink(newLink, serial) {
+  return new Promise((resolve, reject) => {
+
+    for (key in newLink) {
+      newLink['/' + key + '/' + serial] = newLink[key];
+      delete newLink[key];
+    }
+
+    firebase.database().ref('LINK').update(newLink).then(() => {
+      resolve();
+    });
+  });
+}
+
+//기여 내역 저장
+function saveContribution(newContribution) {
+  return new Promise((resolve, reject) => {
+    firebase.database().ref('CONTRIBUTION').child(userInfo.uid).child(newContribution.time).set(newContribution).then(() => {
+      resolve();
+    });
+  });
+}
+
+//키워드 저장
+function saveKeyword(newKeyword, serial) {
+  return new Promise((resolve, reject) => {
+    firebase.database().ref('KEYWORD').child(serial).set(newKeyword).then(() => {
+      resolve();
+    });
+  });
+}
+
+//삭제된 문서도 포함해서 모든 시리얼 있음. 배열 번호가 시리얼임.
+var serialList = [null];
+
+//serial = undefined면 완전 새로운 문서/ 아니면 삭제됐던 문서
+function addSerial(docName, serial) {
+  return new Promise((resolve, reject) => {
+
+    console.log(serial);
+
+    if (serial == undefined) {
+      serial = serialList.length;
+
+      serialList.push(docName);
+
+      docNote.push(docName);
+      serialNote[docName] = serial;
+      inv_serialNote[serial] = docName;
+    } else {
+      delete removeNote[docName];
+      serialNote[docName] = serial;
+      inv_serialNote[serial] = docName;
+      docNote.push(docName);
+    }
+
+    console.log(serial);
+
+    $('#logP').text('문서의 시리얼 넘버를 추가하는 중');
+
+    firebase.database().ref('SERIAL').child(serial).set({
+      true: docName
+    }).then(() => {
+      resolve(serial);
+    });
+
+  });
+}
+//--------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------
+//문서 삭제하기//문서 삭제하기//문서 삭제하기//문서 삭제하기//문서 삭제하기//문서 삭제하기//문서 삭제하기//문서 삭제하기
+//colName = class 같이, docName = fullName 임
+function deleteDoc(colName, docName) {
+  return new Promise(resolve => {
+
+    loading(true);
+
+    console.log('type이 ' + colName + '인 ' + docName + ' 문서 제거 시작');
+    $('#logP').text('시리얼 넘버를 삭제하는 중');
+
+    if (docName == '분류:미분류') {
+      console.log('분류:미분류는 삭제되지 않는다.');
+      loading(false);
+      resolve();
+    } else {
+
+      //시리얼에서 지운다.
+      deleteSerial(docName).then(function () {
+
+        console.log('시리얼에서 ' + docName + '을 지움');
+
+
+        //최근 문서 하나를 가져옴
+        firebase.firestore().collection(String(serialize(docName))).orderBy('history', 'desc').limit(1).get({
+          source: 'server'
+        }).then(snapshot => {
+
+          var data = snapshot.docs[0].data();
+
+          data.name = inv_serialize(data.serial);
+
+          data.highClass = classListFormat(data.highClass, 1);
+          data.lowClass = (classListFormat(data.lowClass, 1) || []);
+          data.lowDoc = classListFormat(data.lowDoc, 3) || [];
+
+          $('#logP').text('분류에서 문서를 삭제하는 중');
+
+          if (colName != 'class') {
+            //분류문서가 아니라면
+            //제거된 문서를 새로 저장함.
+            removeDocToClass(docName, data.highClass, 0).then(() => {
+              console.log('분류에서 제거 완료');
+              deleteDocument(data).then(() => {
+                //로그에서 지운다.
+                console.log('지워진 문서 추가 완료');
+
+                $('#logP').text('문서의 편집 기록을 삭제하는 중');
+
+                deleteLog(docName).then(function () {
+
+                  $('#logP').text('문서 삭제 성공');
+
+                  console.log('로그에서 ' + docName + '을 지움');
+                  console.log(docName + ' 완전히 제거 성공');
+                  resolve();
+                });
+              });
+            });
+          } else {
+            //분류문서라면 => 이미 상위, 하위 다 지워진 상태라 콘텐츠만 수정하면 됨.(강제 제거는 불가능하니까)
+            deleteDocument(data).then(() => {
+
+              //로그에서 지운다.
+              $('#logP').text('문서의 편집 기록을 삭제하는 중');
+
+              deleteLog(docName).then(function () {
+
+                $('#logP').text('문서 삭제 성공');
+
+                console.log('로그에서 ' + docName + '을 지움');
+                console.log(docName + ' 완전히 제거 성공');
+                loading(false);
+                resolve();
+              });
+            })
+          }
+        });
+      });
+    }
+  });
 }
 
 
 
 //로그에서 지우기
-function deleteLog(realName) {
-    return new Promise(resolve => {
-        logRef.child(realName).remove().then(function () {
-            resolve();
+function deleteLog(docName) {
+  return new Promise(resolve => {
+    logRef.child(serialize(docName)).remove().then(function () {
+      resolve();
+    });
+  });
+}
+
+//시리얼에서 지우기
+function deleteSerial(docName) {
+  return new Promise(resolve => {
+    firebase.database().ref('SERIAL').child(serialize(docName)).set({
+      false: docName
+    }).then(() => {
+      resolve();
+    });
+  });
+}
+
+
+function deleteDocument(info) {
+  return new Promise(resolve => {
+
+    var lastDocInfo = info;
+
+    lastDocInfo.editorFull = userInfo.full;
+    lastDocInfo.editorNick = userInfo.nick;
+    lastDocInfo.document = {
+      content: ''
+    };
+    lastDocInfo.state = 2;
+    lastDocInfo.time = new Date().getTime();
+    lastDocInfo.changedByte = -lastDocInfo.byte;
+    lastDocInfo.byte = 0;
+    lastDocInfo.comment = '문서 삭제';
+    lastDocInfo.link = {};
+    lastDocInfo.keyword = {};
+    lastDocInfo.highClass = [];
+    lastDocInfo.lowClass = [];
+    lastDocInfo.lowDoc = [];
+
+    if (inv_serialize(lastDocInfo.serial).split(':')[0] == '파일') {
+      lastDocInfo.link = {
+        ['/' + encode(inv_serialize(lastDocInfo.serial)) + '/' + lastDocInfo.serial]: null
+      };
+    }
+
+    console.log(lastDocInfo);
+
+    delete serialNote[lastDocInfo.name];
+    delete inv_serialNote[lastDocInfo.serial];
+    docNote.splice(docNote.indexOf(lastDocInfo.name), 1);
+    removeNote[lastDocInfo.name] = lastDocInfo.serial;
+
+    saveFunction(lastDocInfo, 2).then(() => {
+
+      if (inv_serialize(lastDocInfo.serial).split(':')[0] == '파일') {
+        fstorage.child('image/' + inv_serialize(lastDocInfo.serial).split(':').slice(1).join(':')).delete().then(() => {
+          resolve();
         });
-    });
+      } else {
+        resolve();
+      }
+    })
+  });
 }
 
-//allDoc에서 지우기
-function deleteAllDoc(realName) {
-    return new Promise(resolve => {
-        //txt파일에서 지우고
-        $.post('../src/php/delete.php', { num: 1, docName: realName.replace(/ /g, '%20') }).then(function () {
-            //fireStore에서 지우기
-            wikiDoc.doc('all').update({
-                all: firebase.firestore.FieldValue.arrayRemove(realName)
-            }).then(() => {
-                resolve();
-            });
-        });
-    });
-}
-
-//분류에서 지우기
-function deleteDocClass(docName, list, k) {
-    return new Promise(resolve => {
-
-        if (k < list.length) {
-            console.log('분류:' + list[k] + '에서 ' + docName + ' 제거 시작');
-            classFunction('분류:' + list[k], 1, docName).then(() => {
-                deleteDocClass(docName, list, k + 1).then(() => {
-                    resolve();
-                });
-
-            });
-        } else {
-            resolve();
-        }
-    });
-}
-
-//문서 하나하나 없애기
-function deleteDocuments(num, docs, realName) {
-    return new Promise(resolve => {
-        //console.log('length => '+docs.length);
-        //console.log('colName => '+colName);
-        if (docs.length > num) {
-            wikiCol.collection(realName).doc(docs[num].id).delete().then(() => {
-                deleteDocuments(num + 1, docs, realName).then(() => {
-                    resolve();
-                })
-            });
-        } else {
-            //파일 문서의 경우 파일도 삭제!
-            if (realName.split(':')[0] != realName.split(':')[1] && realName.split(':')[0] == '파일') {
-                fstorage.child('img/' + realName.split(':')[1]).delete().then(() => {
-                    resolve();
-                });
-            } else {
-                resolve();
-            }
-        }
-    });
-}
-
-const logRef = firebase.database().ref('LOG');
 
 //수정된 문서//수정된 문서//수정된 문서//수정된 문서//수정된 문서//수정된 문서//수정된 문서//수정된 문서//수정된 문서//수정된 문서
-function loadLog(setting) {
-    return new Promise(resolve => {
+const logRef = firebase.database().ref('LOG');
+var logList = [];
+var logObj = {};
 
-        // var filter = "win16|win32|win64|mac|macintel";
-        // if (navigator.platform) {
-        //     if (filter.indexOf(navigator.platform.toLowerCase()) < 0) {
-        //         //모바일
-        //         alert('mobile');
-        //     } else {
-        //         //pc
-        //         console.log('pc');
-        //     }
-        // }
+//로그가 없어지거나 추가되거나 변경될 때마다 동작.
+function startLogListener() {
 
+  logRef.orderByChild('time').on('child_changed', function (snap) {
+    //console.log(snap.val());
+    changeLog(snap);
+  });
 
-        var logs = new Array;
+  logRef.orderByChild('time').limitToLast(12).on('child_added', function (snap) {
+    // console.log('newLog!!');
+    // console.log(snap.val());
+    //새로 추가된 문서 이름은 모르기 때문에 가져와야 함.
+    getSerial().then(() => {
+      addNewLog(snap);
+    })
+  });
 
-        //wikiDoc.doc('log').collection('log').orderBy('time', 'desc').limit(1).get({source: 'server'}).then(logs => {
-        logRef.orderByChild('time').limitToLast(10).once('value', function (snap) {
-            snap.forEach(function (logData) {
-                logs.push(logData.val());
-                //console.log(logData.val());
-            });
-            logs.reverse();
-            logs.forEach(function (log) {
-                var dt = new Date(log.time);
-                $('#logDiv').append('<div class="container"><a href="' + log.name + '">'
-                    + log.name + '</a><p>' + dt.getHours() + ':' + dt.getMinutes() + '</p></div><hr>');
-            })
-
-            resolve();
-
-            // if (!logs.empty) {
-            //     wikiDoc.doc('log').collection('log').orderBy('time', 'desc').where('time', '>=', logs.docs[0].data().time + 200000).limit(1).get({ source: 'server' }).then(nowLog => {
-
-            //         //console.log(logs.docs[0].data());
-            //         if (!nowLog.empty) {
-            //             //console.log('new log');
-
-            //             loadLog({ source: 'server' }).then(() => {
-            //                 resolve();
-            //             });
-
-            //         } else {
-            //             //console.log('old log');
-
-            //             logs.forEach(function (logData) {
-            //                 log.push(logData.data());
-            //             });
-            //             //console.log(logs);
-            //             for (var i = 1; i < 11; i++) {
-            //                 var dt = new Date(log[i - 1].time);
-            //                 $('#logDiv').append('<div class="container"><a href="' + log[i - 1].doc + '">' + log[i - 1].doc + '</a><p>' + dt.getHours() + ':' + dt.getMinutes() + '</p></div><hr>');
-            //             }
-
-            //             resolve();
-            //         }
-
-
-
-            //     });
-            // } else {
-            //     //console.log('new log');
-
-            //     loadLog({ source: 'server' }).then(() => {
-            //         resolve();
-            //     });
-            // }
-        });
-    });
+  logRef.orderByChild('time').on('child_removed', function (snap) {
+    //console.log(snap.val());
+    removeLog(snap);
+  });
 }
 
+function getSerial() {
+  return new Promise((resolve, reject) => {
+    firebase.database().ref('SERIAL').orderByKey().once('value', function (serialData) {
+
+      docNote = [];
+      serialList = [null];
+
+      serialData.forEach(value => {
+        //console.log(value.val());
+        if (value.val().true != undefined) {
+          serialNote[value.val().true] = Number(value.key);
+          inv_serialNote[Number(value.key)] = value.val().true;
+          docNote.push(value.val().true);
+
+          serialList.push(value.val().true);
+        } else {
+          removeNote[value.val().false] = Number(value.key);
+
+          serialList.push(value.val().false);
+        }
+      });
+
+      resolve();
+    });
+  });
+}
+
+function showLog() {
+
+  logList.sort(function (a, b) {
+    if (a.time < b.time) {
+      return 1;
+    } else if (a.time > b.time) {
+      return -1;
+    } else {
+      if (a.serial > b.serial) {
+        return -1;
+      } else {
+        return 1;
+      }
+    }
+  })
+
+  // console.log('showLog!');
+  // console.log(logList[0]);
+
+  $('#logDiv').empty();
+
+  $('#logDiv').append("<p>수정된 문서</p><hr>");
+
+  let logNameList = [];
+
+  let loopCount = 0;
+  logList.forEach(function (log) {
+    var dt = new Date(log.time);
+    var logDocName = inv_serialize(log.serial);
+    if (loopCount < 12 && logNameList.indexOf(logDocName) == -1) {
+      loopCount++;
+      logNameList.push(logDocName);
+      $('#logDiv').append('<div class="container"><a href="w/' + logDocName + '">' +
+        logDocName + '</a><p>' + dt.getHours() + ':' + dt.getMinutes() + '</p></div><hr>');
+
+    }
+  });
+
+  addAnchorEventListener();
+}
+
+function removeLog(snap) {
+
+  let removeIndex;
+  logList.forEach(function (log, index) {
+    if (log.serial == snap.val().serial) {
+      removeIndex = index;
+    }
+  });
+
+  console.log(removeIndex);
+  console.log(logList);
+  console.log(logList[removeIndex]);
+
+  console.log(logList.splice(removeIndex, 1));
+
+  showLog();
+}
+
+function addNewLog(snap) {
+
+  logList.splice(0, 0, snap.val());
+  showLog();
+
+}
+
+function changeLog(snap) {
+
+  logList.forEach(function (log, index) {
+    if (log.serial == snap.val().serial) {
+      logList.splice(index, 1);
+    }
+  });
+
+  logList.splice(0, 0, snap.val());
+
+  showLog();
+}
+
+//const rankRef = firebase.database().ref('RANK');
 //기여도 순위
 function loadRank() {
-    rankRef.orderByChild('edit').limitToLast(7).once('value', function (data) {
-        var editCount = new Array();
-        var editName = new Array();
-        data.forEach(function (val) {
-            editName.push(val.key);
-            editCount.push(val.val().edit);
-        });
-        //console.log(editName);
-        for (var i = editName.length - 1; i > -1; i--) {
-            $('#rankDiv').append('<div class="container"><p>' + editName[i] + ' : ' + editCount[i] + '</p></div><hr>');
-        }
+
+  $('#rankDiv').empty();
+  $('#rankDiv').append('<p>기여도 순위</p>\n<hr>');
+  userRef.orderByChild('edit').limitToLast(7).once('value', function (data) {
+    var editCount = new Array();
+    var editName = new Array();
+    data.forEach(function (val) {
+      editName.push(val.val().nick);
+      editCount.push(val.val().edit);
     });
-}
-
-//파일 업로드 파일 업로드 파일 업로드 파일 업로드 파일 업로드 파일 업로드 파일 업로드 파일 업로드 파일 업로드
-
-const fstorage = firebase.storage().ref();
-var storageRef;
-var fileData = undefined;
-
-function changeFile(files) {
-    fileData = files[0];
-    console.log(fileData);
-    $('#uploadDiv > label').text(fileData.name);
-}
-
-function uploadFile() {
-
-    if (fileData != undefined) {
-
-        if ($('#uploadInput').is(':checked')) {
-
-            $('#uploadInput').prop('checked', false);
-
-            if (confirm(fileData.name + "파일을 업로드 하시겠습니까?")) {
-
-                loading(true);
-                var fileName = fileData.name;
-
-                var isNew = true;
-
-                classRef.child('파일').child('file').once('value').then(function (val) {
-                    for (var key in val.val()) {
-                        console.log(key);
-                        if (key.replace(/&DOT&/g, '.') == fileName) {
-                            isNew = false;
-                        }
-                    }
-
-                    if (!isNew) {
-
-                        alert('이름이 같은 파일이 존재합니다.');
-                        history.go(0);
-                        loading(false);
-
-                    } else {
-
-                        fstorage.child('img/' + fileName).put(fileData).then(function () {
-                            var thisByte = getByteLength("[{" + fileName + "}]\nsize:" + fileData.size);
-                            $.post('../src/php/allDoc.php', { title: ('파일:' + fileName).replace(/ /g, '%20') }).then(function () {
-                                wikiDoc.doc('all').update({
-
-                                    all: firebase.firestore.FieldValue.arrayUnion('파일:' + fileName)
-
-                                }).then(function () {
-
-                                    fstorage.child('img/' + fileName).getDownloadURL().then(fileUrl => {
-                                        classFunction('분류:파일', 0, "파일:" + fileName).then(function () {
-
-                                            saveFunction("분류:&nbsp<a title='분류:파일' href='분류:파일'>파일<\/a><hr/><img onclick='window.location.replace(`파일:" + fileName + "`);' style='cursor:pointer; width:100%;' alt='파일이 존재하지 않습니다.' name='" + fileName + "' src='" + fileUrl + "'><br>size:" + fileData.size + '<hr/>', '파일:' + fileName, 0, 1, wikiDoc.doc('file'), '');
-                                            alert(fileName + ' 파일이 정상적으로 업로드 되었습니다.');
-                                            $("#uploadDiv").hide();
-                                            loading(false);
-                                            history.go(0);
-                                        });
-                                    });
-                                });
-                            });
-                        });
-                    }
-                });
-            } else {
-                alert('다른 파일을 선택하려면 새로고침 하세요.');
-            }
-        }
+    //console.log(editName);
+    for (var i = editName.length - 1; i > -1; i--) {
+      $('#rankDiv').append('<div class="container"><p>' + editName[i] + ' : ' + editCount[i] + '</p></div><hr>');
     }
+  });
 }
 
-const classRef = firebase.database().ref('CLASS');
-//className은 분류:이름 으로 받았음.
-//docName은 추가해야 할 문서 이름으로 풀네임임.
-//0은 doc이 추가되는 경우, 1은 doc이 제거되는 경우
-function classFunction(className, number, docName) {
-    return new Promise(resolve => {
-        var onlyClassName = className.split(':').pop();
-        //console.log(docName);
-        var onlyDocName = docName.split(':').pop().replace(/\./g, '&DOT&');
-        //console.log(onlyDocName);
-        var parsedOnlyDocName = onlyDocName.replace(/ /g, '%20');
-        classRef.child(onlyClassName).once('value', function (snap) {
-            var highClass = undefined;
-            var lowClass = undefined;
-            var classDoc = undefined;
-            var classWiki = undefined;
-            var classFile = undefined;
-            var classFrame = undefined;
+//문서 이동 함수
+function moveDoc(oldDocName, newDocName) {
+  return new Promise((resolve, reject) => {
+    //시리얼만 수정하면 문서 이동이 완료된다!
 
-            var classHistory = 0;
-
-            var classDocList = [];
-            var classWikiList = [];
-            var classFileList = [];
-            var classFrameList = [];
-            var highClassList = [];
-            var lowClassList = [];
-
-            if (snap.val() != null) {
-                highClass = snap.val().high;
-                lowClass = snap.val().low;
-                classDoc = snap.val().doc;
-                classWiki = snap.val().wiki;
-                classFile = snap.val().file;
-                classFrame = snap.val().frame;
-                classHistory = snap.val().history;
-            }
-
-            if (highClass != undefined && highClass != '') {
-                for (var key in highClass) {
-                    highClassList.push(key);
-                }
-            }
-
-            if (lowClass != undefined && lowClass != '') {
-                for (var key in lowClass) {
-                    lowClassList.push(key);
-                }
-            }
-
-            if (classDoc != undefined && classDoc != '') {
-                for (var key in classDoc) {
-                    classDocList.push(key);
-                }
-            }
-
-            if (classWiki != undefined && classWiki != '') {
-                for (var key in classWiki) {
-                    classWikiList.push(key);
-                }
-            }
-
-            if (classFile != undefined && classFile != '') {
-                for (var key in classFile) {
-                    classFileList.push(key);
-                }
-            }
-
-            if (classFrame != undefined && classFrame != '') {
-                for (var key in classFrame) {
-                    classFrameList.push(key);
-                }
-            }
-
-
-            // console.log(highClassList);
-            // console.log (lowClassList);
-            // console.log (classDocList);
-            // console.log(classWikiList);
-            // console.log(classFileList);
-
-            if (number == 0) {
-                //추가되는 경우
-                var isNew = false;
-                if (classDocList.length == 0 && classWikiList.length == 0 && classFileList.length == 0
-                    && lowClassList.length == 0 && classFrameList.length == 0) {
-                    //새로운 분류
-                    isNew = true;
-                } else {
-                    //보존되는 분류
-                    isNew = false;
-                }
-
-                if (docName.search(/분류:/g) != -1) {
-                    //하위 분류 문서
-                    lowClassList.push(parsedOnlyDocName);
-                    changeClassData('low', onlyClassName, onlyDocName, 0);
-
-                } else if (docName.search(/전곽위키:/g) != -1) {
-                    //위키 문서
-                    classWikiList.push(parsedOnlyDocName);
-                    changeClassData('wiki', onlyClassName, onlyDocName, 0);
-
-                } else if (docName.search(/파일:/g) != -1) {
-                    //파일 문서
-                    classFileList.push(parsedOnlyDocName);
-                    changeClassData('file', onlyClassName, onlyDocName, 0);
-
-                } else if (docName.search(/틀:/g) != -1) {
-                    //틀 문서
-                    classFrameList.push(parsedOnlyDocName);
-                    changeClassData('frame', onlyClassName, onlyDocName, 0);
-
-                } else {
-                    //일반 문서
-                    classDocList.push(parsedOnlyDocName);
-                    changeClassData('doc', onlyClassName, onlyDocName, 0);
-                }
-
-                if (isNew) {
-                    //새로운 분류
-                    highClassList[0] = '미분류';
-                    makeClassContents(highClassList, lowClassList, classWikiList, classFileList, classFrameList, classDocList, className).then(content => {
-                        //문서 이름 목록에 추가(서버 텍스트 파일)
-                        $.post('../src/php/allDoc.php', { title: className.replace(/ /g, '%20') }).then(function () {
-
-                            firebase.database().ref('VALUE').child('docCnt').once('value', function (snap) {
-                                var serialNum = snap.val();
-
-                                firebase.database().ref('SERIAL').child(className).set(serialNum).then(() => {
-
-                                    console.log(serialNum);
-
-                                    firebase.database().ref('VALUE').child('docCnt').set(serialNum + 1).then(() => {
-
-                                        //분류 문서 새로 생성
-                                        saveFunction(content, className, 0, 1, wikiDoc.doc('class'), '').then(function () {
-                                            //문서 이름 목록에 추가2 (데이터베이스)
-                                            wikiDoc.doc('all').update({
-
-                                                all: firebase.firestore.FieldValue.arrayUnion(className)
-
-                                            }).then(function () {
-                                                classRef.child(onlyClassName).child('history').set(1).then(() => {
-                                                    classRef.child(onlyClassName).child('high').child('미분류').set(true).then(() => {
-                                                        classFunction('분류:미분류', 0, className).then(() => {
-                                                            console.log(className + ' 생성 완료');
-                                                            resolve();
-                                                        });
-                                                    });
-                                                });
-                                            });
-                                        });
-                                    });
-                                });
-                            });
-                        });
-                    });
-                } else {
-                    //보존되는 분류
-                    makeClassContents(highClassList, lowClassList, classWikiList, classFileList, classFrameList, classDocList, className).then(content => {
-                        //바뀐 분류 문서 저장
-                        saveFunction(content, className, classHistory - 1, 1, wikiDoc.doc('class'), '').then(function () {
-                            console.log(className + ' 변경 완료');
-                            resolve();
-
-                        });
-                    });
-                }
-
-            } else if (number == 1) {
-                //제거되는 경우
-                if (docName.search(/분류:/g) != -1) {
-                    //하위 분류 문서
-                    lowClassList.splice(lowClassList.indexOf(parsedOnlyDocName), 1);
-                    changeClassData('low', onlyClassName, onlyDocName, 1);
-
-
-                } else if (docName.search(/전곽위키:/g) != -1) {
-                    //위키 문서
-                    classWikiList.splice(classWikiList.indexOf(parsedOnlyDocName), 1);
-                    changeClassData('wiki', onlyClassName, onlyDocName, 1);
-
-                } else if (docName.search(/파일:/g) != -1) {
-                    //파일 문서
-                    classFileList.splice(classFileList.indexOf(parsedOnlyDocName), 1);
-                    changeClassData('file', onlyClassName, onlyDocName, 1);
-
-                } else if (docName.search(/틀:/g) != -1) {
-                    //틀 문서
-                    classFrameList.splice(classFrameList.indexOf(parsedOnlyDocName), 1);
-                    changeClassData('frame', onlyClassName, onlyDocName, 1);
-
-                } else {
-                    //일반 문서
-                    classDocList.splice(classDocList.indexOf(parsedOnlyDocName), 1);
-                    changeClassData('doc', onlyClassName, onlyDocName, 1);
-                }
-
-                console.log(className + '에서 ' + docName + '이 삭제되는 중');
-                console.log(highClassList);
-
-                if (classDocList.length == 0 && classWikiList.length == 0 && classFileList.length == 0
-                    && lowClassList.length == 0 && classFrameList.length == 0) {
-                    //삭제되는 분류
-
-                    console.log(className + '이 하위 문서 및 분류가 없어 삭제되는 중');
-                    //상위분류 데이터에서 이 분류 제거하기
-                    function removeFromHighClass(num, highClass, thisName) {
-                        return new Promise(resolve => {
-                            if ((highClass || []).length <= num) {
-                                resolve();
-                            } else {
-                                console.log('분류:' + highClass[num] + '에서 ' + thisName + ' 제거 시작');
-                                classFunction('분류:' + highClass[num], 1, thisName).then(() => {
-                                    removeFromHighClass(num + 1, highClass, thisName).then(() => {
-                                        resolve();
-                                    });
-                                });
-                            }
-                        });
-                    }
-
-
-
-                    //상위분류에서 이 분류 제거하기
-                    removeFromHighClass(0, highClassList, className).then(() => {
-                        //이 분류 문서 제거하기
-                        classRef.child(onlyClassName).remove().then(() => {
-                            deleteDoc('분류', onlyClassName, className).then(() => {
-                                //console.log(className + ' 제거 완료');
-                                resolve();
-                            });
-                        });
-                    });
-
-                } else {
-                    //보존되는 분류
-                    makeClassContents(highClassList, lowClassList, classWikiList, classFileList, classFrameList, classDocList, className).then(content => {
-                        //바뀐 분류 문서 저장
-                        saveFunction(content, className, classHistory - 1, 1, wikiDoc.doc('class'), '').then(function () {
-                            console.log(className + ' 변경 완료');
-                            resolve();
-
-                        });
-                    });
-                }
-            } else {
-                console.log('Error with classFunction number!');
-            }
-        });
+    firebase.database().ref('SERIAL').child(serialize(oldDocName)).set({
+      true: newDocName
+    }).then(() => {
+      resolve();
     });
+  });
 }
 
-//분류이름 / 문서      이름 / 0은 추가 1은 삭제
-function changeClassData(docType, className, docName, num) {
-    return new Promise(resolve => {
+function getDocName() {
 
-        if (num == 0) {
-            classRef.child(className).child(docType).child(docName).set(true).then(() => {
-                resolve();
-            });
-        } else if (num == 1) {
-            classRef.child(className).child(docType).child(docName).set(null).then(() => {
-                resolve();
-            });
+  let url = decodeURI(location.pathname);
+  url = url.split('/');
 
-        }
-    });
+  let docName = url.slice(2).join('/');
+
+  let question = location.search.substring(1);
+
+  if (question.split('&')[0] == 'doc=.') {
+    question = question.split('&').slice(1).join('&');
+    docName = '.';
+  }
+
+  return docName;
 }
 
-function makeClassContents(highClassList, lowClassList, classWikiList, classFileList, classFrameList, classDocList, className) {
-
-    return new Promise(resolve => {
-
-        //모두 합친 결과.
-        var allClassContent = '';
-        //분류된 문서 관련 내용
-        var classDocContent = '';
-        //전곽위키 문서가 분류된 경우 내용
-        var classWikiContent = '';
-        //파일 문서가 분류된 경우 내용
-        var classFileContent = '';
-        //틀 문서가 분류된 경우 내용
-        var classFrameContent = '';
-        //하위 문서 내용
-        var lowClassContent = '';
-        //상위 문서 내용
-        var highClassContent = '';
-
-        lowClassContent = '<h2>하위분류</h2>';
-        classDocContent = '<h2>"' + className.split(':').pop() + '"(으)로 분류된 문서</h2>';
-        classWikiContent = '<h2>"' + className.split(':').pop() + '"(으)로 분류된 전곽위키</h2>';
-        classFileContent = '<h2>"' + className.split(':').pop() + '"(으)로 분류된 파일</h2>';
-        classFrameContent = '<h2>"' + className.split(':').pop() + '"(으)로 분류된 틀</h2>';
-
-        if (lowClassList.length != 0) {
-            lowClassList.sort();
-            for (var i = 0; i < lowClassList.length; i++) {
-                lowClassList[i] = lowClassList[i].replace(/&DOT&/g, '.');
-            }
-            lowClassContent = classCho(lowClassList, '분류:', lowClassContent);
-        } else {
-            lowClassContent = '';
-        }
-
-        if (classDocList.length != 0) {
-            classDocList.sort();
-            for (var i = 0; i < classDocList.length; i++) {
-                classDocList[i] = classDocList[i].replace(/&DOT&/g, '.');
-            }
-            classDocContent = classCho(classDocList, '', classDocContent);
-        } else {
-            classDocContent = '';
-        }
-
-        if (classWikiList.length != 0) {
-            classWikiList.sort();
-            for (var i = 0; i < classWikiList.length; i++) {
-                classWikiList[i] = classWikiList[i].replace(/&DOT&/g, '.');
-            }
-            classWikiContent = classCho(classWikiList, '전곽위키:', classWikiContent);
-        } else {
-            classWikiContent = '';
-        }
-
-        if (classFileList.length != 0) {
-            classFileList.sort();
-            for (var i = 0; i < classFileList.length; i++) {
-                classFileList[i] = classFileList[i].replace(/&DOT&/g, '.');
-            }
-            classFileContent = classCho(classFileList, '파일:', classFileContent);
-        } else {
-            classFileContent = '';
-        }
-
-        if (classFrameList.length != 0) {
-            classFrameList.sort();
-            for (var i = 0; i < classFrameList.length; i++) {
-                classFrameList[i] = classFrameList[i].replace(/&DOT&/g, '.');
-            }
-            classFrameContent = classCho(classFrameList, '틀:', classFrameContent);
-        } else {
-            classFrameContent = '';
-        }
-
-        if (highClassList.length != 0) {
-            highClassList.sort();
-            for (var i = 0; i < highClassList.length; i++) {
-                highClassList[i] = highClassList[i].replace(/&DOT&/g, '.');
-            }
-            highClassContent = '[#' + highClassList.join('#][#') + '#]';
-        } else {
-            highClassContent = '';
-        }
-
-
-        //console.log(allClassContent);
-
-        function makeHighClassContent(highClassContent) {
-            return new Promise(resolve => {
-                var classNum = 0;
-                var lastNum = (highClassContent.match(/(?<!\\)\[#(.+?)#](?!])(?:\n)?/g) || []).length;
-                highClassContent = highClassContent.replace(/(?<!\\)\[#(.+?)#](?!])(?:\n)?/g, function (match, content) {
-                    classNum += 1;
-
-                    if (classNum == 1 && lastNum == 1) {
-                        return "&nbsp<a title='분류:" + content + "' href='분류:" + content + "'>" + content + "<\/a><hr/>";
-                    } else if (classNum == 1) {
-                        return "&nbsp<a title='분류:" + content + "' href='분류:" + content + "'>" + content + "<\/a>";
-                    } else {
-                        if (classNum == lastNum) {
-                            return "&nbsp|&nbsp<a title='분류:" + content + "' href='분류:" + content + "'>" + content + "<\/a><hr/>";
-                        } else {
-                            return "&nbsp|&nbsp<a title='분류:" + content + "' href='분류:" + content + "'>" + content + "<\/a>";
-                        }
-                    }
-                });
-
-                if (highClassContent == '') {
-                    resolve('<hr/>' + highClassContent);
-                } else {
-                    resolve('분류:' + highClassContent);
-                }
-            });
-        }
-
-        makeHighClassContent(highClassContent).then(text => {
-            allClassContent = text + lowClassContent + classDocContent + classWikiContent
-                + classFileContent + classFrameContent + '<hr/>';
-            //console.log('allClassContent => ' + allClassContent);
-
-            unListGrammar(allClassContent, 1).then(finalClassContent => {
-                //console.log('finalClassContent => ' + finalClassContent);
-                resolve(finalClassContent.replace(/%20/g, ' '));
-            });
-        });
-    });
-}
-
-
-function classCho(docList, doctype, content) {
-    var notSortedList = [];
-    var sortedList = [];
-
-    for (var i = 0; i < docList.length; i++) {
-        sortedList.push(docList[i].toUpperCase());
-        notSortedList.push(docList[i].toUpperCase());
-    }
-
-    sortedList.sort();
-
-    var matchNum = 0;
-    var nowNum = -1;
-    var choList = ['기타', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
-    //var gitaList = ['.', ',', '~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '|', '<', '>', '?', ':', '{', '}', '[', ']'];
-    for (var i = 0; i < sortedList.length; i++) {
-
-        if (sortedList[i].charAt(0).search(/[0-9]/) != -1) {
-            matchNum = choList.indexOf(sortedList[i].charAt(0));
-            //console.log('it is Number => ' + choList[matchNum] + ':' + matchNum);
-        } else if (sortedList[i].charAt(0).search(/[가-힣]/) != -1) {
-            matchNum = Math.floor(((sortedList[i].charCodeAt(0) - 44032) / 28) / 21) + 37;
-            //console.log('it is Korean => ' + choList[matchNum] + ':' + matchNum);
-        } else if (sortedList[i].charAt(0).search(/[A-Z]/) != -1) {
-            matchNum = choList.indexOf(sortedList[i].charAt(0));
-            //console.log('it is English => ' + choList[matchNum] + ':' + matchNum);
-        } else {
-            matchNum = 0;
-            //console.log('it is Nothing => ' + choList[matchNum] + ':' + matchNum);
-        }
-
-        if (matchNum > nowNum) {
-            if (nowNum == -1) {
-                content = content.concat('<h4 style="margin: 1rem auto">' + choList[matchNum] + '</h4>:');
-            } else {
-                content = content.concat(':<h4 style="margin: 1rem auto">' + choList[matchNum] + '</h4>:');
-            }
-            nowNum = matchNum;
-        }
-
-        var realDocName = docList[notSortedList.indexOf(sortedList[i])];
-        if (i == docList.length - 1) {
-            content = content.concat("(<a title='" + doctype + realDocName + "' href='" + doctype + realDocName + "'>" + realDocName + "</a>):");
-            return content;
-        } else {
-            content = content.concat("(<a title='" + doctype + realDocName + "' href='" + doctype + realDocName + "'>" + realDocName + "</a>\n)");
-        }
-    }
-}
-
-//분류 저장 방식 변경하면서 쓴 함수
-function addClassData() {
-    var docList = new Array();
-    if ((className = prompt('분류 이름')) != undefined) {
-        if ((classDocType = prompt('분류된 문서 종류 (doc, wiki, file, high, low)')) != undefined) {
-            if ((docList = prompt('문서 리스트 (공백 구분)').split(' ')) != undefined) {
-                docList.forEach(function (value, index) {
-                    console.log(value);
-                    value = value.replace(/%20/g, ' ');
-                    value = value.replace(/\./g, '&DOT&');
-                    classRef.child(className).child(classDocType).child(value).set(true);
-                });
-            }
-        }
-    }
+function getPageType() {
+  let url = decodeURI(location.pathname);
+  url = url.split('/');
+  return url[1];
 }

@@ -6,205 +6,330 @@
 } */
 
 * {
-    box-sizing: border-box;
-    font-family: 'NanumSquare', '돋움', sans-serif;
-}
-
-p {
-    line-height: 1.4;
+  box-sizing: border-box;
+  font-family: 'NanumSquare', '돋움', sans-serif;
 }
 
 table {
-    border-collapse: collapse;
-    border: black solid .1rem;
-    margin: .5rem;
+  border-collapse: collapse;
+  border: black solid .1rem;
+  margin: .5rem;
 }
 
-.historyTd, .historyTh {
-    border: black solid .1rem;
-    margin: 0;
-    padding: .5rem;
-    text-align: center;
+.historyTd,
+.historyTh {
+  border: black solid .1rem;
+  margin: 0;
+  padding: .5rem;
+  text-align: center;
 }
 
-td:not(.historyTd), th:not(.historyTh) {
-    border: grey solid .1rem;
-    margin: 0;
-    padding: .5rem 1rem;
-    text-align: center;
-    background-color: rgb(245,245,245);
+td:not(.historyTd),
+th:not(.historyTh) {
+  border: grey solid .1rem;
+  margin: 0;
+  padding: .5rem 1rem;
+  text-align: center;
+  background-color: rgb(245, 245, 245);
 }
 
 body {
-    margin: 0;
+  margin: 0;
 }
 
 input:focus {
-    outline: none;
+  outline: none;
 }
 
 button:focus {
-    outline: none;
+  outline: none;
 }
 
 ul {
-    list-style: outside none none !important;
-    padding-inline-start: 4rem;
-    margin: .5rem 0;
+  list-style: outside none none !important;
+  padding-inline-start: 4rem;
+  margin: .5rem 0;
+  text-align: left;
+}
+
+:is(ul, ol) li {
+  margin: .2rem 0;
 }
 
 ol {
-    padding-inline-start: 4rem;
-    margin: .5rem 0;
+  padding-inline-start: 4rem;
+  margin: .5rem 0;
+  text-align: left;
 }
 
-td>ul, td>ol {
-    padding-inline-start: 2rem;
+td>ul,
+td>ol {
+  padding-inline-start: 2rem;
 }
 
 del {
-    color: gray;
+  color: gray;
+  text-decoration-thickness: from-font;
 }
 
 a {
-    text-decoration: none;
-    color: rgb(60, 0, 255);
+  text-decoration: none;
+  color: rgb(60, 0, 255);
 }
 
 a>del {
-    color: rgb(60, 0, 255) !important;
+  color: rgb(60, 0, 255) !important;
 }
 
 *[id^=index]>a {
-    color: rgb(80, 0, 255) !important;
+  color: rgb(80, 0, 255) !important;
 }
 
 a:hover {
-    border-bottom: rgb(60, 0, 255) solid .1rem;
+  text-decoration: underline;
+  text-underline-offset: 0.4rem;
+  text-decoration-thickness: 0.1rem;
 }
 
 del:hover {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 ins {
-    text-decoration: none;
-    border-bottom: black solid .1rem;
+  text-underline-offset: 0.3rem;
+  text-decoration-thickness: from-font;
 }
 
-h2, h3, h4, h5 {
-    border-bottom: rgb(200, 200, 200) solid .15rem;
-    padding: .5rem 0;
-    margin-bottom: 1rem;
+h2,
+h3,
+h4,
+h5 {
+  border-bottom: rgb(190, 190, 190) solid .1rem;
+  padding: .8rem 0;
+  margin-bottom: 1rem;
+  margin-top: 2rem;
 }
 
 h2 {
-    font-size: 3rem;
+  font-size: 3rem;
 }
 
 h3 {
-    font-size: 2.8rem;
+  font-size: 2.8rem;
 }
 
 h4 {
-    font-size: 2.6rem;
+  font-size: 2.6rem;
 }
 
 h5 {
-    font-size: 2.4rem;
+  font-size: 2.4rem;
 }
 
 blockquote[class^=small] {
-    display: inline;
-    text-align: center;
-    margin: 0 .2rem;
-    padding: .2rem .5rem;
-    background-color: rgb(235, 235, 235);
-    border-radius: .5rem;
+  display: inline;
+  text-align: center;
+  margin: 0 .2rem;
+  padding: .2rem .4rem;
+  background-color: rgb(235, 235, 235);
+  border-radius: .5rem;
 }
 
 blockquote[class^=middle] {
-    margin: 0;
-    max-width: max-content;
-    text-align: center;
-    padding: .8rem 2rem;
-    background-color: rgb(235, 235, 235);
-    border-radius: .5rem;
+  margin: 0;
+  max-width: max-content;
+  text-align: center;
+  padding: .8rem 2rem;
+  background-color: rgb(235, 235, 235);
+  border-radius: .5rem;
 }
 
 blockquote[class^=big] {
-    margin: 2rem 2rem;
-    text-align: center;
-    padding: 3rem 4.5rem;
-    background-color: rgb(235, 235, 235);
-    border-radius: 1rem;
+  margin: 2rem 2rem;
+  text-align: center;
+  padding: 3rem 4.5rem;
+  background-color: rgb(235, 235, 235);
+  border-radius: 1rem;
 }
 
 code {
-    display: inline-block;
-    margin: 0 .2rem;
-    max-width: max-content;
-    text-align: left;
-    padding: .1rem .5rem;
-    background-color: rgb(255, 255, 255);
-    border: grey solid .1rem;
-    border-radius: .5rem;
-    font-family: '돋움';
+  display: inline-block;
+  margin: 0 .2rem;
+  max-width: max-content;
+  text-align: left;
+  padding: .3rem .8rem;
+  background-color: rgb(255, 255, 255);
+  border: grey solid .1rem;
+  border-radius: .5rem;
+  font-family: '돋움';
 }
 
 .adminNameSpan {
-    animation-duration: 1s;
-    animation-name: gradation;
-    animation-iteration-count: infinite;
+  animation-duration: 1s;
+  animation-name: gradation;
+  animation-iteration-count: infinite;
+}
+
+.RONameSpan {
+  animation-duration: 1s;
+  animation-name: ROGradation;
+  animation-iteration-count: infinite;
+}
+
+.OYNameSpan {
+  animation-duration: 1s;
+  animation-name: OYGradation;
+  animation-iteration-count: infinite;
+}
+
+.YGNameSpan {
+  animation-duration: 1s;
+  animation-name: YGGradation;
+  animation-iteration-count: infinite;
+}
+
+.GBNameSpan {
+  animation-duration: 1s;
+  animation-name: GBGradation;
+  animation-iteration-count: infinite;
+}
+
+.BNNameSpan {
+  animation-duration: 1s;
+  animation-name: BNGradation;
+  animation-iteration-count: infinite;
 }
 
 .borderGradation {
-    animation-duration: 1s;
-    animation-name: borderGradation;
-    animation-iteration-count: infinite;
+  animation-duration: 1s;
+  animation-name: borderGradation;
+  animation-iteration-count: infinite;
 }
 
 .adminDiv {
-    border-color: rgb(80, 0, 255);
-    border-width: .2rem;
-    border-style: solid;
+  border-color: rgb(80, 0, 255);
+  border-width: .2rem;
+  border-style: solid;
 }
+
 .adminDiv:hover {
-    border-color: rgb(160, 0, 255);
+  border-color: rgb(160, 0, 255);
 }
 
 #redirectAlertP {
-    border: .2rem rgb(80, 0, 255) solid;
-    border-radius: 1rem;
-    background-color: rgb(250,245,255);
-    padding: .5rem .8rem;
-    font-size: 1.8rem;
-    padding-left: 1rem;
-    line-height: 2.4rem;
-    margin: 0;
-    margin-bottom: 1rem;
+  border: .2rem rgb(80, 0, 255) solid;
+  border-radius: 1rem;
+  background-color: rgb(250, 245, 255);
+  padding: .6rem .8rem;
+  font-size: 1.8rem;
+  padding-left: 1rem;
+  line-height: 2.4rem;
+  margin: 0;
+  margin-bottom: 1rem;
 }
 
 @keyframes gradation {
-    0% {
-        color: rgb(80, 0, 255);
-    }
-    50% {
-        color: rgb(160, 0, 255);
-    }
-    100% {
-        color: rgb(80, 0, 255);
-    }
+  0% {
+    color: rgb(80, 0, 255);
+  }
+
+  50% {
+    color: rgb(160, 0, 255);
+  }
+
+  100% {
+    color: rgb(80, 0, 255);
+  }
+}
+
+@keyframes ROGradation {
+  0% {
+    color: rgb(220, 0, 0);
+  }
+
+  50% {
+    color: rgb(250, 120, 0);
+  }
+
+  100% {
+    color: rgb(220, 0, 0);
+  }
+}
+
+@keyframes OYGradation {
+  0% {
+    color: rgb(250, 120, 0);
+  }
+
+  50% {
+    color: rgb(250, 200, 0);
+  }
+
+  100% {
+    color: rgb(250, 120, 0);
+  }
+}
+
+@keyframes YGGradation {
+  0% {
+    color: rgb(250, 200, 0);
+  }
+
+  50% {
+    color: rgb(100, 220, 100);
+  }
+
+  100% {
+    color: rgb(250, 200, 0);
+  }
+}
+
+@keyframes GBGradation {
+  0% {
+    color: rgb(100, 220, 100);
+  }
+
+  50% {
+    color: rgb(50, 100, 255);
+  }
+
+  100% {
+    color: rgb(100, 220, 100);
+  }
+}
+
+@keyframes BNGradation {
+  0% {
+    color: rgb(50, 100, 255);
+  }
+
+  50% {
+    color: rgb(50, 50, 200);
+  }
+
+  100% {
+    color: rgb(50, 100, 255);
+  }
 }
 
 @keyframes borderGradation {
-    0% {
-        border-color: rgb(160, 0, 255);
-    }
-    50% {
-        border-color: rgb(80, 0, 255);
-    }
-    100% {
-        border-color: rgb(160, 0, 255);
-    }
+  0% {
+    border-color: rgb(160, 0, 255);
+  }
+
+  50% {
+    border-color: rgb(80, 0, 255);
+  }
+
+  100% {
+    border-color: rgb(160, 0, 255);
+  }
+}
+
+.card {
+  margin: .8rem 0;
+  border-radius: 2rem;
+  padding: 1.8rem;
+  font-size: 2.2rem;
+  border: solid .2rem;
 }

@@ -18,7 +18,7 @@
 }
 
 .hidden {
-    display: none;
+    display: none !important;
 }
 
 .whiteBlock {
@@ -29,6 +29,21 @@
 .greyBlock {
     background-color: rgb(240, 240, 240);
     border: rgb(200, 200, 200) dashed .15rem;
+}
+
+.commonBtn {
+    font-size: 2rem;
+    padding: .6rem 1.2rem;
+    display: block;
+    border: .1rem solid black;
+    background-color: rgb(245, 245, 245);
+    text-align: center;
+}
+
+.commonBtn:hover {
+    cursor: pointer;
+    background-color: rgb(235, 235, 235);
+    font-weight: bold;
 }
 
 .F1 {

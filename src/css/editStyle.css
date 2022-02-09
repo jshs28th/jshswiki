@@ -1,0 +1,25 @@
+#documentE {
+    height: 50rem;
+    font-size: 2rem;
+    line-height: 1.4;
+    margin-bottom: 1rem;
+    padding: .2rem .5rem;
+}
+
+#toolDiv {
+    margin-bottom: 1.5rem;
+}
+
+#commentInput {
+    height: 4rem;
+    font-size: 2rem;
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+}
+
+.preTxt {
+    font-size: 2rem;
+    margin-left: 0.6rem;
+    margin-right: 0.6rem;
+    line-height: 2.8rem;
+}
